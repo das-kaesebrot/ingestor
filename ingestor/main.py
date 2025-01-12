@@ -47,8 +47,8 @@ def main():
         "--output-directory",
         help="Output directory to place renamed files in",
         type=str,
-        required=True,
-        default=None,
+        required=False,
+        default="Merged",
     )
 
     parser.add_argument(
@@ -63,6 +63,33 @@ def main():
         "-s",
         "--silent",
         help="Suppress non-error output (sets logging level to ERROR)",
+        action="store_true",
+        required=False,
+        default=False,
+    )
+
+    parser.add_argument(
+        "-n",
+        "--name",
+        help="Date pattern for filenames",
+        type=str,
+        required=False,
+        default=r"%Y-%m-%d %H.%M.%S",
+    )
+
+    parser.add_argument(
+        "-p",
+        "--person-suffix",
+        help="File suffix of the person the files are from. Example: Julian Handy -> J_H",
+        type=str,
+        required=False,
+        default="J_H",
+    )
+
+    parser.add_argument(
+        "-k",
+        "--keep-original-filename",
+        help="Whether to keep the original filename as part of the new filename",
         action="store_true",
         required=False,
         default=False,
