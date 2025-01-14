@@ -6,7 +6,7 @@ import logging
 from sys import version_info
 
 
-def main():
+def cli_entrypoint():
     # set up logging config via argparse
     # custom behaviour for python versions < 3.11 as the level names mapping func was only added to the logging lib in 3.11
     if version_info[1] >= 11:
@@ -124,4 +124,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    cli_entrypoint()

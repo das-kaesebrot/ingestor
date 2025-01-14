@@ -1,3 +1,3 @@
-from .main import main
+from .main import cli_entrypoint
 
-main()
+cli_entrypoint()
