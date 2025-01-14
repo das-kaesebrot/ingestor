@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse
-import json
 import logging
 from sys import version_info
 from .utils.copyer import Copyer
@@ -18,6 +16,13 @@ DEFAULT_MODE = IngestingMode.MOVE
 
 
 def cli_entrypoint():
+    import argparse
+    import json
+    from time import perf_counter
+    from datetime import timedelta
+
+    start = perf_counter()
+
     # set up logging config via argparse
     # custom behaviour for python versions < 3.11 as the level names mapping func was only added to the logging lib in 3.11
     if version_info[1] >= 11:
@@ -129,6 +134,9 @@ def cli_entrypoint():
     )
 
     ingest(**vars(args))
+    
+    end = perf_counter()
+    logging.getLogger("cli-entrypoint").info(f"Done in {timedelta(seconds=end-start)}")
 
 
 def ingest(
