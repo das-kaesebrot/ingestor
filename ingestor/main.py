@@ -4,6 +4,13 @@ import argparse
 import json
 import logging
 from sys import version_info
+DEFAULT_DIRECTORY = "."
+DEFAULT_OUTPUT_DIRECTORY = "Merged"
+DEFAULT_DATE_PATTERN = r"%Y-%m-%d %H.%M.%S"
+DEFAULT_DRY_RUN = False
+DEFAULT_PERSON_SUFFIX = "J_H"
+DEFAULT_KEEP_ORIGINAL_FILENAME = False
+DEFAULT_MODE = IngestingMode.MOVE
 
 
 def cli_entrypoint():
@@ -39,7 +46,7 @@ def cli_entrypoint():
         help="Directory to ingest files from",
         type=str,
         required=False,
-        default=".",
+        default=DEFAULT_DIRECTORY,
     )
 
     parser.add_argument(
@@ -48,7 +55,7 @@ def cli_entrypoint():
         help="Output directory to place renamed files in",
         type=str,
         required=False,
-        default="Merged",
+        default=DEFAULT_OUTPUT_DIRECTORY,
     )
 
     parser.add_argument(
@@ -56,7 +63,7 @@ def cli_entrypoint():
         help="Don't actually rename/copy any files",
         action="store_true",
         required=False,
-        default=False,
+        default=DEFAULT_DRY_RUN,
     )
 
     parser.add_argument(
@@ -74,7 +81,7 @@ def cli_entrypoint():
         help="Date pattern for filenames",
         type=str,
         required=False,
-        default=r"%Y-%m-%d %H.%M.%S",
+        default=DEFAULT_DATE_PATTERN,
     )
 
     parser.add_argument(
@@ -83,7 +90,7 @@ def cli_entrypoint():
         help="File suffix of the person the files are from. Example: Julian Handy -> J_H",
         type=str,
         required=False,
-        default="J_H",
+        default=DEFAULT_PERSON_SUFFIX,
     )
 
     parser.add_argument(
@@ -92,6 +99,7 @@ def cli_entrypoint():
         help="Whether to keep the original filename as part of the new filename",
         action="store_true",
         required=False,
+        default=DEFAULT_KEEP_ORIGINAL_FILENAME,
         default=False,
     )
 
