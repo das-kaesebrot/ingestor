@@ -7,11 +7,31 @@ class FilenameUtils:
     # https://exiftool.org/TagNames/EXIF.html
     EXIF_TAG_ID_DATETIMEORIGINAL = 0x9003
 
-    def __init__(self):
-        pass
+    date_pattern: str
+    keep_original_filename: bool
+    person_suffix: str
+
+    def __init__(
+        self, date_pattern: str, keep_original_filename: bool, person_suffix: str
+    ):
+        self.date_pattern = date_pattern
+        self.keep_original_filename = keep_original_filename
+        self.person_suffix = person_suffix
+
+    def get_filename_for_image(
+        self,
+        *,
+        image_file_path: str,
+    ):
+        return FilenameUtils.get_filename_for_image_static(
+            date_pattern=self.date_pattern,
+            image_file_path=image_file_path,
+            person_suffix=self.person_suffix,
+            keep_original_filename=self.keep_original_filename,
+        )
 
     @staticmethod
-    def get_filename_for_image(
+    def get_filename_for_image_static(
         *,
         date_pattern: str,
         image_file_path: str,
