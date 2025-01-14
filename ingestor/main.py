@@ -115,7 +115,7 @@ def cli_entrypoint():
     )
 
     args = parser.parse_args()
-    
+
     if args.silent:
         args.loglevel = logging.getLevelName(logging.ERROR).lower()
 
@@ -123,12 +123,24 @@ def cli_entrypoint():
         format="[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s",
         level=args.loglevel.upper(),
     )
-    
-    logging.getLogger("cli-entrypoint").debug(f"Args:\n{json.dumps(vars(args), indent=4)}")
-    
+
+    logging.getLogger("cli-entrypoint").debug(
+        f"Args:\n{json.dumps(vars(args), indent=4)}"
+    )
+
     ingest(**vars(args))
 
-def ingest(*, directory: str = DEFAULT_DIRECTORY, output_directory: str = DEFAULT_OUTPUT_DIRECTORY, dry_run: bool = DEFAULT_DRY_RUN, person_suffix: str = DEFAULT_PERSON_SUFFIX, keep_original_filename: str = DEFAULT_KEEP_ORIGINAL_FILENAME, date_pattern: str = DEFAULT_DATE_PATTERN, mode: IngestingMode = DEFAULT_MODE):
+
+def ingest(
+    *,
+    directory: str = DEFAULT_DIRECTORY,
+    output_directory: str = DEFAULT_OUTPUT_DIRECTORY,
+    dry_run: bool = DEFAULT_DRY_RUN,
+    person_suffix: str = DEFAULT_PERSON_SUFFIX,
+    keep_original_filename: str = DEFAULT_KEEP_ORIGINAL_FILENAME,
+    date_pattern: str = DEFAULT_DATE_PATTERN,
+    mode: IngestingMode = DEFAULT_MODE,
+):
     logger = logging.getLogger()
 
     if dry_run:
