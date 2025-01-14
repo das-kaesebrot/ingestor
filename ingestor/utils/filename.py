@@ -4,6 +4,9 @@ from os.path import basename, splitext
 
 
 class FilenameUtils:
+    # https://exiftool.org/TagNames/EXIF.html
+    EXIF_TAG_ID_DATETIMEORIGINAL = 0x9003
+
     def __init__(self):
         pass
 
@@ -35,7 +38,9 @@ class FilenameUtils:
             if not exif:
                 raise Exception(f"File '{image_file_path}' does not have EXIF data.")
 
-            return datetime.datetime.strptime(exif[36867], "%Y:%m:%d %H:%M:%S")
+            return datetime.datetime.strptime(
+                exif[FilenameUtils.EXIF_TAG_ID_DATETIMEORIGINAL], "%Y:%m:%d %H:%M:%S"
+            )
 
     @staticmethod
     def get_basename_without_extension(file_path: str) -> str:
