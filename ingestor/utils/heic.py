@@ -19,6 +19,7 @@ class HeicConverter:
             input_directory if not output_directory else output_directory
         )
         self._logger = logging.getLogger()
+        self._logger.debug(f"Initialized {__name__}: {self.input_directory=}, {self.output_directory=}")
 
     def run_conversion(self, delete_source_files: bool = False):
         files = HeicConverter._find_heic_files(self.input_directory)
