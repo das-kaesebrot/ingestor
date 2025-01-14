@@ -8,3 +8,6 @@ pillow = "*"
 pillow-heif = "*"
 
 [dev-packages]
+flake8 = "*"
+pytest = "*"
+pytest-dependency = "*"
