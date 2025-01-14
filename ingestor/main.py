@@ -104,7 +104,16 @@ def cli_entrypoint():
         action="store_true",
         required=False,
         default=DEFAULT_KEEP_ORIGINAL_FILENAME,
-        default=False,
+    )
+
+    parser.add_argument(
+        "-m",
+        "--mode",
+        help="Operation mode",
+        type=IngestingMode,
+        required=False,
+        choices=IngestingMode.list(),
+        default=DEFAULT_MODE,
     )
 
     args = parser.parse_args()
