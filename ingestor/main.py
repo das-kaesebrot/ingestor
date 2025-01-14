@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
-from sys import version_info
-from .utils.copyer import Copyer
-from .utils.mover import Mover
+from .utils.ingestor import Ingestor
 from .constants.ingesting_mode import IngestingMode
 
 DEFAULT_DIRECTORY = "."
@@ -18,6 +16,7 @@ DEFAULT_MODE = IngestingMode.MOVE
 def cli_entrypoint():
     import argparse
     import json
+    from sys import version_info
     from time import perf_counter
     from datetime import timedelta
 
@@ -133,11 +132,12 @@ def cli_entrypoint():
         f"Args:\n{json.dumps(vars(args), indent=4)}"
     )
 
-    ingest(**vars(args))
-    
+    exit_code = ingest(**vars(args))
+
     end = perf_counter()
     logging.getLogger("cli-entrypoint").info(f"Done in {timedelta(seconds=end-start)}")
-
+    
+    exit(exit_code)
 
 def ingest(
     *,
@@ -149,24 +149,35 @@ def ingest(
     date_pattern: str = DEFAULT_DATE_PATTERN,
     mode: IngestingMode = DEFAULT_MODE,
     **kwargs,
-):
+) -> int | None:
     logger = logging.getLogger()
 
     if dry_run:
         logger.warning(f"Dry run active, skipping destructive operations")
 
     try:
+        ingestor = Ingestor(
+            directory=directory,
+            output_directory=output_directory,
+            person_suffix=person_suffix,
+            keep_original_filename=keep_original_filename,
+            date_pattern=date_pattern,
+        )
+        
+        if dry_run:            
+            return 0
+
         if mode == IngestingMode.MOVE:
-            Mover.do_the_thing()
+            ingestor.move_all()
         elif mode == IngestingMode.COPY:
-            Copyer.do_the_thing()
+            ingestor.copy_all()
 
     except KeyboardInterrupt as e:
         logger.warning("Interrupted by SIGINT")
 
     except Exception as e:
         logger.exception("Exception occured")
-        exit(1)
+        return 1
 
 
 if __name__ == "__main__":
