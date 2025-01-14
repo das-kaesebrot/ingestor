@@ -140,6 +140,7 @@ def ingest(
     keep_original_filename: str = DEFAULT_KEEP_ORIGINAL_FILENAME,
     date_pattern: str = DEFAULT_DATE_PATTERN,
     mode: IngestingMode = DEFAULT_MODE,
+    **kwargs,
 ):
     logger = logging.getLogger()
 
