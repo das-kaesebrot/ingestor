@@ -23,7 +23,7 @@ class FilenameUtils:
         *,
         image_file_path: str,
     ):
-        return FilenameUtils.get_filename_for_image_static(
+        return FilenameUtils._get_filename_for_image(
             date_pattern=self.date_pattern,
             image_file_path=image_file_path,
             person_suffix=self.person_suffix,
@@ -31,14 +31,14 @@ class FilenameUtils:
         )
 
     @staticmethod
-    def get_filename_for_image_static(
+    def _get_filename_for_image(
         *,
         date_pattern: str,
         image_file_path: str,
         person_suffix: str,
         keep_original_filename: bool = False,
     ):
-        date = FilenameUtils.get_exif_date(image_file_path)
+        date = FilenameUtils._get_exif_date(image_file_path)
         formatted_date = datetime.datetime.strftime(date, date_pattern)
 
         original_filename_suffix = (
@@ -52,7 +52,7 @@ class FilenameUtils:
         return filename
 
     @staticmethod
-    def get_exif_date(image_file_path: str) -> datetime:
+    def _get_exif_date(image_file_path: str) -> datetime:
         with Image.open(image_file_path) as image:
             exif = image.getexif()
             if not exif:
