@@ -33,7 +33,7 @@ class HeicConverter:
         register_heif_opener()
 
         for file in files:
-            jpg_file = join(self.output_directory, splitext(basename(file))[0] + ".JPG")
+            jpg_file = join(self.output_directory, splitext(basename(file))[0] + ".jpg")
 
             self._logger.debug(f"Converting file '{file}' to JPEG file '{jpg_file}'")
 
