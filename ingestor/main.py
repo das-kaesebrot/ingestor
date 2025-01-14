@@ -80,8 +80,7 @@ def cli_entrypoint():
     )
 
     parser.add_argument(
-        "-n",
-        "--name",
+        "--date-pattern",
         help="Date pattern for filenames",
         type=str,
         required=False,
@@ -89,7 +88,6 @@ def cli_entrypoint():
     )
 
     parser.add_argument(
-        "-p",
         "--person-suffix",
         help="File suffix of the person the files are from. Example: Julian Handy -> J_H",
         type=str,
