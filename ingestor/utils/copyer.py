@@ -3,5 +3,5 @@ class Copyer:
         pass
     
     @staticmethod
-    def do_the_thing(self):
+    def do_the_thing():
         pass

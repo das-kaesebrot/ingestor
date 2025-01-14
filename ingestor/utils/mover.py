@@ -3,5 +3,5 @@ class Mover:
         pass
     
     @staticmethod
-    def do_the_thing(self):
+    def do_the_thing():
         pass
