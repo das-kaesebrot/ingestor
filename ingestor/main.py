@@ -115,7 +115,7 @@ def cli_entrypoint():
     )
 
     args = parser.parse_args()
-
+    
     if args.silent:
         args.loglevel = logging.getLevelName(logging.ERROR).lower()
 
@@ -123,16 +123,22 @@ def cli_entrypoint():
         format="[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s",
         level=args.loglevel.upper(),
     )
+    
+    logging.getLogger("cli-entrypoint").debug(f"Args:\n{json.dumps(vars(args), indent=4)}")
+    
+    ingest(**vars(args))
 
-    logging.getLogger("main").debug(f"Args:\n{json.dumps(vars(args), indent=4)}")
-
+def ingest(*, directory: str = DEFAULT_DIRECTORY, output_directory: str = DEFAULT_OUTPUT_DIRECTORY, dry_run: bool = DEFAULT_DRY_RUN, person_suffix: str = DEFAULT_PERSON_SUFFIX, keep_original_filename: str = DEFAULT_KEEP_ORIGINAL_FILENAME, date_pattern: str = DEFAULT_DATE_PATTERN, mode: IngestingMode = DEFAULT_MODE):
     logger = logging.getLogger()
 
-    if args.dry_run:
+    if dry_run:
         logger.warning(f"Dry run active, skipping destructive operations")
 
     try:
-        pass
+        if mode == IngestingMode.MOVE:
+            Mover.do_the_thing()
+        elif mode == IngestingMode.COPY:
+            Copyer.do_the_thing()
 
     except KeyboardInterrupt as e:
         logger.warning("Interrupted by SIGINT")
