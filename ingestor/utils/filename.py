@@ -65,3 +65,7 @@ class FilenameUtils:
     @staticmethod
     def get_basename_without_extension(file_path: str) -> str:
         return splitext(basename(file_path))[0]
+    
+    @staticmethod
+    def get_file_extension(file_path: str) -> str:
+        return splitext(file_path)[-1]
