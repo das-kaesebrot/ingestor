@@ -115,4 +115,5 @@ class FilenameUtils:
 
     @staticmethod
     def get_file_extension(file_path: str) -> str:
-        return splitext(file_path)[-1]
+        extension = splitext(file_path)[-1].lstrip(".")
+        return extension
