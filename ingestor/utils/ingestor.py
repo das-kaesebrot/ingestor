@@ -34,6 +34,24 @@ class Ingestor:
         self._filename_utils = FilenameUtils(date_pattern=date_pattern, keep_original_filename=keep_original_filename, person_suffix=person_suffix)
 
         self._logger = logging.getLogger(__name__)
+        
+    def do_the_thing(self, mode: IngestingMode, dry_run: bool = False):
+        filenames = self._get_new_filenames()
+        
+        if dry_run:
+            self._logger.warning("Dry run activated")
+            
+            mode_string = "moved" if mode == IngestingMode.MOVE else "copied"
+            
+            for old_name, new_name in filenames.items():
+                self._logger.debug(f"File would be {mode_string}: '{old_name}' -> '{new_name}'")
+            
+            return
+        
+        if mode == IngestingMode.COPY: Ingestor.copy_all(filenames)
+        elif mode == IngestingMode.MOVE: Ingestor.move_all(filenames)
+        
+        raise ValueError(f"Unsupported mode '{mode}'")
     
     @staticmethod
     def move_all(filenames: dict[str, str]):
