@@ -34,6 +34,26 @@ class Ingestor:
         self._filename_utils = FilenameUtils(date_pattern=date_pattern, keep_original_filename=keep_original_filename, person_suffix=person_suffix)
 
         self._logger = logging.getLogger(__name__)
+    
+    @staticmethod
+    def move_all(filenames: dict[str, str]):
+        from shutil import move
+        
+        logger = logging.getLogger(__name__)
+        
+        for old_name, new_name in filenames.items():
+            logger.debug(f"Moving: '{old_name}' -> '{new_name}'")
+            move(old_name, new_name)    
+            
+    @staticmethod
+    def copy_all(filenames: dict[str, str]):
+        from shutil import copy2
+        
+        logger = logging.getLogger(__name__)
+        
+        for old_name, new_name in filenames.items():
+            logger.debug(f"Copying: '{old_name}' -> '{new_name}'")
+            copy2(old_name, new_name)
 
     def _get_new_filenames(self) -> dict[str, str]:
         filenames = {}
