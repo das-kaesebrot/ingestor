@@ -164,13 +164,7 @@ def ingest(
             date_pattern=date_pattern,
         )
         
-        if dry_run:            
-            return 0
-
-        if mode == IngestingMode.MOVE:
-            ingestor.move_all()
-        elif mode == IngestingMode.COPY:
-            ingestor.copy_all()
+        ingestor.do_the_thing(mode=mode, dry_run=dry_run)
 
     except KeyboardInterrupt as e:
         logger.warning("Interrupted by SIGINT")
