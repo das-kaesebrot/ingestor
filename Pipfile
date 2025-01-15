@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 pillow = "*"
 pillow-heif = "*"
+exifread = "*"
 
 [dev-packages]
 flake8 = "*"
