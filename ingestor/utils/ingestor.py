@@ -102,13 +102,13 @@ class Ingestor:
         for image_file in image_files:
             filenames[image_file] = join(
                 self._output_directory,
-                FilenameUtils.get_filename_for_image(image_file_path=image_file),
+                self._filename_utils.get_filename_for_image(image_file_path=image_file),
             )
 
         for video_file in video_files:
             filenames[video_file] = join(
                 self._output_directory,
-                FilenameUtils.get_filename_for_video(video_file_path=video_file),
+                self._filename_utils.get_filename_for_video(video_file_path=video_file),
             )
 
         return filenames
