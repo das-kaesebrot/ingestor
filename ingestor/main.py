@@ -3,6 +3,7 @@
 import logging
 from .utils.ingestor import Ingestor
 from .constants.ingesting_mode import IngestingMode
+from .constants.heic_mode import HeicMode
 
 DEFAULT_DIRECTORY = "."
 DEFAULT_OUTPUT_DIRECTORY = "Merged"
@@ -11,6 +12,7 @@ DEFAULT_DRY_RUN = False
 DEFAULT_PERSON_SUFFIX = "J_H"
 DEFAULT_KEEP_ORIGINAL_FILENAME = False
 DEFAULT_MODE = IngestingMode.MOVE
+DEFAULT_HEIC_MODE = HeicMode.CONVERT
 
 
 def cli_entrypoint():
@@ -117,6 +119,15 @@ def cli_entrypoint():
         choices=IngestingMode.list(),
         default=DEFAULT_MODE,
     )
+    
+    parser.add_argument(
+        "--heic-mode",
+        help="HEIC operation mode. Whether to convert HEIC files to JPG before copying or copying as is.",
+        type=HeicMode,
+        required=False,
+        choices=HeicMode.list(),
+        default=DEFAULT_HEIC_MODE,
+    )
 
     args = parser.parse_args()
 
@@ -148,6 +159,7 @@ def ingest(
     keep_original_filename: str = DEFAULT_KEEP_ORIGINAL_FILENAME,
     date_pattern: str = DEFAULT_DATE_PATTERN,
     mode: IngestingMode = DEFAULT_MODE,
+    heic_mode: HeicMode = DEFAULT_HEIC_MODE,
     **kwargs,
 ) -> int | None:
     logger = logging.getLogger()
@@ -162,6 +174,7 @@ def ingest(
             person_suffix=person_suffix,
             keep_original_filename=keep_original_filename,
             date_pattern=date_pattern,
+            heic_mode=heic_mode,
         )
         
         ingestor.do_the_thing(mode=mode, dry_run=dry_run)
