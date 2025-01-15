@@ -57,7 +57,7 @@ class Ingestor:
         ]
 
     @staticmethod
-    def _get_video_files_in_directory(directory) -> list[str]:
+    def _find_video_files_in_directory(directory) -> list[str]:
         return [
             join(directory, f)
             for f in listdir(directory)
