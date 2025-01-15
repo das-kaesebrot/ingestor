@@ -2,6 +2,7 @@ import logging
 from os import listdir
 from os.path import join
 from ..constants.allowed_file_extensions import AllowedFileExtension
+from ..constants.ingesting_mode import IngestingMode
 from ..constants.heic_mode import HeicMode
 from ..utils.heic import HeicConverter
 from ..utils.filename import FilenameUtils
