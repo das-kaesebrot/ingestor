@@ -139,14 +139,14 @@ def cli_entrypoint():
         level=args.loglevel.upper(),
     )
 
-    logging.getLogger("cli-entrypoint").debug(
+    logging.getLogger(__name__).debug(
         f"Args:\n{json.dumps(vars(args), indent=4)}"
     )
 
     exit_code = ingest(**vars(args))
 
     end = perf_counter()
-    logging.getLogger("cli-entrypoint").info(f"Done in {timedelta(seconds=end-start)}")
+    logging.getLogger(__name__).info(f"Done in {timedelta(seconds=end-start)}")
     
     exit(exit_code)
 
@@ -162,7 +162,7 @@ def ingest(
     heic_mode: HeicMode = DEFAULT_HEIC_MODE,
     **kwargs,
 ) -> int | None:
-    logger = logging.getLogger()
+    logger = logging.getLogger(__name__)
 
     if dry_run:
         logger.warning(f"Dry run active, skipping destructive operations")
