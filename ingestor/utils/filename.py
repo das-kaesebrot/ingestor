@@ -68,7 +68,7 @@ class FilenameUtils:
         person_suffix: str,
         keep_original_filename: bool = False,
     ):
-        date = datetime.datetime.fromtimestamp(getmtime(video_file_path))
+        date = FilenameUtils._get_mtime(file_path=video_file_path)
         return FilenameUtils._get_formatted_filename(
             date=date,
             date_pattern=date_pattern,
@@ -76,6 +76,10 @@ class FilenameUtils:
             person_suffix=person_suffix,
             keep_original_filename=keep_original_filename,
         )
+    
+    @staticmethod
+    def _get_mtime(file_path: str) -> datetime.datetime:
+        return datetime.datetime.fromtimestamp(getmtime(file_path))
 
     @staticmethod
     def _get_formatted_filename(
