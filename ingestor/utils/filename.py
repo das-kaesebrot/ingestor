@@ -1,6 +1,7 @@
 import datetime
 import exifread
 import logging
+import ffmpeg
 from PIL import Image
 from os.path import basename, splitext, getmtime
 
@@ -76,7 +77,12 @@ class FilenameUtils:
         person_suffix: str,
         keep_original_filename: bool = False,
     ):
-        date = FilenameUtils._get_mtime(file_path=video_file_path)
+        date = FilenameUtils._get_video_creation_date(video_file_path)
+        
+        if not date:
+            logging.getLogger(__name__).warning(f"Couldn't get video creation date from '{video_file_path}', using file modification date instead")
+            date = FilenameUtils._get_mtime(video_file_path)
+        
         return FilenameUtils._get_formatted_filename(
             date=date,
             date_pattern=date_pattern,
@@ -111,7 +117,16 @@ class FilenameUtils:
         filename = f"{formatted_date}_{person_suffix}{original_filename_suffix}.{extension}"
 
         return filename
-
+    
+    @staticmethod
+    def _get_video_creation_date(video_file_path: str) -> datetime.datetime:
+        try:
+            probe_result = ffmpeg.probe(video_file_path)
+            creation_time_str = probe_result.get("format").get("tags").get("creation_time")
+            return datetime.datetime.fromisoformat(creation_time_str)
+        except Exception as e:
+            logging.getLogger(__name__).exception(f"Error while probing '{video_file_path}'")
+        
     @staticmethod
     def _get_exif_date(image_file_path: str) -> datetime.datetime:
         with open(image_file_path, "rb") as file_handle:
