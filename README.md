@@ -7,7 +7,7 @@ This tool aims to create a workflow for ingesting files from different people to
 ```
 usage: __main__.py [-h] [-l {critical,fatal,error,warn,info,debug}] [-d DIRECTORY] [-o OUTPUT_DIRECTORY] [--dry-run] [-s]
                    [--date-pattern DATE_PATTERN] [--person-suffix PERSON_SUFFIX] [-k] [-m {move,copy}]
-                   [--heic-mode {convert,copy}]
+                   [--heic-mode {convert,copy}] [--time-correction-offset +00:00:00]
 
 Script for ingesting and renaming image and video files from vacations from different people
 
@@ -32,7 +32,9 @@ options:
   --heic-mode {convert,copy}
                         HEIC operation mode. Whether to convert HEIC files to JPG before copying or copying as is. (default:
                         convert)
-
+  --time-correction-offset +00:00:00
+                        A correction offset to apply to the media files in the folder. Can either be positive (no prefix or +)
+                        or negative (-). (default: 00:00:00)
 ```
 
 # Open Source License Attribution

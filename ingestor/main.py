@@ -13,6 +13,7 @@ DEFAULT_PERSON_SUFFIX = "J_H"
 DEFAULT_KEEP_ORIGINAL_FILENAME = False
 DEFAULT_MODE = IngestingMode.MOVE
 DEFAULT_HEIC_MODE = HeicMode.CONVERT
+DEFAULT_TIME_CORRECTION_OFFSET = "00:00:00"
 
 
 def cli_entrypoint():
@@ -128,6 +129,15 @@ def cli_entrypoint():
         choices=HeicMode.list(),
         default=DEFAULT_HEIC_MODE,
     )
+    
+    parser.add_argument(
+        "--time-correction-offset",
+        help="A correction offset to apply to the media files in the folder. Can either be positive (no prefix or +) or negative (-).",
+        type=str,
+        required=False,
+        metavar="+00:00:00",
+        default=DEFAULT_TIME_CORRECTION_OFFSET,
+    )
 
     args = parser.parse_args()
 
@@ -160,9 +170,13 @@ def ingest(
     date_pattern: str = DEFAULT_DATE_PATTERN,
     mode: IngestingMode = DEFAULT_MODE,
     heic_mode: HeicMode = DEFAULT_HEIC_MODE,
+    time_correction_offset: str = DEFAULT_TIME_CORRECTION_OFFSET,
     **kwargs,
 ) -> int | None:
     logger = logging.getLogger(__name__)
+    
+    if time_correction_offset != DEFAULT_TIME_CORRECTION_OFFSET:
+        raise NotImplementedError("Time correction not implemented yet!")
 
     if dry_run:
         logger.warning(f"Dry run active, skipping destructive operations")
