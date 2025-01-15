@@ -49,11 +49,11 @@ class Ingestor:
             
 
     @staticmethod
-    def _get_image_files_in_directory(directory) -> list[str]:
+    def _find_image_files_in_directory(directory, include_heic: bool = False, include_raw: bool = False) -> list[str]:
         return [
             join(directory, f)
             for f in listdir(directory)
-            if AllowedFileExtension.is_image(f)
+            if AllowedFileExtension.is_image(f, include_heic=include_heic, include_raw=include_raw)
         ]
 
     @staticmethod
