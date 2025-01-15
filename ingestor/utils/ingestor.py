@@ -40,6 +40,10 @@ class Ingestor:
         image_files = Ingestor._find_image_files_in_directory(self._directory, include_heic=(self._heic_mode == HeicMode.COPY), include_raw=False)
         video_files = Ingestor._find_video_files_in_directory(self._directory)
         
+        self._logger.info(f"Found {len(image_files)} image files in '{self._directory}'")
+        self._logger.info(f"Found {len(video_files)} video files in '{self._directory}'")
+        self._logger.debug(f"{image_files=}")
+        self._logger.debug(f"{video_files=}")
         
         for image_file in image_files:
             filenames[image_file] = join(self._output_directory, FilenameUtils.get_filename_for_image(image_file_path=image_file))
