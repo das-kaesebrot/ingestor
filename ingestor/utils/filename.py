@@ -101,10 +101,12 @@ class FilenameUtils:
         original_filename_suffix = (
             FilenameUtils.get_basename_without_extension(file_path)
             if keep_original_filename
-            else None
+            else ''
         )
+        
+        extension = FilenameUtils.get_file_extension(file_path)
 
-        filename = f"{formatted_date}_{person_suffix}{original_filename_suffix}"
+        filename = f"{formatted_date}_{person_suffix}{original_filename_suffix}.{extension}"
 
         return filename
 
