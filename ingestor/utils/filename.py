@@ -39,10 +39,20 @@ class FilenameUtils:
         keep_original_filename: bool = False,
     ):
         date = FilenameUtils._get_exif_date(image_file_path)
+
+    @staticmethod
+    def _get_formatted_filename(
+        *,
+        date: datetime.datetime,
+        date_pattern: str,
+        file_path: str,
+        person_suffix: str,
+        keep_original_filename: bool = False,
+    ):
         formatted_date = datetime.datetime.strftime(date, date_pattern)
 
         original_filename_suffix = (
-            FilenameUtils.get_basename_without_extension(image_file_path)
+            FilenameUtils.get_basename_without_extension(file_path)
             if keep_original_filename
             else None
         )
