@@ -35,12 +35,19 @@ class Ingestor:
 
         self._logger = logging.getLogger(__name__)
 
-    def move_all(self):
-        pass
-
-    def copy_all(self):
-        pass
-
+    def _get_new_filenames(self) -> dict[str, str]:
+        filenames = {}
+        image_files = Ingestor._find_image_files_in_directory(self._directory, include_heic=(self._heic_mode == HeicMode.COPY), include_raw=False)
+        video_files = Ingestor._find_video_files_in_directory(self._directory)
+        
+        
+        for image_file in image_files:
+            filenames[image_file] = join(self._output_directory, FilenameUtils.get_filename_for_image(image_file_path=image_file))
+        
+        for video_file in video_files:
+            filenames[video_file] = join(self._output_directory, FilenameUtils.get_filename_for_video(video_file_path=video_file))
+        
+        return filenames
     
     def _handle_heic(self):
         if not self._heic_mode == HeicMode.CONVERT:
