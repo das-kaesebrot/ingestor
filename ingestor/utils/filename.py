@@ -1,4 +1,5 @@
 import datetime
+import logging
 from PIL import Image
 from os.path import basename, splitext, getmtime
 
@@ -52,6 +53,11 @@ class FilenameUtils:
         keep_original_filename: bool = False,
     ):
         date = FilenameUtils._get_exif_date(image_file_path)
+        
+        if not date:
+            logging.getLogger(__name__).warning(f"Couldn't get EXIF date from '{image_file_path}', using modification date instead")
+            date = FilenameUtils._get_mtime(image_file_path)
+        
         return FilenameUtils._get_formatted_filename(
             date=date,
             date_pattern=date_pattern,
