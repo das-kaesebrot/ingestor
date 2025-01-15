@@ -4,14 +4,15 @@ from os.path import join
 from ..constants.allowed_file_extensions import AllowedFileExtension
 from ..constants.heic_mode import HeicMode
 from ..utils.heic import HeicConverter
+from ..utils.filename import FilenameUtils
 
 
 class Ingestor:
     _directory: str
     _output_directory: str
-    _person_suffix: str
-    _keep_original_filename: bool
-    _date_pattern: str
+    _heic_mode: HeicMode
+    
+    _filename_utils: FilenameUtils
 
     _logger: logging.Logger
 
@@ -28,8 +29,8 @@ class Ingestor:
         self._directory = directory
         self._output_directory = output_directory
         self._heic_mode = heic_mode
-        self._keep_original_filename = keep_original_filename
-        self._date_pattern = date_pattern
+        
+        self._filename_utils = FilenameUtils(date_pattern=date_pattern, keep_original_filename=keep_original_filename, person_suffix=person_suffix)
 
         self._logger = logging.getLogger(__name__)
 
