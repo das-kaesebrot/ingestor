@@ -1,4 +1,5 @@
 import datetime
+import exifread
 import logging
 from PIL import Image
 from os.path import basename, splitext, getmtime
@@ -7,6 +8,7 @@ from os.path import basename, splitext, getmtime
 class FilenameUtils:
     # https://exiftool.org/TagNames/EXIF.html
     EXIF_TAG_ID_DATETIMEORIGINAL = 0x9003
+    EXIF_TAG_NAME_DATETIMEORIGINAL = "EXIF DateTimeOriginal"
 
     date_pattern: str
     keep_original_filename: bool
@@ -112,14 +114,15 @@ class FilenameUtils:
 
     @staticmethod
     def _get_exif_date(image_file_path: str) -> datetime.datetime:
-        with Image.open(image_file_path) as image:
-            exif = image.getexif()
-            if not exif:
-                raise Exception(f"File '{image_file_path}' does not have EXIF data.")
-
-            return datetime.datetime.strptime(
-                exif[FilenameUtils.EXIF_TAG_ID_DATETIMEORIGINAL], "%Y:%m:%d %H:%M:%S"
-            )
+        with open(image_file_path, "rb") as file_handle:
+            tags = exifread.process_file(file_handle, stop_tag='DateTimeOriginal')
+            
+            if FilenameUtils.EXIF_TAG_NAME_DATETIMEORIGINAL in tags.keys():
+                value = tags[FilenameUtils.EXIF_TAG_NAME_DATETIMEORIGINAL].values
+                
+                return datetime.datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
+            
+            logging.getLogger(__name__).warning(f"Couldn't find tag '{FilenameUtils.EXIF_TAG_NAME_DATETIMEORIGINAL}'")
 
     @staticmethod
     def get_basename_without_extension(file_path: str) -> str:
