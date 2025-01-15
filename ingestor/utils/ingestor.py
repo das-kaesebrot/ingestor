@@ -58,8 +58,8 @@ class Ingestor:
             Ingestor.copy_all(filenames)
         elif mode == IngestingMode.MOVE:
             Ingestor.move_all(filenames)
-
-        raise ValueError(f"Unsupported mode '{mode}'")
+        else:
+            raise ValueError(f"Unsupported mode '{mode}'")
 
     @staticmethod
     def move_all(filenames: dict[str, str]):
