@@ -2,7 +2,6 @@ import datetime
 import exifread
 import logging
 import ffmpeg
-from PIL import Image
 from os.path import basename, splitext, getmtime
 
 
@@ -58,7 +57,7 @@ class FilenameUtils:
         date = FilenameUtils._get_exif_date(image_file_path)
         
         if not date:
-            logging.getLogger(__name__).warning(f"Couldn't get EXIF date from '{image_file_path}', using modification date instead")
+            logging.getLogger(__name__).warning(f"Couldn't get EXIF date from '{image_file_path}', using file modification date instead")
             date = FilenameUtils._get_mtime(image_file_path)
         
         return FilenameUtils._get_formatted_filename(
