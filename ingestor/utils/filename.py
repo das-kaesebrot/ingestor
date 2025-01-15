@@ -1,6 +1,6 @@
 import datetime
 from PIL import Image
-from os.path import basename, splitext
+from os.path import basename, splitext, getmtime
 
 
 class FilenameUtils:
@@ -10,6 +10,7 @@ class FilenameUtils:
     date_pattern: str
     keep_original_filename: bool
     person_suffix: str
+    output_directory: str
 
     def __init__(
         self, date_pattern: str, keep_original_filename: bool, person_suffix: str
@@ -30,6 +31,18 @@ class FilenameUtils:
             keep_original_filename=self.keep_original_filename,
         )
 
+    def get_filename_for_video(
+        self,
+        *,
+        video_file_path: str,
+    ):
+        return FilenameUtils._get_filename_for_video(
+            date_pattern=self.date_pattern,
+            video_file_path=video_file_path,
+            person_suffix=self.person_suffix,
+            keep_original_filename=self.keep_original_filename,
+        )
+
     @staticmethod
     def _get_filename_for_image(
         *,
@@ -39,6 +52,30 @@ class FilenameUtils:
         keep_original_filename: bool = False,
     ):
         date = FilenameUtils._get_exif_date(image_file_path)
+        return FilenameUtils._get_formatted_filename(
+            date=date,
+            date_pattern=date_pattern,
+            file_path=image_file_path,
+            person_suffix=person_suffix,
+            keep_original_filename=keep_original_filename,
+        )
+
+    @staticmethod
+    def _get_filename_for_video(
+        *,
+        date_pattern: str,
+        video_file_path: str,
+        person_suffix: str,
+        keep_original_filename: bool = False,
+    ):
+        date = datetime.datetime.fromtimestamp(getmtime(video_file_path))
+        return FilenameUtils._get_formatted_filename(
+            date=date,
+            date_pattern=date_pattern,
+            file_path=video_file_path,
+            person_suffix=person_suffix,
+            keep_original_filename=keep_original_filename,
+        )
 
     @staticmethod
     def _get_formatted_filename(
@@ -75,7 +112,7 @@ class FilenameUtils:
     @staticmethod
     def get_basename_without_extension(file_path: str) -> str:
         return splitext(basename(file_path))[0]
-    
+
     @staticmethod
     def get_file_extension(file_path: str) -> str:
         return splitext(file_path)[-1]
