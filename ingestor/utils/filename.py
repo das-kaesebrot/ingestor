@@ -52,7 +52,7 @@ class FilenameUtils:
         return filename
 
     @staticmethod
-    def _get_exif_date(image_file_path: str) -> datetime:
+    def _get_exif_date(image_file_path: str) -> datetime.datetime:
         with Image.open(image_file_path) as image:
             exif = image.getexif()
             if not exif:
