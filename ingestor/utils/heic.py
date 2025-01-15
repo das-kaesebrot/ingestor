@@ -5,6 +5,7 @@ from os import listdir, remove
 from os.path import join, splitext, abspath, basename
 from PIL import Image
 from pillow_heif import register_heif_opener
+from ..constants.allowed_file_extensions import AllowedFileExtension
 
 
 class HeicConverter:
@@ -56,5 +57,6 @@ class HeicConverter:
         return [
             join(directory, f)
             for f in listdir(directory)
-            if f.lower().endswith(".heic") or f.lower().endswith(".heif")
+            if AllowedFileExtension.is_heic(f)
         ]
+        
