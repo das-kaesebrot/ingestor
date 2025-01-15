@@ -2,6 +2,8 @@ import logging
 from os import listdir
 from os.path import join
 from ..constants.allowed_file_extensions import AllowedFileExtension
+from ..constants.heic_mode import HeicMode
+from ..utils.heic import HeicConverter
 
 
 class Ingestor:
@@ -21,10 +23,11 @@ class Ingestor:
         person_suffix: str,
         keep_original_filename: bool,
         date_pattern: str,
+        heic_mode: HeicMode,
     ):
         self._directory = directory
         self._output_directory = output_directory
-        self._person_suffix = person_suffix
+        self._heic_mode = heic_mode
         self._keep_original_filename = keep_original_filename
         self._date_pattern = date_pattern
 
@@ -36,8 +39,14 @@ class Ingestor:
     def copy_all(self):
         pass
 
-    def get_new_filenames(self) -> dict[str, str]:
-        pass
+    
+    def _handle_heic(self):
+        if not self._heic_mode == HeicMode.CONVERT:
+            return
+        
+        converter = HeicConverter(self._directory)
+        converter.run_conversion(delete_source_files=False)
+            
 
     @staticmethod
     def _get_image_files_in_directory(directory) -> list[str]:
