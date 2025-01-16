@@ -12,4 +12,3 @@ ffmpeg-python = "*"
 [dev-packages]
 flake8 = "*"
 pytest = "*"
-pytest-dependency = "*"
