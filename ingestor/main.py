@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import logging
+from datetime import timedelta
 from .utils.ingestor import Ingestor
+from .utils.time_offset_parser import TimeOffsetParser
 from .constants.ingesting_mode import IngestingMode
 from .constants.heic_mode import HeicMode
 
@@ -13,7 +15,7 @@ DEFAULT_PERSON_SUFFIX = "J_H"
 DEFAULT_KEEP_ORIGINAL_FILENAME = False
 DEFAULT_MODE = IngestingMode.MOVE
 DEFAULT_HEIC_MODE = HeicMode.CONVERT
-DEFAULT_TIME_CORRECTION_OFFSET = "00:00:00"
+DEFAULT_TIME_CORRECTION_OFFSET = timedelta(seconds=0)
 
 
 def cli_entrypoint():
@@ -132,8 +134,8 @@ def cli_entrypoint():
     
     parser.add_argument(
         "--time-correction-offset",
-        help="A correction offset to apply to the media files in the folder. Can either be positive (no prefix or +) or negative (-).",
-        type=str,
+        help="A correction offset in the format [+/-]HH:MM:SS to apply to the media files in the folder. Can either be positive (no prefix or +) or negative (-).",
+        type=TimeOffsetParser.parse,
         required=False,
         metavar="+00:00:00",
         default=DEFAULT_TIME_CORRECTION_OFFSET,
@@ -150,7 +152,7 @@ def cli_entrypoint():
     )
 
     logging.getLogger(__name__).debug(
-        f"Args:\n{json.dumps(vars(args), indent=4)}"
+        f"Args:\n{json.dumps(vars(args), indent=4, default=str)}"
     )
 
     exit_code = ingest(**vars(args))
