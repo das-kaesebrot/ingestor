@@ -42,5 +42,27 @@ options:
 This application uses Open Source components. You can find the source code of their open source projects along with license information below. We acknowledge and are grateful to these developers for their contributions to open source.
 
 ### [Pillow](https://github.com/python-pillow/Pillow)
-- Copyright © 2010 by Jeffrey A. Clark and contributors
+- Copyright (c) 2010 by Jeffrey A. Clark and contributors
 - [MIT-CMU License](https://github.com/python-pillow/Pillow/blob/main/LICENSE)
+
+### [pillow_heif](https://github.com/bigcat88/pillow_heif)
+- Copyright (c) 2021-2023, Pillow-Heif contributors
+- [BSD-3-Clause License](https://github.com/bigcat88/pillow_heif/blob/master/LICENSE.txt)
+
+### [exif_py](https://github.com/ianare/exif-py)
+- Copyright (c) 2002-2007 Gene Cash
+- Copyright (c) 2007-2023 Ianaré Sévi and contributors
+- [BSD-3-Clause License](https://github.com/ianare/exif-py/blob/develop/LICENSE.txt)
+
+### [ffmpeg_python](https://github.com/kkroening/ffmpeg-python)
+- Copyright (c) ffmpeg_python contributors
+- [Apache-2.0 License](https://github.com/kkroening/ffmpeg-python/blob/master/LICENSE)
+
+### [Flake8](https://github.com/PyCQA/flake8)
+- Copyright (c) 2011-2013 Tarek Ziade <tarek@ziade.org>
+- Copyright (c) 2012-2016 Ian Cordasco <graffatcolmingov@gmail.com>
+- [Flake8 license (MIT)](https://github.com/PyCQA/flake8/blob/main/LICENSE)
+
+### [pytest](https://github.com/pytest-dev/pytest)
+- Copyright (c) 2004-present [Holger Krekel](https://github.com/hpk42) and [other contributors](https://github.com/pytest-dev/pytest/blob/main/AUTHORS)
+- [MIT License](https://github.com/pytest-dev/pytest/blob/main/LICENSE)
