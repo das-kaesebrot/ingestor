@@ -172,7 +172,7 @@ def ingest(
     date_pattern: str = DEFAULT_DATE_PATTERN,
     mode: IngestingMode = DEFAULT_MODE,
     heic_mode: HeicMode = DEFAULT_HEIC_MODE,
-    time_correction_offset: str = DEFAULT_TIME_CORRECTION_OFFSET,
+    time_correction_offset: timedelta = DEFAULT_TIME_CORRECTION_OFFSET,
     **kwargs,
 ) -> int | None:
     logger = logging.getLogger(__name__)
@@ -191,6 +191,7 @@ def ingest(
             keep_original_filename=keep_original_filename,
             date_pattern=date_pattern,
             heic_mode=heic_mode,
+            time_correction_offset=time_correction_offset,
         )
         
         ingestor.do_the_thing(mode=mode, dry_run=dry_run)

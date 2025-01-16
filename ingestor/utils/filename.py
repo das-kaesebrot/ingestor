@@ -14,13 +14,15 @@ class FilenameUtils:
     keep_original_filename: bool
     person_suffix: str
     output_directory: str
+    correction_offset: datetime.timedelta
 
     def __init__(
-        self, date_pattern: str, keep_original_filename: bool, person_suffix: str
+        self, date_pattern: str, keep_original_filename: bool, person_suffix: str, correction_offset: datetime.timedelta
     ):
         self.date_pattern = date_pattern
         self.keep_original_filename = keep_original_filename
         self.person_suffix = person_suffix
+        self.correction_offset = correction_offset
 
     def get_filename_for_image(
         self,
@@ -52,6 +54,7 @@ class FilenameUtils:
         date_pattern: str,
         image_file_path: str,
         person_suffix: str,
+        time_correction_offset: datetime.timedelta,
         keep_original_filename: bool = False,
     ):
         date = FilenameUtils._get_exif_date(image_file_path)
@@ -66,6 +69,7 @@ class FilenameUtils:
             file_path=image_file_path,
             person_suffix=person_suffix,
             keep_original_filename=keep_original_filename,
+            time_correction_offset=time_correction_offset
         )
 
     @staticmethod
@@ -74,6 +78,7 @@ class FilenameUtils:
         date_pattern: str,
         video_file_path: str,
         person_suffix: str,
+        time_correction_offset: datetime.timedelta,
         keep_original_filename: bool = False,
     ):
         date = FilenameUtils._get_video_creation_date(video_file_path)
@@ -88,6 +93,7 @@ class FilenameUtils:
             file_path=video_file_path,
             person_suffix=person_suffix,
             keep_original_filename=keep_original_filename,
+            time_correction_offset=time_correction_offset
         )
     
     @staticmethod
@@ -101,8 +107,10 @@ class FilenameUtils:
         date_pattern: str,
         file_path: str,
         person_suffix: str,
+        time_correction_offset: datetime.timedelta,
         keep_original_filename: bool = False,
     ):
+        date = date + time_correction_offset        
         formatted_date = datetime.datetime.strftime(date, date_pattern)
 
         original_filename_suffix = (
