@@ -122,7 +122,7 @@ def cli_entrypoint():
         choices=IngestingMode.list(),
         default=DEFAULT_MODE,
     )
-    
+
     parser.add_argument(
         "--heic-mode",
         help="HEIC operation mode. Whether to convert HEIC files to JPG before copying or copying as is.",
@@ -131,7 +131,7 @@ def cli_entrypoint():
         choices=HeicMode.list(),
         default=DEFAULT_HEIC_MODE,
     )
-    
+
     parser.add_argument(
         "--time-correction-offset",
         help="A correction offset in the format [+/-]HH:MM:SS to apply to the media files in the folder. Can either be positive (no prefix or +) or negative (-).",
@@ -159,8 +159,9 @@ def cli_entrypoint():
 
     end = perf_counter()
     logging.getLogger(__name__).info(f"Done in {timedelta(seconds=end-start)}")
-    
+
     exit(exit_code)
+
 
 def ingest(
     *,
@@ -176,7 +177,7 @@ def ingest(
     **kwargs,
 ) -> int | None:
     logger = logging.getLogger(__name__)
-    
+
     if time_correction_offset != DEFAULT_TIME_CORRECTION_OFFSET:
         raise NotImplementedError("Time correction not implemented yet!")
 
@@ -193,7 +194,7 @@ def ingest(
             heic_mode=heic_mode,
             time_correction_offset=time_correction_offset,
         )
-        
+
         ingestor.do_the_thing(mode=mode, dry_run=dry_run)
 
     except KeyboardInterrupt as e:

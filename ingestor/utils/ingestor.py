@@ -27,10 +27,12 @@ class Ingestor:
         keep_original_filename: bool,
         date_pattern: str,
         heic_mode: HeicMode,
-        time_correction_offset: timedelta
-    ):        
+        time_correction_offset: timedelta,
+    ):
         self._directory = expanduser(directory.strip().rstrip("/").rstrip("\\"))
-        self._output_directory = expanduser(output_directory.strip().rstrip("/").rstrip("\\"))
+        self._output_directory = expanduser(
+            output_directory.strip().rstrip("/").rstrip("\\")
+        )
         self._heic_mode = heic_mode
 
         self._filename_utils = FilenameUtils(
