@@ -1,6 +1,7 @@
+from datetime import timedelta
 import logging
 from os import listdir
-from os.path import join
+from os.path import join, expanduser
 from ..constants.allowed_file_extensions import AllowedFileExtension
 from ..constants.ingesting_mode import IngestingMode
 from ..constants.heic_mode import HeicMode
@@ -28,6 +29,8 @@ class Ingestor:
         heic_mode: HeicMode,
         time_correction_offset: timedelta
     ):        
+        self._directory = expanduser(directory.strip().rstrip("/").rstrip("\\"))
+        self._output_directory = expanduser(output_directory.strip().rstrip("/").rstrip("\\"))
         self._heic_mode = heic_mode
 
         self._filename_utils = FilenameUtils(
