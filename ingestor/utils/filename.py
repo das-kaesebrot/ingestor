@@ -34,6 +34,7 @@ class FilenameUtils:
             image_file_path=image_file_path,
             person_suffix=self.person_suffix,
             keep_original_filename=self.keep_original_filename,
+            time_correction_offset=self.correction_offset,
         )
 
     def get_filename_for_video(
@@ -46,6 +47,7 @@ class FilenameUtils:
             video_file_path=video_file_path,
             person_suffix=self.person_suffix,
             keep_original_filename=self.keep_original_filename,
+            time_correction_offset=self.correction_offset,
         )
 
     @staticmethod

@@ -26,15 +26,15 @@ class Ingestor:
         keep_original_filename: bool,
         date_pattern: str,
         heic_mode: HeicMode,
-    ):
-        self._directory = directory
-        self._output_directory = output_directory
+        time_correction_offset: timedelta
+    ):        
         self._heic_mode = heic_mode
 
         self._filename_utils = FilenameUtils(
             date_pattern=date_pattern,
             keep_original_filename=keep_original_filename,
             person_suffix=person_suffix,
+            correction_offset=time_correction_offset,
         )
 
         self._logger = logging.getLogger(__name__)
