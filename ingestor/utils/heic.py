@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import logging
 from os import listdir, remove
 from os.path import join, splitext, abspath, basename
