@@ -178,9 +178,6 @@ def ingest(
 ) -> int | None:
     logger = logging.getLogger(__name__)
 
-    if time_correction_offset != DEFAULT_TIME_CORRECTION_OFFSET:
-        raise NotImplementedError("Time correction not implemented yet!")
-
     if dry_run:
         logger.warning(f"Dry run active, skipping destructive operations")
 
