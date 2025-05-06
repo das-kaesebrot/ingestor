@@ -2,6 +2,7 @@
 
 import logging
 from datetime import timedelta
+from zoneinfo import ZoneInfo
 from .utils.ingestor import Ingestor
 from .utils.time_offset_parser import TimeOffsetParser
 from .constants.ingesting_mode import IngestingMode
@@ -16,6 +17,7 @@ DEFAULT_KEEP_ORIGINAL_FILENAME = False
 DEFAULT_MODE = IngestingMode.MOVE
 DEFAULT_HEIC_MODE = HeicMode.CONVERT
 DEFAULT_TIME_CORRECTION_OFFSET = timedelta(seconds=0)
+DEFAULT_TIMEZONE = ZoneInfo("Europe/Berlin")
 
 
 def cli_entrypoint():
@@ -140,6 +142,14 @@ def cli_entrypoint():
         metavar="+00:00:00",
         default=DEFAULT_TIME_CORRECTION_OFFSET,
     )
+    
+    parser.add_argument(
+        "--timezone",
+        help="Timezone to set for the filenames",
+        type=ZoneInfo,
+        required=False,
+        default=DEFAULT_TIMEZONE,
+    )
 
     args = parser.parse_args()
 
@@ -174,6 +184,7 @@ def ingest(
     mode: IngestingMode = DEFAULT_MODE,
     heic_mode: HeicMode = DEFAULT_HEIC_MODE,
     time_correction_offset: timedelta = DEFAULT_TIME_CORRECTION_OFFSET,
+    timezone: ZoneInfo = DEFAULT_TIMEZONE,
     **kwargs,
 ) -> int | None:
     logger = logging.getLogger(__name__)
@@ -190,6 +201,7 @@ def ingest(
             date_pattern=date_pattern,
             heic_mode=heic_mode,
             time_correction_offset=time_correction_offset,
+            timezone=timezone,
         )
 
         ingestor.do_the_thing(mode=mode, dry_run=dry_run)

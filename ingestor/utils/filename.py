@@ -3,6 +3,7 @@ import exifread
 import logging
 import ffmpeg
 from os.path import basename, splitext, getmtime
+from zoneinfo import ZoneInfo
 
 
 class FilenameUtils:
@@ -15,6 +16,7 @@ class FilenameUtils:
     person_suffix: str
     output_directory: str
     correction_offset: datetime.timedelta
+    timezone: ZoneInfo
 
     def __init__(
         self,
@@ -22,11 +24,13 @@ class FilenameUtils:
         keep_original_filename: bool,
         person_suffix: str,
         correction_offset: datetime.timedelta,
+        timezone: ZoneInfo
     ):
         self.date_pattern = date_pattern
         self.keep_original_filename = keep_original_filename
         self.person_suffix = person_suffix
         self.correction_offset = correction_offset
+        self.timezone = timezone
 
     def get_filename_for_image(
         self,
@@ -39,6 +43,7 @@ class FilenameUtils:
             person_suffix=self.person_suffix,
             keep_original_filename=self.keep_original_filename,
             time_correction_offset=self.correction_offset,
+            timezone=self.timezone,
         )
 
     def get_filename_for_video(
@@ -52,6 +57,7 @@ class FilenameUtils:
             person_suffix=self.person_suffix,
             keep_original_filename=self.keep_original_filename,
             time_correction_offset=self.correction_offset,
+            timezone=self.timezone,
         )
 
     @staticmethod
@@ -61,6 +67,7 @@ class FilenameUtils:
         image_file_path: str,
         person_suffix: str,
         time_correction_offset: datetime.timedelta,
+        timezone: ZoneInfo,
         keep_original_filename: bool = False,
     ):
         date = FilenameUtils._get_exif_date(image_file_path)
@@ -78,6 +85,7 @@ class FilenameUtils:
             person_suffix=person_suffix,
             keep_original_filename=keep_original_filename,
             time_correction_offset=time_correction_offset,
+            timezone=timezone,
         )
 
     @staticmethod
@@ -87,6 +95,7 @@ class FilenameUtils:
         video_file_path: str,
         person_suffix: str,
         time_correction_offset: datetime.timedelta,
+        timezone: ZoneInfo,
         keep_original_filename: bool = False,
     ):
         date = FilenameUtils._get_video_creation_date(video_file_path)
@@ -104,6 +113,7 @@ class FilenameUtils:
             person_suffix=person_suffix,
             keep_original_filename=keep_original_filename,
             time_correction_offset=time_correction_offset,
+            timezone=timezone,
         )
 
     @staticmethod
@@ -118,9 +128,11 @@ class FilenameUtils:
         file_path: str,
         person_suffix: str,
         time_correction_offset: datetime.timedelta,
+        timezone: ZoneInfo,
         keep_original_filename: bool = False,
     ):
         date = date + time_correction_offset
+        date = date.astimezone(timezone)
         formatted_date = datetime.datetime.strftime(date, date_pattern)
 
         original_filename_suffix = (

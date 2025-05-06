@@ -1,4 +1,5 @@
 from datetime import timedelta
+from zoneinfo import ZoneInfo
 import logging
 from os import listdir
 from os.path import join, expanduser
@@ -28,6 +29,7 @@ class Ingestor:
         date_pattern: str,
         heic_mode: HeicMode,
         time_correction_offset: timedelta,
+        timezone: ZoneInfo,
     ):
         self._directory = expanduser(directory.strip().rstrip("/").rstrip("\\"))
         self._output_directory = expanduser(
@@ -40,6 +42,7 @@ class Ingestor:
             keep_original_filename=keep_original_filename,
             person_suffix=person_suffix,
             correction_offset=time_correction_offset,
+            timezone=timezone,
         )
 
         self._logger = logging.getLogger(__name__)
