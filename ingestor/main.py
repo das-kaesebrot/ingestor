@@ -4,7 +4,6 @@ import logging
 from datetime import timedelta
 from zoneinfo import ZoneInfo
 from .utils.ingestor import Ingestor
-from .utils.time_offset_parser import TimeOffsetParser
 from .constants.ingesting_mode import IngestingMode
 from .constants.heic_mode import HeicMode
 
@@ -25,7 +24,7 @@ def cli_entrypoint():
     import json
     from sys import version_info
     from time import perf_counter
-    from datetime import timedelta
+    from .utils.time_offset_parser import TimeOffsetParser
 
     start = perf_counter()
 
