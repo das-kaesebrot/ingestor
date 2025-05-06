@@ -6,18 +6,7 @@ from zoneinfo import ZoneInfo
 from .utils.ingestor import Ingestor
 from .constants.ingesting_mode import IngestingMode
 from .constants.heic_mode import HeicMode
-
-DEFAULT_DIRECTORY = "."
-DEFAULT_OUTPUT_DIRECTORY = "Merged"
-DEFAULT_DATE_PATTERN = r"%Y-%m-%d %H.%M.%S"
-DEFAULT_DRY_RUN = False
-DEFAULT_PERSON_SUFFIX = "J_H"
-DEFAULT_KEEP_ORIGINAL_FILENAME = False
-DEFAULT_MODE = IngestingMode.MOVE
-DEFAULT_HEIC_MODE = HeicMode.CONVERT
-DEFAULT_TIME_CORRECTION_OFFSET = timedelta(seconds=0)
-DEFAULT_TIMEZONE = ZoneInfo("Europe/Berlin")
-
+from .constants.defaults import DefaultSettings
 
 def cli_entrypoint():
     import argparse
@@ -60,7 +49,7 @@ def cli_entrypoint():
         help="Directory to ingest files from",
         type=str,
         required=False,
-        default=DEFAULT_DIRECTORY,
+        default=DefaultSettings.DIRECTORY,
     )
 
     parser.add_argument(
@@ -69,7 +58,7 @@ def cli_entrypoint():
         help="Output directory to place renamed files in",
         type=str,
         required=False,
-        default=DEFAULT_OUTPUT_DIRECTORY,
+        default=DefaultSettings.OUTPUT_DIRECTORY,
     )
 
     parser.add_argument(
@@ -77,7 +66,7 @@ def cli_entrypoint():
         help="Don't actually rename/copy any files",
         action="store_true",
         required=False,
-        default=DEFAULT_DRY_RUN,
+        default=DefaultSettings.DRY_RUN,
     )
 
     parser.add_argument(
@@ -94,7 +83,7 @@ def cli_entrypoint():
         help="Date pattern for filenames",
         type=str,
         required=False,
-        default=DEFAULT_DATE_PATTERN,
+        default=DefaultSettings.DATE_PATTERN,
     )
 
     parser.add_argument(
@@ -102,7 +91,7 @@ def cli_entrypoint():
         help="File suffix of the person the files are from. Example: Julian Handy -> J_H",
         type=str,
         required=False,
-        default=DEFAULT_PERSON_SUFFIX,
+        default=DefaultSettings.PERSON_SUFFIX,
     )
 
     parser.add_argument(
@@ -111,7 +100,7 @@ def cli_entrypoint():
         help="Whether to keep the original filename as part of the new filename",
         action="store_true",
         required=False,
-        default=DEFAULT_KEEP_ORIGINAL_FILENAME,
+        default=DefaultSettings.KEEP_ORIGINAL_FILENAME,
     )
 
     parser.add_argument(
@@ -121,7 +110,7 @@ def cli_entrypoint():
         type=IngestingMode,
         required=False,
         choices=IngestingMode.list(),
-        default=DEFAULT_MODE,
+        default=DefaultSettings.MODE,
     )
 
     parser.add_argument(
@@ -130,7 +119,7 @@ def cli_entrypoint():
         type=HeicMode,
         required=False,
         choices=HeicMode.list(),
-        default=DEFAULT_HEIC_MODE,
+        default=DefaultSettings.HEIC_MODE,
     )
 
     parser.add_argument(
@@ -139,7 +128,7 @@ def cli_entrypoint():
         type=TimeOffsetParser.parse,
         required=False,
         metavar="+00:00:00",
-        default=DEFAULT_TIME_CORRECTION_OFFSET,
+        default=DefaultSettings.TIME_CORRECTION_OFFSET,
     )
     
     parser.add_argument(
@@ -147,7 +136,7 @@ def cli_entrypoint():
         help="Timezone to set for the filenames",
         type=ZoneInfo,
         required=False,
-        default=DEFAULT_TIMEZONE,
+        default=DefaultSettings.TIMEZONE,
     )
 
     args = parser.parse_args()
@@ -174,16 +163,16 @@ def cli_entrypoint():
 
 def ingest(
     *,
-    directory: str = DEFAULT_DIRECTORY,
-    output_directory: str = DEFAULT_OUTPUT_DIRECTORY,
-    dry_run: bool = DEFAULT_DRY_RUN,
-    person_suffix: str = DEFAULT_PERSON_SUFFIX,
-    keep_original_filename: str = DEFAULT_KEEP_ORIGINAL_FILENAME,
-    date_pattern: str = DEFAULT_DATE_PATTERN,
-    mode: IngestingMode = DEFAULT_MODE,
-    heic_mode: HeicMode = DEFAULT_HEIC_MODE,
-    time_correction_offset: timedelta = DEFAULT_TIME_CORRECTION_OFFSET,
-    timezone: ZoneInfo = DEFAULT_TIMEZONE,
+    directory: str = DefaultSettings.DIRECTORY,
+    output_directory: str = DefaultSettings.OUTPUT_DIRECTORY,
+    dry_run: bool = DefaultSettings.DRY_RUN,
+    person_suffix: str = DefaultSettings.PERSON_SUFFIX,
+    keep_original_filename: str = DefaultSettings.KEEP_ORIGINAL_FILENAME,
+    date_pattern: str = DefaultSettings.DATE_PATTERN,
+    mode: IngestingMode = DefaultSettings.MODE,
+    heic_mode: HeicMode = DefaultSettings.HEIC_MODE,
+    time_correction_offset: timedelta = DefaultSettings.TIME_CORRECTION_OFFSET,
+    timezone: ZoneInfo = DefaultSettings.TIMEZONE,
     **kwargs,
 ) -> int | None:
     logger = logging.getLogger(__name__)
