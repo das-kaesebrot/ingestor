@@ -8,6 +8,7 @@ pillow = "*"
 pillow-heif = "*"
 exifread = "*"
 ffmpeg-python = "*"
+django = "*"
 
 [dev-packages]
 flake8 = "*"
