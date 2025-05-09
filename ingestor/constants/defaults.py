@@ -3,7 +3,7 @@ from zoneinfo import ZoneInfo
 from ..constants.ingesting_mode import IngestingMode
 from ..constants.heic_mode import HeicMode
 
-class DefaultSettings:
+class IngestorDefaultSettings:
     DIRECTORY = "."
     OUTPUT_DIRECTORY = "Merged"
     DATE_PATTERN = r"%Y-%m-%d %H.%M.%S"

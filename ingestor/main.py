@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 from .utils.ingestor import Ingestor
 from .constants.ingesting_mode import IngestingMode
 from .constants.heic_mode import HeicMode
-from .constants.defaults import DefaultSettings
+from .constants.defaults import IngestorDefaultSettings
 
 def cli_entrypoint():
     import argparse
@@ -49,7 +49,7 @@ def cli_entrypoint():
         help="Directory to ingest files from",
         type=str,
         required=False,
-        default=DefaultSettings.DIRECTORY,
+        default=IngestorDefaultSettings.DIRECTORY,
     )
 
     parser.add_argument(
@@ -58,7 +58,7 @@ def cli_entrypoint():
         help="Output directory to place renamed files in",
         type=str,
         required=False,
-        default=DefaultSettings.OUTPUT_DIRECTORY,
+        default=IngestorDefaultSettings.OUTPUT_DIRECTORY,
     )
 
     parser.add_argument(
@@ -66,7 +66,7 @@ def cli_entrypoint():
         help="Don't actually rename/copy any files",
         action="store_true",
         required=False,
-        default=DefaultSettings.DRY_RUN,
+        default=IngestorDefaultSettings.DRY_RUN,
     )
 
     parser.add_argument(
@@ -83,7 +83,7 @@ def cli_entrypoint():
         help="Date pattern for filenames",
         type=str,
         required=False,
-        default=DefaultSettings.DATE_PATTERN,
+        default=IngestorDefaultSettings.DATE_PATTERN,
     )
 
     parser.add_argument(
@@ -91,7 +91,7 @@ def cli_entrypoint():
         help="File suffix of the person the files are from. Example: Julian Handy -> J_H",
         type=str,
         required=False,
-        default=DefaultSettings.PERSON_SUFFIX,
+        default=IngestorDefaultSettings.PERSON_SUFFIX,
     )
 
     parser.add_argument(
@@ -100,7 +100,7 @@ def cli_entrypoint():
         help="Whether to keep the original filename as part of the new filename",
         action="store_true",
         required=False,
-        default=DefaultSettings.KEEP_ORIGINAL_FILENAME,
+        default=IngestorDefaultSettings.KEEP_ORIGINAL_FILENAME,
     )
 
     parser.add_argument(
@@ -110,7 +110,7 @@ def cli_entrypoint():
         type=IngestingMode,
         required=False,
         choices=IngestingMode.list(),
-        default=DefaultSettings.MODE,
+        default=IngestorDefaultSettings.MODE,
     )
 
     parser.add_argument(
@@ -119,7 +119,7 @@ def cli_entrypoint():
         type=HeicMode,
         required=False,
         choices=HeicMode.list(),
-        default=DefaultSettings.HEIC_MODE,
+        default=IngestorDefaultSettings.HEIC_MODE,
     )
 
     parser.add_argument(
@@ -128,7 +128,7 @@ def cli_entrypoint():
         type=TimeOffsetParser.parse,
         required=False,
         metavar="+00:00:00",
-        default=DefaultSettings.TIME_CORRECTION_OFFSET,
+        default=IngestorDefaultSettings.TIME_CORRECTION_OFFSET,
     )
     
     parser.add_argument(
@@ -136,7 +136,7 @@ def cli_entrypoint():
         help="Timezone to set for the filenames",
         type=ZoneInfo,
         required=False,
-        default=DefaultSettings.TIMEZONE,
+        default=IngestorDefaultSettings.TIMEZONE,
     )
 
     args = parser.parse_args()
@@ -163,16 +163,16 @@ def cli_entrypoint():
 
 def ingest(
     *,
-    directory: str = DefaultSettings.DIRECTORY,
-    output_directory: str = DefaultSettings.OUTPUT_DIRECTORY,
-    dry_run: bool = DefaultSettings.DRY_RUN,
-    person_suffix: str = DefaultSettings.PERSON_SUFFIX,
-    keep_original_filename: str = DefaultSettings.KEEP_ORIGINAL_FILENAME,
-    date_pattern: str = DefaultSettings.DATE_PATTERN,
-    mode: IngestingMode = DefaultSettings.MODE,
-    heic_mode: HeicMode = DefaultSettings.HEIC_MODE,
-    time_correction_offset: timedelta = DefaultSettings.TIME_CORRECTION_OFFSET,
-    timezone: ZoneInfo = DefaultSettings.TIMEZONE,
+    directory: str = IngestorDefaultSettings.DIRECTORY,
+    output_directory: str = IngestorDefaultSettings.OUTPUT_DIRECTORY,
+    dry_run: bool = IngestorDefaultSettings.DRY_RUN,
+    person_suffix: str = IngestorDefaultSettings.PERSON_SUFFIX,
+    keep_original_filename: str = IngestorDefaultSettings.KEEP_ORIGINAL_FILENAME,
+    date_pattern: str = IngestorDefaultSettings.DATE_PATTERN,
+    mode: IngestingMode = IngestorDefaultSettings.MODE,
+    heic_mode: HeicMode = IngestorDefaultSettings.HEIC_MODE,
+    time_correction_offset: timedelta = IngestorDefaultSettings.TIME_CORRECTION_OFFSET,
+    timezone: ZoneInfo = IngestorDefaultSettings.TIMEZONE,
     **kwargs,
 ) -> int | None:
     logger = logging.getLogger(__name__)

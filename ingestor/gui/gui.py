@@ -2,7 +2,7 @@ import argparse
 import logging
 import json
 from ..main import ingest
-from ..constants.defaults import DefaultSettings
+from ..constants.defaults import IngestorDefaultSettings
 from sys import version_info
 from tkinter import *
 from tkinter import ttk
@@ -40,7 +40,7 @@ def gui_entrypoint():
         help="Directory to ingest files from",
         type=str,
         required=False,
-        default=DefaultSettings.DIRECTORY,
+        default=IngestorDefaultSettings.DIRECTORY,
     )
 
     parser.add_argument(
@@ -49,7 +49,7 @@ def gui_entrypoint():
         help="Output directory to place renamed files in",
         type=str,
         required=False,
-        default=DefaultSettings.OUTPUT_DIRECTORY,
+        default=IngestorDefaultSettings.OUTPUT_DIRECTORY,
     )
 
     args = parser.parse_args()
