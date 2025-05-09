@@ -1,0 +1,42 @@
+{% load django_htmx static %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>django-htmx example app</title>
+  <link rel="stylesheet" href="{% static 'mvp.css' %}">
+
+  <!-- An example of how we can configure htmx -->
+  <!-- https://htmx.org/docs/#config -->
+  <meta name="htmx-config" content='{"historyCacheSize": 15}'>
+
+  {% htmx_script %}
+</head>
+
+<!--
+  Enable htmx extensions for all requests:
+  * event-header: https://github.com/bigskysoftware/htmx-extensions/blob/main/src/event-header/README.md
+-->
+<body hx-ext=event-header>
+  <header>
+    <nav>
+      <h1>
+        <a href="/">
+          django-htmx example app
+        </a>
+      </h1>
+    </nav>
+  </header>
+  <main id="main">
+    {% block main %}{% endblock %}
+  </main>
+  <footer>
+    <hr>
+    <p>
+      For more information see <a href="https://github.com/adamchainz/django-htmx">django-htmx</a> and <a href="https://htmx.org/">htmx</a>.
+    </p>
+  </footer>
+  {% django_htmx_script %}
+</body>
+</html>
