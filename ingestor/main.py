@@ -8,7 +8,7 @@ from .constants.ingesting_mode import IngestingMode
 from .constants.heic_mode import HeicMode
 from .constants.defaults import IngestorDefaultSettings
 
-def cli_entrypoint():
+def _cli_entrypoint():
     import argparse
     import json
     from sys import version_info
@@ -203,4 +203,4 @@ def ingest(
 
 
 if __name__ == "__main__":
-    cli_entrypoint()
+    _cli_entrypoint()
