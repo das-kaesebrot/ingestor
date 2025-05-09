@@ -192,7 +192,7 @@ def ingest(
             timezone=timezone,
         )
 
-        ingestor.do_the_thing(mode=mode, dry_run=dry_run)
+        ingestor.execute(mode=mode, dry_run=dry_run)
 
     except KeyboardInterrupt as e:
         logger.warning("Interrupted by SIGINT")

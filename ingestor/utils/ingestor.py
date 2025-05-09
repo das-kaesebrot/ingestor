@@ -47,7 +47,7 @@ class Ingestor:
 
         self._logger = logging.getLogger(__name__)
 
-    def do_the_thing(self, mode: IngestingMode, dry_run: bool = False):
+    def execute(self, mode: IngestingMode, dry_run: bool = False):
         filenames = self._get_new_filenames()
 
         if dry_run:
