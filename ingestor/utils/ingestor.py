@@ -108,16 +108,34 @@ class Ingestor:
         self._logger.debug(f"{video_files=}")
 
         for image_file in image_files:
-            filenames[image_file] = join(
-                self._output_directory,
-                self._filename_utils.get_filename_for_image(image_file_path=image_file),
-            )
+            counter = 0
+            
+            while True:
+                filename = join(
+                    self._output_directory,
+                    self._filename_utils.get_filename_for_image(image_file_path=image_file, counter=counter),
+                )
+                
+                if not filename in filenames.values():
+                    filenames[image_file] = filename
+                    break
+                
+                counter += 1
 
         for video_file in video_files:
-            filenames[video_file] = join(
-                self._output_directory,
-                self._filename_utils.get_filename_for_video(video_file_path=video_file),
-            )
+            counter = 0
+            
+            while True:
+                filename = join(
+                    self._output_directory,
+                    self._filename_utils.get_filename_for_video(video_file_path=video_file, counter=counter),
+                )
+                
+                if not filename in filenames.values():
+                    filenames[video_file] = filename
+                    break
+                
+                counter += 1
 
         return filenames
 

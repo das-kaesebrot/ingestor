@@ -36,6 +36,7 @@ class FilenameUtils:
         self,
         *,
         image_file_path: str,
+        counter: int = 0,
     ):
         return FilenameUtils._get_filename_for_image(
             date_pattern=self.date_pattern,
@@ -44,12 +45,14 @@ class FilenameUtils:
             keep_original_filename=self.keep_original_filename,
             time_correction_offset=self.correction_offset,
             timezone=self.timezone,
+            counter=counter,
         )
 
     def get_filename_for_video(
         self,
         *,
         video_file_path: str,
+        counter: int = 0,
     ):
         return FilenameUtils._get_filename_for_video(
             date_pattern=self.date_pattern,
@@ -58,6 +61,7 @@ class FilenameUtils:
             keep_original_filename=self.keep_original_filename,
             time_correction_offset=self.correction_offset,
             timezone=self.timezone,
+            counter=counter,
         )
 
     @staticmethod
@@ -69,6 +73,7 @@ class FilenameUtils:
         time_correction_offset: datetime.timedelta,
         timezone: ZoneInfo,
         keep_original_filename: bool = False,
+        counter = 0,
     ):
         date = FilenameUtils._get_exif_date(image_file_path)
 
@@ -86,6 +91,7 @@ class FilenameUtils:
             keep_original_filename=keep_original_filename,
             time_correction_offset=time_correction_offset,
             timezone=timezone,
+            counter=counter,
         )
 
     @staticmethod
@@ -97,6 +103,7 @@ class FilenameUtils:
         time_correction_offset: datetime.timedelta,
         timezone: ZoneInfo,
         keep_original_filename: bool = False,
+        counter = 0,
     ):
         date = FilenameUtils._get_video_creation_date(video_file_path)
 
@@ -114,6 +121,7 @@ class FilenameUtils:
             keep_original_filename=keep_original_filename,
             time_correction_offset=time_correction_offset,
             timezone=timezone,
+            counter=counter,
         )
 
     @staticmethod
@@ -130,10 +138,17 @@ class FilenameUtils:
         time_correction_offset: datetime.timedelta,
         timezone: ZoneInfo,
         keep_original_filename: bool = False,
+        counter = 0,        
     ):
         date = date + time_correction_offset
         date = date.astimezone(timezone)
         formatted_date = datetime.datetime.strftime(date, date_pattern)
+        
+        counter_str = ""
+        
+        if counter >= 0:
+            counter_str = f"_{counter}"
+        
 
         original_filename_suffix = (
             FilenameUtils.get_basename_without_extension(file_path)
@@ -144,7 +159,7 @@ class FilenameUtils:
         extension = FilenameUtils.get_file_extension(file_path)
 
         filename = (
-            f"{formatted_date}_{person_suffix}{original_filename_suffix}.{extension}"
+            f"{formatted_date}{counter_str}_{person_suffix}{original_filename_suffix}.{extension}"
         )
 
         return filename
