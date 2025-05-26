@@ -10,6 +10,9 @@ class FilenameUtils:
     # https://exiftool.org/TagNames/EXIF.html
     EXIF_TAG_ID_DATETIMEORIGINAL = 0x9003
     EXIF_TAG_NAME_DATETIMEORIGINAL = "EXIF DateTimeOriginal"
+    
+    VIDEO_TAG_QUICKTIME_CREATION_DATE = "com.apple.quicktime.creationdate"
+    VIDEO_TAG_GENERIC_CREATION_TIME = "creation_time"
 
     date_pattern: str
     keep_original_filename: bool
@@ -168,9 +171,15 @@ class FilenameUtils:
     def _get_video_creation_date(video_file_path: str) -> datetime.datetime:
         try:
             probe_result = ffmpeg.probe(video_file_path)
-            creation_time_str = (
-                probe_result.get("format").get("tags").get("creation_time")
-            )
+            
+            tags = probe_result.get("format").get("tags")
+            
+            creation_time_str = tags.get(FilenameUtils.VIDEO_TAG_GENERIC_CREATION_TIME)
+            
+            # prefer apple creation date
+            if FilenameUtils.VIDEO_TAG_QUICKTIME_CREATION_DATE in tags.keys():
+                creation_time_str = tags.get(FilenameUtils.VIDEO_TAG_QUICKTIME_CREATION_DATE)    
+            
             return datetime.datetime.fromisoformat(creation_time_str)
         except Exception as e:
             logging.getLogger(__name__).exception(
