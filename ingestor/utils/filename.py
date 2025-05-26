@@ -149,7 +149,7 @@ class FilenameUtils:
         
         counter_str = ""
         
-        if counter >= 0:
+        if counter > 0:
             counter_str = f"_{counter}"
         
 
