@@ -25,6 +25,7 @@ class AllowedFileExtension:
         "mpg",
         "mpeg",
         "mts",
+        "m2t",
         "ogv",
         "rm",
         "swf",
