@@ -48,6 +48,8 @@ class Ingestor:
         self._logger = logging.getLogger(__name__)
 
     def execute(self, mode: IngestingMode, dry_run: bool = False):
+        self._handle_heic()
+        
         filenames = self._get_new_filenames()
 
         if dry_run:
