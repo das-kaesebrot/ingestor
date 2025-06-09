@@ -2,10 +2,60 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest
 from django.views.decorators.http import require_GET
 from django_htmx.middleware import HtmxDetails
+from django.core.paginator import Paginator
+from .models import Person, Project
 
 class HtmxHttpRequest(HttpRequest):
     htmx: HtmxDetails
 
 @require_GET
 def index(request: HtmxHttpRequest) -> HttpResponse:
-    return render(request, "index.html")
+    if request.htmx:
+        base_template = "_partial.html"
+    else:
+        base_template = "_base.html"
+
+    return render(
+        request,
+        "index.html",
+        {
+            "base_template": base_template,
+        },
+    )
+
+@require_GET
+def favicon(request: HtmxHttpRequest) -> HttpResponse:
+    return HttpResponse(
+        (
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
+            + '<text y=".9em" font-size="90">🛂</text>'
+            + "</svg>"
+        ),
+        content_type="image/svg+xml",
+    )
+
+
+@require_GET
+def project_list(request: HtmxHttpRequest) -> HttpResponse:
+    # Standard Django pagination
+    page_num = request.GET.get("page", "1")
+    page = Paginator(object_list=Project.objects.all(), per_page=10).get_page(page_num)
+
+    # The htmx magic - render just the `#table-section` partial for htmx
+    # requests, allowing us to skip rendering the unchanging parts of the
+    # template.
+    
+    if request.htmx:
+        base_template = "_partial.html"
+    else:
+        base_template = "_base.html"
+
+    return render(
+        request,
+        "project_list.html",
+        {
+            "base_template": base_template,
+            "page": page,
+        },
+    )
+    

@@ -4,4 +4,6 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("favicon.ico", views.favicon),
+    path("projects", views.project_list)
 ]
