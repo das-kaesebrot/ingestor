@@ -10,6 +10,9 @@ class FilenameUtils:
     # https://exiftool.org/TagNames/EXIF.html
     EXIF_TAG_ID_DATETIMEORIGINAL = 0x9003
     EXIF_TAG_NAME_DATETIMEORIGINAL = "EXIF DateTimeOriginal"
+    
+    VIDEO_TAG_QUICKTIME_CREATION_DATE = "com.apple.quicktime.creationdate"
+    VIDEO_TAG_GENERIC_CREATION_TIME = "creation_time"
 
     date_pattern: str
     keep_original_filename: bool
@@ -36,6 +39,7 @@ class FilenameUtils:
         self,
         *,
         image_file_path: str,
+        counter: int = 0,
     ):
         return FilenameUtils._get_filename_for_image(
             date_pattern=self.date_pattern,
@@ -44,12 +48,14 @@ class FilenameUtils:
             keep_original_filename=self.keep_original_filename,
             time_correction_offset=self.correction_offset,
             timezone=self.timezone,
+            counter=counter,
         )
 
     def get_filename_for_video(
         self,
         *,
         video_file_path: str,
+        counter: int = 0,
     ):
         return FilenameUtils._get_filename_for_video(
             date_pattern=self.date_pattern,
@@ -58,6 +64,7 @@ class FilenameUtils:
             keep_original_filename=self.keep_original_filename,
             time_correction_offset=self.correction_offset,
             timezone=self.timezone,
+            counter=counter,
         )
 
     @staticmethod
@@ -69,6 +76,7 @@ class FilenameUtils:
         time_correction_offset: datetime.timedelta,
         timezone: ZoneInfo,
         keep_original_filename: bool = False,
+        counter = 0,
     ):
         date = FilenameUtils._get_exif_date(image_file_path)
 
@@ -86,6 +94,7 @@ class FilenameUtils:
             keep_original_filename=keep_original_filename,
             time_correction_offset=time_correction_offset,
             timezone=timezone,
+            counter=counter,
         )
 
     @staticmethod
@@ -97,6 +106,7 @@ class FilenameUtils:
         time_correction_offset: datetime.timedelta,
         timezone: ZoneInfo,
         keep_original_filename: bool = False,
+        counter = 0,
     ):
         date = FilenameUtils._get_video_creation_date(video_file_path)
 
@@ -114,6 +124,7 @@ class FilenameUtils:
             keep_original_filename=keep_original_filename,
             time_correction_offset=time_correction_offset,
             timezone=timezone,
+            counter=counter,
         )
 
     @staticmethod
@@ -130,10 +141,17 @@ class FilenameUtils:
         time_correction_offset: datetime.timedelta,
         timezone: ZoneInfo,
         keep_original_filename: bool = False,
+        counter = 0,        
     ):
         date = date + time_correction_offset
         date = date.astimezone(timezone)
         formatted_date = datetime.datetime.strftime(date, date_pattern)
+        
+        counter_str = ""
+        
+        if counter > 0:
+            counter_str = f"_{counter}"
+        
 
         original_filename_suffix = (
             FilenameUtils.get_basename_without_extension(file_path)
@@ -144,7 +162,7 @@ class FilenameUtils:
         extension = FilenameUtils.get_file_extension(file_path)
 
         filename = (
-            f"{formatted_date}_{person_suffix}{original_filename_suffix}.{extension}"
+            f"{formatted_date}{counter_str}_{person_suffix}{original_filename_suffix}.{extension}"
         )
 
         return filename
@@ -153,9 +171,15 @@ class FilenameUtils:
     def _get_video_creation_date(video_file_path: str) -> datetime.datetime:
         try:
             probe_result = ffmpeg.probe(video_file_path)
-            creation_time_str = (
-                probe_result.get("format").get("tags").get("creation_time")
-            )
+            
+            tags = probe_result.get("format").get("tags")
+            
+            creation_time_str = tags.get(FilenameUtils.VIDEO_TAG_GENERIC_CREATION_TIME)
+            
+            # prefer apple creation date
+            if FilenameUtils.VIDEO_TAG_QUICKTIME_CREATION_DATE in tags.keys():
+                creation_time_str = tags.get(FilenameUtils.VIDEO_TAG_QUICKTIME_CREATION_DATE)    
+            
             return datetime.datetime.fromisoformat(creation_time_str)
         except Exception as e:
             logging.getLogger(__name__).exception(
