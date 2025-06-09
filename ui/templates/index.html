@@ -1,8 +1,14 @@
-{% extends "_base.html" %}
+{% extends base_template %}
 
 {% block main %}
   <section>
     Welcome to the example app.
     Use one of the links in the navigation to explore!
   </section>
+  <ul>
+    <li>
+      <a hx-get="/projects" href="/projects" hx-target="#main" hx-push-url=true>Projects</a>
+      <a hx-get="/people" href="/people" hx-target="#main" hx-push-url=true>People</a>
+    </li>
+  </ul>
 {% endblock main %}
