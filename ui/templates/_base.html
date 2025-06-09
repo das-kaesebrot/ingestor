@@ -11,6 +11,8 @@
   <!-- https://htmx.org/docs/#config -->
   <meta name="htmx-config" content='{"historyCacheSize": 15}'>
 
+  <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+
   {% htmx_script %}
 </head>
 
@@ -38,5 +40,7 @@
     </p>
   </footer>
   {% django_htmx_script %}
+  <script src="{% static "js/bootstrap.min.js" %}" ></script>
+  <script src="{% static "js/jquery.min.js" %}" ></script>
 </body>
 </html>
