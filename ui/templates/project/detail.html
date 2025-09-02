@@ -1,0 +1,24 @@
+<h1>Project: {{ project.name }}</h1>
+<p>Ingesting done? {{ project.done_ingesting }}</p>
+
+<p>
+  <a href="{% url 'project_edit' project.id %}">✏️ Edit Project</a> |
+  <a href="{% url 'project_delete' project.id %}">🗑️ Delete Project</a>
+</p>
+
+<h2>Users</h2>
+<ul>
+  {% for link in user_links %}
+    <li>
+      {{ link.user.name }} ({{ link.user.suffix }}) — Secret: <code>{{ link.upload_secret }}</code>
+      <br>
+      <a href="{% url 'user_edit' link.id %}">✏️ Edit</a> |
+      <a href="{% url 'user_delete' link.id %}">🗑️ Remove</a>
+    </li>
+  {% empty %}
+    <li>No users yet.</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'project_add_user' project.id %}">+ Add User</a><br>
+<a href="{% url 'project_list' %}">⬅ Back to Projects</a>

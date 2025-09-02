@@ -1,0 +1,7 @@
+<h1>Remove User from Project</h1>
+<p>Are you sure you want to remove {{ link.user.name }} from project {{ link.project.name }}?</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Yes, remove</button>
+</form>
+<a href="{% url 'project_detail' link.project.id %}">Cancel</a>

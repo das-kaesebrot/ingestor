@@ -1,0 +1,16 @@
+<h1>Projects</h1>
+<ul>
+  {% for project in projects %}
+    <li>
+      <a href="{% url 'project_detail' project.id %}">{{ project.name }}</a>
+      {% if project.done_ingesting %}(Done){% endif %}
+      —
+      <a href="{% url 'project_edit' project.id %}">✏️ Edit</a> |
+      <a href="{% url 'project_delete' project.id %}">🗑️ Delete</a>
+    </li>
+  {% empty %}
+    <li>No projects yet.</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'project_add' %}">+ Add Project</a>

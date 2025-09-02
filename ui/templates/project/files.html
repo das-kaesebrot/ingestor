@@ -1,0 +1,8 @@
+<h1>Project Files</h1>
+<ul>
+  {% for file in files %}
+    <li>{{ file.filename }} ({{ file.uploaded_at }})</li>
+  {% empty %}
+    <li>No files yet</li>
+  {% endfor %}
+</ul>

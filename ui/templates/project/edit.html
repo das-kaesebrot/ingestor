@@ -1,0 +1,7 @@
+<h1>Edit Project: {{ project.name }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+</form>
+<a href="{% url 'project_detail' project.id %}">Cancel</a>
