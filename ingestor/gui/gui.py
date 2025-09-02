@@ -7,6 +7,7 @@ from sys import version_info
 from tkinter import *
 from tkinter import ttk
 
+
 def gui_entrypoint():
     # set up logging config via argparse
     # custom behaviour for python versions < 3.11 as the level names mapping func was only added to the logging lib in 3.11
@@ -53,7 +54,7 @@ def gui_entrypoint():
     )
 
     args = parser.parse_args()
-    
+
     logging.basicConfig(
         format="[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s",
         level=args.loglevel.upper(),
@@ -62,9 +63,9 @@ def gui_entrypoint():
     logging.getLogger(__name__).debug(
         f"Args:\n{json.dumps(vars(args), indent=4, default=str)}"
     )
-    
+
     logger = logging.getLogger(__name__)
-    
+
     try:
         root = Tk()
         frm = ttk.Frame(root, padding=10)

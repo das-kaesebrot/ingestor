@@ -1,8 +1,10 @@
 import secrets
 from django.db import models
 
+
 def generate_secret():
     return secrets.token_urlsafe(16)
+
 
 class Project(models.Model):
     name = models.CharField(max_length=200)

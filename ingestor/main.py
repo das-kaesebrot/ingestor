@@ -8,6 +8,7 @@ from .constants.ingesting_mode import IngestingMode
 from .constants.heic_mode import HeicMode
 from .constants.defaults import IngestorDefaultSettings
 
+
 def _cli_entrypoint():
     import argparse
     import json
@@ -130,7 +131,7 @@ def _cli_entrypoint():
         metavar="+00:00:00",
         default=IngestorDefaultSettings.TIME_CORRECTION_OFFSET,
     )
-    
+
     parser.add_argument(
         "--timezone",
         help="Timezone to set for the filenames",

@@ -49,7 +49,7 @@ class Ingestor:
 
     def execute(self, mode: IngestingMode, dry_run: bool = False):
         self._handle_heic()
-        
+
         filenames = self._get_new_filenames()
 
         if dry_run:
@@ -111,32 +111,36 @@ class Ingestor:
 
         for image_file in image_files:
             counter = 0
-            
+
             while True:
                 filename = join(
                     self._output_directory,
-                    self._filename_utils.get_filename_for_image(image_file_path=image_file, counter=counter),
+                    self._filename_utils.get_filename_for_image(
+                        image_file_path=image_file, counter=counter
+                    ),
                 )
-                
+
                 if not filename in filenames.values():
                     filenames[image_file] = filename
                     break
-                
+
                 counter += 1
 
         for video_file in video_files:
             counter = 0
-            
+
             while True:
                 filename = join(
                     self._output_directory,
-                    self._filename_utils.get_filename_for_video(video_file_path=video_file, counter=counter),
+                    self._filename_utils.get_filename_for_video(
+                        video_file_path=video_file, counter=counter
+                    ),
                 )
-                
+
                 if not filename in filenames.values():
                     filenames[video_file] = filename
                     break
-                
+
                 counter += 1
 
         return filenames

@@ -10,8 +10,10 @@ from .models import Device, File, Project, UserProjectLink
 BASE_TEMPLATE = "_base.html"
 PARTIAL_TEMPLATE = "_partial.html"
 
+
 class HtmxHttpRequest(HttpRequest):
     htmx: HtmxDetails
+
 
 # determine whether the request is a full http request or just a partial htmx one, render content accordingly
 def get_base_template_name(request: HtmxHttpRequest) -> str:
@@ -30,6 +32,7 @@ def index(request: HtmxHttpRequest) -> HttpResponse:
         },
     )
 
+
 @require_GET
 def favicon(request: HtmxHttpRequest) -> HttpResponse:
     return HttpResponse(
@@ -46,7 +49,8 @@ def favicon(request: HtmxHttpRequest) -> HttpResponse:
 def project_list(request):
     projects = Project.objects.all().order_by("id")
     return render(request, "project/list.html", {"projects": projects})
-    
+
+
 def upload_file(request, upload_secret, device_id):
     uplink = get_object_or_404(UserProjectLink, upload_secret=upload_secret)
     device = get_object_or_404(Device, id=device_id, user_project_link=uplink)
@@ -68,8 +72,11 @@ def upload_file(request, upload_secret, device_id):
 
 
 def project_files(request, project_id):
-    files = File.objects.filter(device__user_project_link__project_id=project_id).order_by("-uploaded_at")
+    files = File.objects.filter(
+        device__user_project_link__project_id=project_id
+    ).order_by("-uploaded_at")
     return render(request, "project/files.html", {"files": files})
+
 
 def project_add(request):
     if request.method == "POST":
@@ -85,10 +92,14 @@ def project_add(request):
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     user_links = project.user_links.select_related("user").all()
-    return render(request, "project/detail.html", {
-        "project": project,
-        "user_links": user_links,
-    })
+    return render(
+        request,
+        "project/detail.html",
+        {
+            "project": project,
+            "user_links": user_links,
+        },
+    )
 
 
 def project_add_user(request, project_id):
@@ -97,15 +108,15 @@ def project_add_user(request, project_id):
         form = UserForm(request.POST)
         if form.is_valid():
             user = form.save()
-            UserProjectLink.objects.create(user=user, project=project)  # secret auto-generated
+            UserProjectLink.objects.create(
+                user=user, project=project
+            )  # secret auto-generated
             return redirect("project_detail", project_id=project.id)
     else:
         form = UserForm()
-    return render(request, "project/add_user.html", {
-        "form": form,
-        "project": project
-    })
-    
+    return render(request, "project/add_user.html", {"form": form, "project": project})
+
+
 # -----------------
 # Project CRUD
 # -----------------

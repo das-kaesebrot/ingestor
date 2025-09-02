@@ -3,6 +3,7 @@ from zoneinfo import ZoneInfo
 from ..constants.ingesting_mode import IngestingMode
 from ..constants.heic_mode import HeicMode
 
+
 class IngestorDefaultSettings:
     DIRECTORY = "."
     OUTPUT_DIRECTORY = "Merged"
@@ -14,4 +15,3 @@ class IngestorDefaultSettings:
     HEIC_MODE = HeicMode.CONVERT
     TIME_CORRECTION_OFFSET = timedelta(seconds=0)
     TIMEZONE = ZoneInfo("Europe/Berlin")
-    
