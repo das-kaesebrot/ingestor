@@ -7,7 +7,7 @@ urlpatterns = [
     path("favicon.ico", views.favicon),
     path("projects", views.project_list),
     path(
-        "upload/<str:upload_secret>/<int:device_id>/",
+        "upload/<str:upload_secret>/",
         views.upload_file,
         name="upload_file",
     ),

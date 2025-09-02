@@ -1,4 +1,4 @@
-<h1>Upload for {{ device.name }}</h1>
+<h1>Upload for {{ user.name }} in {{ project.name }}</h1>
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   {{ form.as_p }}

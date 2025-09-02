@@ -5,6 +5,7 @@ from .models import Project, User
 
 class FileUploadForm(forms.Form):
     file = forms.FileField()
+    device = forms.IntegerField()
 
 
 class ProjectForm(forms.ModelForm):

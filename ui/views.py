@@ -51,13 +51,14 @@ def project_list(request):
     return render(request, "project/list.html", {"projects": projects})
 
 
-def upload_file(request, upload_secret, device_id):
+def upload_file(request, upload_secret):
     uplink = get_object_or_404(UserProjectLink, upload_secret=upload_secret)
-    device = get_object_or_404(Device, id=device_id, user_project_link=uplink)
 
     if request.method == "POST":
         form = FileUploadForm(request.POST, request.FILES)
         if form.is_valid():
+            device = get_object_or_404(Device, id=form.cleaned_data["device"], user_project_link=uplink)
+            
             file_instance = File(
                 device=device,
                 file=form.cleaned_data["file"],
@@ -68,7 +69,7 @@ def upload_file(request, upload_secret, device_id):
     else:
         form = FileUploadForm()
 
-    return render(request, "upload.html", {"form": form, "device": device})
+    return render(request, "upload.html", {"form": form, "project": uplink.project, "user": uplink.user})
 
 
 def project_files(request, project_id):

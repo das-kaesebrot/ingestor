@@ -10,7 +10,7 @@
 <ul>
   {% for link in user_links %}
     <li>
-      {{ link.user.name }} ({{ link.user.suffix }}) — Secret: <code>{{ link.upload_secret }}</code>
+      {{ link.user.name }} ({{ link.user.suffix }}) — Secret: <a href="{% url 'upload_file' link.upload_secret %}">Upload link</a>
       <br>
       <a href="{% url 'user_edit' link.id %}">✏️ Edit</a> |
       <a href="{% url 'user_delete' link.id %}">🗑️ Remove</a>
