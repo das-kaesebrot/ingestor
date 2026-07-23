@@ -5,11 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Module",
-            "type": "debugpy",
+            "name": "Launch Package",
+            "type": "go",
             "request": "launch",
-            "module": "ingestor",
-            "args": ["--logging", "debug"]
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/ingestor",
+            "env": {
+                "LOG_LEVEL": "debug"
+            },
+            "args": ["-c", "${workspaceFolder}/config.local.yml"]
         }
     ]
 }
