@@ -3,6 +3,7 @@ package renderer
 import (
 	"fmt"
 	"html/template"
+	"io/fs"
 	"log/slog"
 	"net/http"
 	"path/filepath"
@@ -49,13 +50,14 @@ var rendererFuncs = template.FuncMap{
 	},
 }
 
-func New(rootDir string, templateSuffix string, defaultData map[string]any) (*Renderer, error) {
+func New(templateFS fs.FS, templateSuffix string, defaultData map[string]any) (*Renderer, error) {
 	r := &Renderer{
 		funcs:       rendererFuncs,
 		defaultData: defaultData,
+		templates:   make(map[string]*template.Template),
 	}
 
-	err := r.initTemplates(rootDir, templateSuffix)
+	err := r.initTemplates(templateFS, templateSuffix)
 	if err != nil {
 		return nil, err
 	}
@@ -63,29 +65,32 @@ func New(rootDir string, templateSuffix string, defaultData map[string]any) (*Re
 	return r, nil
 }
 
-func (r *Renderer) initTemplates(rootDir string, templateSuffix string) error {
-	baseTemplate := filepath.Join(rootDir, "base"+templateSuffix)
-	partials, err := filepath.Glob(filepath.Join(rootDir, "partials", "*"+templateSuffix))
+func (r *Renderer) initTemplates(templateFS fs.FS, templateSuffix string) error {
+	baseTemplate := filepath.Join("base" + templateSuffix)
+	partials, err := fs.Glob(templateFS, filepath.Join("partials", "*"+templateSuffix))
 	if err != nil {
 		return err
 	}
 	baseFiles := append([]string{baseTemplate}, partials...)
 
-	foundLayoutFiles, err := filepath.Glob(filepath.Join(rootDir, "layouts", "*"+templateSuffix))
+	foundLayoutFiles, err := fs.Glob(templateFS, filepath.Join("layouts", "*"+templateSuffix))
 	if err != nil {
 		return err
 	}
+
 	for _, layoutFile := range foundLayoutFiles {
 		layoutName := strings.TrimSuffix(filepath.Base(layoutFile), templateSuffix)
 		layoutFiles := append(baseFiles, layoutFile)
 
+		slog.Debug("Parsing layout", "layoutFiles", layoutFiles)
+
 		templ := template.New(layoutName).Funcs(r.funcs)
-		templ, err := templ.ParseFiles(layoutFiles...)
+		templ, err := templ.ParseFS(templateFS, layoutFiles...)
 		if err != nil {
 			return err
 		}
 
-		*r.templates[layoutName] = *templ
+		r.templates[layoutName] = templ
 	}
 
 	return nil

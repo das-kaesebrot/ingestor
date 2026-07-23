@@ -1,13 +1,14 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"math"
 	"net/http"
 	"os"
-	"path"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/renderer"
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
@@ -17,6 +18,9 @@ var (
 	Version = "v0.0.1-dev"
 	GitHash = "0000000000000000000000000000000000000000"
 )
+
+//go:embed web
+var webFS embed.FS
 
 func main() {
 	var logLevelStr, host string
@@ -52,7 +56,11 @@ func main() {
 	slog.Info("Starting up", "version", Version, "gitHash", GitHash)
 	slog.Debug("Using slog with specified level", "loglevel", logLevel)
 
-	renderer, err := renderer.New(path.Join("web", "template"), ".tmpl", map[string]any{})
+	templateFS, err := fs.Sub(webFS, "web/template")
+	if err != nil {
+		utility.HandleErr("Error creating sub fs!", err)
+	}
+	renderer, err := renderer.New(templateFS, ".tmpl", map[string]any{})
 	if err != nil {
 		utility.HandleErr("Error while creating renderer", err)
 	}
