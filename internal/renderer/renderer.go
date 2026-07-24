@@ -1,6 +1,8 @@
 package renderer
 
 import (
+	"embed"
+	"encoding/hex"
 	"fmt"
 	"html/template"
 	"io/fs"
@@ -9,60 +11,91 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/blake2s"
 )
 
 type Renderer struct {
-	funcs       template.FuncMap
-	templates   map[string]*template.Template
-	defaultData map[string]any
+	funcs           template.FuncMap
+	templates       map[string]*template.Template
+	defaultData     map[string]any
+	staticHashCache map[string]string
+	webFS           embed.FS
+	staticFilesRoot string
 }
 
-var rendererFuncs = template.FuncMap{
-	"formatDate": func(t time.Time) string {
-		return t.Format("2006-01-02")
-	},
-	"formatDateTime": func(t time.Time) string {
-		return t.Format("2006-01-02T15:04")
-	},
-	"formatDateTimeLocal": func(t time.Time) string {
-		return t.Format("2006-01-02 15:04")
-	},
-	"add": func(a, b int) int {
-		return a + b
-	},
-	"sub": func(a, b int) int {
-		return a - b
-	},
-	"seq": func(start, end int) []int {
-		n := end - start + 1
-		if n <= 0 {
-			return nil
-		}
-		s := make([]int, n)
-		for i := range s {
-			s[i] = start + i
-		}
-		return s
-	},
-	"join": strings.Join,
-	"isAfter": func(checkAfter, base time.Time) bool {
-		return checkAfter.After(base)
-	},
-}
-
-func New(templateFS fs.FS, templateSuffix string, defaultData map[string]any) (*Renderer, error) {
+func New(webFS embed.FS, staticFilesRoot string, templateFilesRoot string, templateSuffix string, defaultData map[string]any) (*Renderer, error) {
 	r := &Renderer{
-		funcs:       rendererFuncs,
-		defaultData: defaultData,
-		templates:   make(map[string]*template.Template),
+		defaultData:     defaultData,
+		templates:       make(map[string]*template.Template),
+		staticHashCache: make(map[string]string),
+		webFS:           webFS,
+		staticFilesRoot: strings.TrimSuffix(staticFilesRoot, "/"),
 	}
 
-	err := r.initTemplates(templateFS, templateSuffix)
+	r.funcs = template.FuncMap{
+		"formatDate": func(t time.Time) string {
+			return t.Format("2006-01-02")
+		},
+		"formatDateTime": func(t time.Time) string {
+			return t.Format("2006-01-02T15:04")
+		},
+		"formatDateTimeLocal": func(t time.Time) string {
+			return t.Format("2006-01-02 15:04")
+		},
+		"add": func(a, b int) int {
+			return a + b
+		},
+		"sub": func(a, b int) int {
+			return a - b
+		},
+		"seq": func(start, end int) []int {
+			n := end - start + 1
+			if n <= 0 {
+				return nil
+			}
+			s := make([]int, n)
+			for i := range s {
+				s[i] = start + i
+			}
+			return s
+		},
+		"join": strings.Join,
+		"isAfter": func(checkAfter, base time.Time) bool {
+			return checkAfter.After(base)
+		},
+		"blake2sSum256": hashData,
+		"hashStatic": func(filePath string) string {
+			if hash, ok := r.staticHashCache[filePath]; ok {
+				return hash
+			}
+			fullFilePath := filepath.Join(staticFilesRoot, filePath)
+			data, err := r.webFS.ReadFile(fullFilePath)
+			if err != nil {
+				panic(err)
+			}
+			hash := hashData(data)
+			r.staticHashCache[filePath] = hash
+			return hash
+		},
+	}
+
+	templateFS, err := fs.Sub(webFS, templateFilesRoot)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.initTemplates(templateFS, templateSuffix)
 	if err != nil {
 		return nil, err
 	}
 
 	return r, nil
+}
+
+func hashData(data []byte) string {
+	sum := blake2s.Sum256(data)
+	return hex.EncodeToString(sum[:])
 }
 
 func (r *Renderer) initTemplates(templateFS fs.FS, templateSuffix string) error {

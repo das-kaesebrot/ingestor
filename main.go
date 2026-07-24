@@ -4,7 +4,6 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"io/fs"
 	"log/slog"
 	"math"
 	"net/http"
@@ -56,11 +55,7 @@ func main() {
 	slog.Info("Starting up", "version", Version, "gitHash", GitHash)
 	slog.Debug("Using slog with specified level", "loglevel", logLevel)
 
-	templateFS, err := fs.Sub(webFS, "web/template")
-	if err != nil {
-		utility.HandleErr("Error creating sub fs!", err)
-	}
-	renderer, err := renderer.New(templateFS, ".tmpl", map[string]any{})
+	renderer, err := renderer.New(webFS, "web/static", "web/template", ".tmpl", map[string]any{})
 	if err != nil {
 		utility.HandleErr("Error while creating renderer", err)
 	}
