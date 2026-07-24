@@ -22,6 +22,7 @@ type Renderer struct {
 	staticHashCache map[string]string
 	webFS           embed.FS
 	staticFilesRoot string
+	templateSuffix  string
 }
 
 func New(webFS embed.FS, staticFilesRoot string, templateFilesRoot string, templateSuffix string, defaultData map[string]any) (*Renderer, error) {
@@ -31,6 +32,7 @@ func New(webFS embed.FS, staticFilesRoot string, templateFilesRoot string, templ
 		staticHashCache: make(map[string]string),
 		webFS:           webFS,
 		staticFilesRoot: strings.TrimSuffix(staticFilesRoot, "/"),
+		templateSuffix:  templateSuffix,
 	}
 
 	r.funcs = template.FuncMap{
@@ -85,7 +87,7 @@ func New(webFS embed.FS, staticFilesRoot string, templateFilesRoot string, templ
 		return nil, err
 	}
 
-	err = r.initTemplates(templateFS, templateSuffix)
+	err = r.initTemplates(templateFS)
 	if err != nil {
 		return nil, err
 	}
@@ -98,27 +100,35 @@ func hashData(data []byte) string {
 	return hex.EncodeToString(sum[:])
 }
 
-func (r *Renderer) initTemplates(templateFS fs.FS, templateSuffix string) error {
-	baseTemplate := filepath.Join("base" + templateSuffix)
+func (r *Renderer) initTemplates(templateFS fs.FS) error {
+	templateSuffix := r.templateSuffix
+	baseTemplateName := filepath.Join("base" + templateSuffix)
 	partials, err := fs.Glob(templateFS, filepath.Join("partials", "*"+templateSuffix))
 	if err != nil {
 		return err
 	}
-	baseFiles := append([]string{baseTemplate}, partials...)
+	baseFiles := append([]string{baseTemplateName}, partials...)
 
 	foundLayoutFiles, err := fs.Glob(templateFS, filepath.Join("layouts", "*"+templateSuffix))
 	if err != nil {
 		return err
 	}
 
+	slog.Debug("Parsing base template", "baseTemplateName", baseTemplateName, "baseFiles", baseFiles)
+	baseTemplate, err := template.New(baseTemplateName).Funcs(r.funcs).ParseFS(templateFS, baseFiles...)
+	if err != nil {
+		return err
+	}
+	// https://stackoverflow.com/questions/50842389/parsing-multiple-templates-in-go
 	for _, layoutFile := range foundLayoutFiles {
-		layoutName := strings.TrimSuffix(filepath.Base(layoutFile), templateSuffix)
-		layoutFiles := append(baseFiles, layoutFile)
+		layoutName := filepath.Base(layoutFile)
+		slog.Debug("Parsing layout", "templateName", layoutName)
 
-		slog.Debug("Parsing layout", "layoutFiles", layoutFiles)
-
-		templ := template.New(layoutName).Funcs(r.funcs)
-		templ, err := templ.ParseFS(templateFS, layoutFiles...)
+		templ, err := baseTemplate.Clone()
+		if err != nil {
+			return err
+		}
+		templ, err = templ.ParseFS(templateFS, layoutFile)
 		if err != nil {
 			return err
 		}
@@ -137,6 +147,7 @@ func (r *Renderer) RenderWithoutData(w http.ResponseWriter, templateName string)
 
 func (r *Renderer) Render(w http.ResponseWriter, templateName string, data map[string]any) {
 	combinedData := r.defaultData
+	templateName = templateName + r.templateSuffix
 
 	for k, v := range data {
 		combinedData[k] = v
