@@ -4,6 +4,7 @@ import (
 	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"math"
 	"net/http"
@@ -20,6 +21,9 @@ var (
 
 //go:embed web
 var webFS embed.FS
+
+var templateFilesRoot = "web/template"
+var staticFilesRoot = "web/static"
 
 func main() {
 	var logLevelStr, host string
@@ -55,13 +59,18 @@ func main() {
 	slog.Info("Starting up", "version", Version, "gitHash", GitHash)
 	slog.Debug("Using slog with specified level", "loglevel", logLevel)
 
-	renderer, err := renderer.New(webFS, "web/static", "web/template", ".tmpl", map[string]any{})
+	renderer, err := renderer.New(webFS, staticFilesRoot, templateFilesRoot, ".tmpl", map[string]any{})
 	if err != nil {
 		utility.HandleErr("Error while creating renderer", err)
 	}
 
 	mux := http.NewServeMux()
 
+	staticFS, err := fs.Sub(webFS, staticFilesRoot)
+	if err != nil {
+		utility.HandleErr("Error while creating sub FS for static file server", err)
+	}
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(staticFS)))
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		renderer.RenderWithoutData(w, "home")
 	})
