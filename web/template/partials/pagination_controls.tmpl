@@ -1,0 +1,42 @@
+{{define "pagination_controls"}}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <ul class="pagination pagination-sm mb-0">
+        {{if gt $.TotalPages 1}}
+        <li class="page-item {{if eq $.Page 1}}disabled{{end}}">
+            <a class="page-link" href="?page=1&per_page={{$.PerPage}}" {{if eq $.Page 1}}tabindex="-1" aria-disabled="true"{{end}}>&laquo;</a>
+        </li>
+        {{end}}
+        {{if gt $.TotalPages 1}}
+        <li class="page-item {{if eq $.Page 1}}disabled{{end}}">
+            <a class="page-link" href="?page={{sub $.Page 1}}&per_page={{$.PerPage}}" {{if eq $.Page 1}}tabindex="-1" aria-disabled="true"{{end}}>‹</a>
+        </li>
+        {{end}}
+        {{range seq 1 $.TotalPages}}
+        <li class="page-item {{if eq $.Page .}}active{{end}}">
+            <a class="page-link" href="?page={{.}}&per_page={{$.PerPage}}">{{.}}</a>
+        </li>
+        {{end}}
+        {{if gt $.TotalPages 1}}
+        <li class="page-item {{if ge $.Page $.TotalPages}}disabled{{end}}">
+            <a class="page-link" href="?page={{add $.Page 1}}&per_page={{$.PerPage}}" {{if ge $.Page $.TotalPages}}tabindex="-1" aria-disabled="true"{{end}}>›</a>
+        </li>
+        {{end}}
+        {{if gt $.TotalPages 1}}
+        <li class="page-item {{if ge $.Page $.TotalPages}}disabled{{end}}">
+            <a class="page-link" href="?page={{$.TotalPages}}&per_page={{$.PerPage}}" {{if ge $.Page $.TotalPages}}tabindex="-1" aria-disabled="true"{{end}}>&raquo;</a>
+        </li>
+        {{end}}
+    </ul>
+
+    <div class="dropdown">
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{$.PerPage}}
+        </button>
+        <ul class="dropdown-menu">
+            {{ range .AvailablePageSizes }}
+            <li><a class="dropdown-item{{if eq $.PerPage .}} active{{end}}" href="?page={{$.Page}}&per_page={{ . }}">{{ . }}</a></li>
+            {{ end }}
+        </ul>
+    </div>
+</div>
+{{end}}

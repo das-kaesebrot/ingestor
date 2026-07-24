@@ -1,0 +1,15 @@
+{{define "navbar"}}
+<nav class="navbar navbar-expand-lg bg-primary-subtle text-primary-emphasis border-bottom">
+    <div class="container">
+        <a class="navbar-brand" href="/">{{ template "brand" . }}</a>
+        <nav aria-label="breadcrumb" class="d-none d-md-block flex-grow-1">
+            <ol class="breadcrumb mb-0">
+                {{template "breadcrumb-items" .}}
+            </ol>
+        </nav>
+        <button class="btn btn-sm btn-outline-secondary" type="button" id="themeToggle" aria-label="Toggle dark mode">
+            <span id="themeIcon"></span>
+        </button>
+    </div>
+</nav>
+{{end}}

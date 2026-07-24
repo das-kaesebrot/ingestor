@@ -1,0 +1,9 @@
+{{define "title"}}New Entry{{end}}
+{{define "main"}}
+    <h1>Upload files</h1>
+    <form method="POST" action="/projects/{{.Project.ID}}/images" class="needs-validation">
+        {{ template "upload_form" . }}
+        <button type="submit" class="btn btn-primary">Create Entry</button>
+        <a href="/users/{{.User.ID}}/entries" class="btn btn-secondary">Cancel</a>
+    </form>
+{{end}}

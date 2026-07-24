@@ -1,0 +1,18 @@
+{{define "title"}}Error {{.Code}}{{end}}
+{{define "main"}}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Error {{.Code}}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{.Message}}</p>
+                    <a href="/" class="btn btn-primary">Go Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

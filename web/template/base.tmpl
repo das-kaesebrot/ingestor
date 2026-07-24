@@ -1,0 +1,24 @@
+{{define "breadcrumb-items"}}{{end}}
+{{define "brand"}}Ingestor{{end}}
+{{define "title"}}Base{{end}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ template "title" . }} | {{ template "brand" . }}</title>
+    <link href="{{ if .StaticLibsDir }}{{ .StaticLibsDir }}{{ else }}/static/libs{{ end }}/bootstrap/css/bootstrap.min.css?{{ . }}" rel="stylesheet">
+</head>
+    <body class="d-flex flex-column min-vh-100">
+        {{template "navbar" .}}
+
+        <main class="container mt-4 flex-grow-1">
+            {{template "main" .}}
+        </main>
+
+        {{template "footer" .}}
+
+        <script src="{{ if .StaticLibsDir }}{{ .StaticLibsDir }}{{ else }}/static/libs{{ end }}/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{{ if .StaticScriptsDir }}{{ .StaticScriptsDir }}{{ else }}/static/js{{end}}/script.js"></script>
+    </body>
+</html>
