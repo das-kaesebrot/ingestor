@@ -141,11 +141,11 @@ func (r *Renderer) initTemplates(templateFS fs.FS) error {
 
 // Render a template without additional data.
 // Data passed as defaultData to the Renderer constructor will always be used.
-func (r *Renderer) RenderWithoutData(w http.ResponseWriter, templateName string) {
-	r.Render(w, templateName, map[string]any{})
+func (r *Renderer) RenderWithoutData(w http.ResponseWriter, templateName string) error {
+	return r.Render(w, templateName, map[string]any{})
 }
 
-func (r *Renderer) Render(w http.ResponseWriter, templateName string, data map[string]any) {
+func (r *Renderer) Render(w http.ResponseWriter, templateName string, data map[string]any) error {
 	combinedData := r.defaultData
 	templateName = templateName + r.templateSuffix
 
@@ -155,13 +155,15 @@ func (r *Renderer) Render(w http.ResponseWriter, templateName string, data map[s
 
 	t, ok := r.templates[templateName]
 	if !ok {
-		r.handleError(w, fmt.Errorf("Template '%s' doesn't exist!", templateName))
+		return fmt.Errorf("Template '%s' doesn't exist!", templateName)
 	}
 
 	err := t.Execute(w, data)
 	if err != nil {
-		r.handleError(w, err)
+		return err
 	}
+
+	return nil
 }
 
 func (r *Renderer) handleError(w http.ResponseWriter, err error) {

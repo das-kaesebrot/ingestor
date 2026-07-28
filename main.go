@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 
+	"dev.kaesebrot.eu/go/ingestor/internal/handler"
+	"dev.kaesebrot.eu/go/ingestor/internal/middleware"
 	"dev.kaesebrot.eu/go/ingestor/internal/renderer"
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 )
@@ -64,6 +66,7 @@ func main() {
 		utility.HandleErr("Error while creating renderer", err)
 	}
 
+	h := handler.NewHandler(renderer)
 	mux := http.NewServeMux()
 
 	staticFS, err := fs.Sub(webFS, staticFilesRoot)
@@ -71,9 +74,7 @@ func main() {
 		utility.HandleErr("Error while creating sub FS for static file server", err)
 	}
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(staticFS)))
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		renderer.RenderWithoutData(w, "home")
-	})
+	mux.HandleFunc("GET /", middleware.Make(h.GetRoot))
 
 	slog.Info("Server ready", "host", host, "port", port)
 	http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), mux)
