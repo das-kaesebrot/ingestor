@@ -1,3 +1,5 @@
+//go:generate go run tools/setup-web.go
+
 package main
 
 import (
