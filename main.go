@@ -28,6 +28,7 @@ var webFS embed.FS
 
 var templateFilesRoot = "web/template"
 var staticFilesRoot = "web/static"
+var webStaticFilesRoot = "static"
 
 func main() {
 	var logLevelStr, host string
@@ -63,7 +64,9 @@ func main() {
 	slog.Info("Starting up", "version", Version, "gitHash", GitHash)
 	slog.Debug("Using slog with specified level", "loglevel", logLevel)
 
-	renderer, err := renderer.New(webFS, staticFilesRoot, templateFilesRoot, ".tmpl", map[string]any{})
+	renderer, err := renderer.New(webFS, staticFilesRoot, webStaticFilesRoot, templateFilesRoot, ".tmpl", map[string]any{
+		"StaticLibsSubDir": "/" + webStaticFilesRoot + "/libs",
+	})
 	if err != nil {
 		utility.HandleErr("Error while creating renderer", err)
 	}
@@ -75,7 +78,7 @@ func main() {
 	if err != nil {
 		utility.HandleErr("Error while creating sub FS for static file server", err)
 	}
-	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(staticFS)))
+	mux.Handle(fmt.Sprintf("GET /%s/", webStaticFilesRoot), http.StripPrefix("/"+webStaticFilesRoot+"/", http.FileServerFS(staticFS)))
 	mux.HandleFunc("GET /", middleware.Make(h.GetRoot))
 
 	slog.Info("Server ready", "host", host, "port", port)

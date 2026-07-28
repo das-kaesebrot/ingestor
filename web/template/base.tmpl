@@ -7,7 +7,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ template "title" . }} | {{ template "brand" . }}</title>
-        <link href="{{ if .StaticLibsDir }}{{ .StaticLibsDir }}{{ else }}/static/libs{{ end }}/bootstrap/css/bootstrap.min.css?{{ . }}" rel="stylesheet">
+        <link href="{{ (printf "%s/%s" .StaticLibsSubDir "css/bootstrap.min.css") | staticPathWithHash  }}" rel="stylesheet">
     </head>
     <body class="d-flex flex-column min-vh-100">
         {{template "navbar" .}}
@@ -18,7 +18,6 @@
 
         {{template "footer" .}}
 
-        <script src="{{ if .StaticLibsDir }}{{ .StaticLibsDir }}{{ else }}/static/libs{{ end }}/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="{{ if .StaticScriptsDir }}{{ .StaticScriptsDir }}{{ else }}/static/js{{end}}/script.js"></script>
+        <script src="{{ (printf "%s/%s" .StaticLibsSubDir "js/bootstrap.bundle.min.js") | staticPathWithHash }}"></script>
     </body>
 </html>

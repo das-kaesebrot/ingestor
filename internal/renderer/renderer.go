@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"io/fs"
 	"log/slog"
+	"maps"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -16,23 +17,25 @@ import (
 )
 
 type Renderer struct {
-	funcs           template.FuncMap
-	templates       map[string]*template.Template
-	defaultData     map[string]any
-	staticHashCache map[string]string
-	webFS           embed.FS
-	staticFilesRoot string
-	templateSuffix  string
+	funcs              template.FuncMap
+	templates          map[string]*template.Template
+	defaultData        map[string]any
+	staticHashCache    map[string]string
+	webFS              embed.FS
+	staticFilesRoot    string
+	webStaticFilesRoot string
+	templateSuffix     string
 }
 
-func New(webFS embed.FS, staticFilesRoot string, templateFilesRoot string, templateSuffix string, defaultData map[string]any) (*Renderer, error) {
+func New(webFS embed.FS, staticFilesRoot string, webStaticFilesRoot string, templateFilesRoot string, templateSuffix string, defaultData map[string]any) (*Renderer, error) {
 	r := &Renderer{
-		defaultData:     defaultData,
-		templates:       make(map[string]*template.Template),
-		staticHashCache: make(map[string]string),
-		webFS:           webFS,
-		staticFilesRoot: strings.TrimSuffix(staticFilesRoot, "/"),
-		templateSuffix:  templateSuffix,
+		defaultData:        defaultData,
+		templates:          make(map[string]*template.Template),
+		staticHashCache:    make(map[string]string),
+		webFS:              webFS,
+		staticFilesRoot:    strings.TrimSuffix(staticFilesRoot, "/"),
+		webStaticFilesRoot: strings.TrimSuffix(webStaticFilesRoot, "/"),
+		templateSuffix:     templateSuffix,
 	}
 
 	r.funcs = template.FuncMap{
@@ -66,20 +69,9 @@ func New(webFS embed.FS, staticFilesRoot string, templateFilesRoot string, templ
 		"isAfter": func(checkAfter, base time.Time) bool {
 			return checkAfter.After(base)
 		},
-		"blake2sSum256": hashData,
-		"hashStatic": func(filePath string) string {
-			if hash, ok := r.staticHashCache[filePath]; ok {
-				return hash
-			}
-			fullFilePath := filepath.Join(staticFilesRoot, filePath)
-			data, err := r.webFS.ReadFile(fullFilePath)
-			if err != nil {
-				panic(err)
-			}
-			hash := hashData(data)
-			r.staticHashCache[filePath] = hash
-			return hash
-		},
+		"blake2sSum256":      hashData,
+		"hashStatic":         r.hashStatic,
+		"staticPathWithHash": r.staticPathWithHash,
 	}
 
 	templateFS, err := fs.Sub(webFS, templateFilesRoot)
@@ -93,6 +85,26 @@ func New(webFS embed.FS, staticFilesRoot string, templateFilesRoot string, templ
 	}
 
 	return r, nil
+}
+
+func (r *Renderer) staticPathWithHash(filePath string) string {
+	return fmt.Sprintf("%s?v=%s", filePath, r.hashStatic(filePath))
+}
+
+func (r *Renderer) hashStatic(filePath string) string {
+	filePath = strings.TrimPrefix(strings.TrimPrefix(strings.TrimPrefix(filePath, "/"), r.webStaticFilesRoot), "/")
+
+	if hash, ok := r.staticHashCache[filePath]; ok {
+		return hash
+	}
+	fullFilePath := filepath.Join(r.staticFilesRoot, filePath)
+	data, err := r.webFS.ReadFile(fullFilePath)
+	if err != nil {
+		panic(err)
+	}
+	hash := hashData(data)
+	r.staticHashCache[filePath] = hash
+	return hash
 }
 
 func hashData(data []byte) string {
