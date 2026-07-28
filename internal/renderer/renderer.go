@@ -149,16 +149,14 @@ func (r *Renderer) Render(w http.ResponseWriter, templateName string, data map[s
 	combinedData := r.defaultData
 	templateName = templateName + r.templateSuffix
 
-	for k, v := range data {
-		combinedData[k] = v
-	}
+	maps.Copy(combinedData, data)
 
 	t, ok := r.templates[templateName]
 	if !ok {
 		return fmt.Errorf("Template '%s' doesn't exist!", templateName)
 	}
 
-	err := t.Execute(w, data)
+	err := t.Execute(w, combinedData)
 	if err != nil {
 		return err
 	}
