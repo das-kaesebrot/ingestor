@@ -7,14 +7,17 @@ import (
 	"flag"
 	"fmt"
 	"io/fs"
+	"log"
 	"log/slog"
 	"math"
 	"net/http"
 	"os"
+	"path"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/handler"
 	"dev.kaesebrot.eu/go/ingestor/internal/middleware"
 	"dev.kaesebrot.eu/go/ingestor/internal/renderer"
+	"dev.kaesebrot.eu/go/ingestor/internal/repository"
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 )
 
@@ -33,14 +36,33 @@ var webStaticFilesRoot = "static"
 func main() {
 	var logLevelStr, host string
 	var portUnparsed int
+	var versionFlag bool
 
 	flag.StringVar(&logLevelStr, "l", "", "Log level")
 	flag.StringVar(&logLevelStr, "loglevel", "", "Log level")
 	flag.StringVar(&host, "host", "[::]", "HTTP server host")
 	flag.IntVar(&portUnparsed, "p", 8000, "HTTP server port")
 	flag.IntVar(&portUnparsed, "port", 8000, "HTTP server port")
-
+	flag.BoolVar(&versionFlag, "v", false, "print version information")
+	flag.BoolVar(&versionFlag, "version", false, "print version information")
 	flag.Parse()
+
+	if versionFlag {
+		fmt.Printf("%v\n", Version)
+		return
+	}
+
+	log.Printf("Version: %v", Version)
+
+	dbFile := path.Clean(os.Getenv("INGESTOR_DB_FILE"))
+	if dbFile == "." {
+		dbFile = "ingestor.db"
+	}
+
+	db, err := repository.New(dbFile)
+	if err != nil {
+		utility.HandleErr("Error initializing database", err)
+	}
 
 	if l := os.Getenv("LOG_LEVEL"); l != "" {
 		logLevelStr = l
@@ -71,7 +93,7 @@ func main() {
 		utility.HandleErr("Error while creating renderer", err)
 	}
 
-	h := handler.NewHandler(renderer)
+	h := handler.NewHandler(renderer, db)
 	mux := http.NewServeMux()
 
 	staticFS, err := fs.Sub(webFS, staticFilesRoot)
