@@ -1,6 +1,10 @@
 package utility
 
-import "math/rand/v2"
+import (
+	"crypto/rand"
+	"fmt"
+	"math/big"
+)
 
 const (
 	TokenAlphabetLatinLowercase            = "abcdefghijklmnopqrstuvwxyz"
@@ -13,12 +17,25 @@ const (
 	TokenAlphabetHumanReadable = "abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789"
 )
 
-func GenerateRandomToken(length int, alphabet string) string {
+// https://stackoverflow.com/a/6878625
+const (
+	maxUint = ^uint(0)
+	minUint = 0
+	maxInt  = int(maxUint >> 1)
+	minInt  = -maxInt - 1
+)
+
+func GenerateRandomToken(length int, alphabet string) (string, error) {
 	token := make([]byte, length)
 
-	for i := range length {
-		token[i] = alphabet[rand.IntN(len(alphabet))]
+	if len(alphabet) > maxInt {
+		return "", fmt.Errorf("Alphabet can't be bigger than int max val! maxInt=%v, alphabetLength=%v", maxInt, len(alphabet))
 	}
 
-	return string(token)
+	for i := range length {
+		a, _ := rand.Int(rand.Reader, big.NewInt(int64(len(alphabet))))
+		token[i] = alphabet[int(a.Int64())]
+	}
+
+	return string(token), nil
 }

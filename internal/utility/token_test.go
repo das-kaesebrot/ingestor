@@ -20,7 +20,11 @@ var tokenGeneratorTests = []struct {
 
 func TestTokenGenerator(t *testing.T) {
 	for _, tt := range tokenGeneratorTests {
-		token := GenerateRandomToken(tt.length, tt.alphabet)
+		token, err := GenerateRandomToken(tt.length, tt.alphabet)
+
+		if err != nil {
+			t.Errorf("Token generator returned error, %w", err)
+		}
 
 		if len(token) != tt.length {
 			t.Errorf("Token length is not expected value! expected=%v, result=%v", tt.length, len(token))
