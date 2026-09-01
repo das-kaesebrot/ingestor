@@ -10,6 +10,7 @@ type Project struct {
 	ID          uuid.UUID `gorm:"primaryKey,type:uuid"`
 	ShareKey    string    `gorm:"uniqueIndex"`
 	AdminKey    string    `gorm:"uniqueIndex"`
+	Description string
 	UploadUsers []UploadUser
 }
 
