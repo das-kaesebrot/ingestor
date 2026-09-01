@@ -15,6 +15,7 @@ var tokenGeneratorTests = []struct {
 	{10, TokenAlphabetSelectSpecial},
 	{10, TokenAlphabetLatinWithDigitsAndSpecial},
 	{128, TokenAlphabetLatinWithDigitsAndSpecial},
+	{16, TokenAlphabetHumanReadable},
 }
 
 func TestTokenGenerator(t *testing.T) {
