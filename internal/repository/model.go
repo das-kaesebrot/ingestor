@@ -1,8 +1,9 @@
 package repository
 
 import (
+	"uuid"
+
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -16,10 +17,7 @@ type Project struct {
 }
 
 func (p *Project) BeforeCreate(tx *gorm.DB) error {
-	newUuid, err := uuid.NewV7()
-	if err != nil {
-		return err
-	}
+	newUuid := uuid.NewV7()
 	p.ID = newUuid
 
 	defaultTokenLength := 16
@@ -48,10 +46,7 @@ type UploadUser struct {
 }
 
 func (u *UploadUser) BeforeCreate(tx *gorm.DB) (err error) {
-	newUuid, err := uuid.NewV7()
-	if err != nil {
-		return err
-	}
+	newUuid := uuid.NewV7()
 	u.ID = newUuid
 	return
 }
