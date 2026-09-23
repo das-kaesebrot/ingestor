@@ -9,12 +9,12 @@ import (
 )
 
 type APIHandler struct {
-	db     *repository.Repository
+	repo   *repository.Repository
 	prefix string
 }
 
 func NewAPIHandler(db *repository.Repository, prefix string) *APIHandler {
-	return &APIHandler{db: db, prefix: prefix}
+	return &APIHandler{repo: db, prefix: prefix}
 }
 
 func (h *APIHandler) APIMux() http.Handler {
@@ -37,7 +37,7 @@ func (h *APIHandler) SearchAllProjectsPaged(w http.ResponseWriter, r *http.Reque
 func (h *APIHandler) PostCreateNewProject(w http.ResponseWriter, r *http.Request) error {
 	project := new(repository.Project{})
 
-	err := h.db.Save(project)
+	err := h.repo.Save(project)
 
 	if err != nil {
 		return err
