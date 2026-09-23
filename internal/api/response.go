@@ -14,6 +14,8 @@ type ProjectResponse struct {
 	ShareToken  string    `json:"share_token"`
 	AdminToken  string    `json:"admin_token,omitempty"`
 	Description string    `json:"description"`
+	UpdatedAt   string    `json:"updated_at"`
+	CreatedAt   string    `json:"created_at"`
 }
 
 func ProjectResponseFromProject(project repository.Project, withAdminToken bool) *ProjectResponse {
@@ -26,5 +28,7 @@ func ProjectResponseFromProject(project repository.Project, withAdminToken bool)
 		ShareToken:  project.ShareToken,
 		AdminToken:  adminToken,
 		Description: project.Description,
+		UpdatedAt:   project.UpdatedAt.Format(time.RFC3339),
+		CreatedAt:   project.CreatedAt.Format(time.RFC3339),
 	})
 }
