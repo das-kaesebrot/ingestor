@@ -264,3 +264,4 @@ $RECYCLE.BIN/
 
 # ignore static libs that are automatically downloaded
 web/static/libs
+*.db
