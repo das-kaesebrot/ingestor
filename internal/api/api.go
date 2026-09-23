@@ -58,6 +58,6 @@ func writeJSON(w http.ResponseWriter, object any) error {
 		return err
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(jData)
-	return nil
+	_, err = w.Write(jData)
+	return err
 }
