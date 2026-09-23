@@ -34,3 +34,8 @@ func New(dbFile string) (*Repository, error) {
 
 	return &Repository{db: db}, nil
 }
+
+func (r *Repository) Save(object any) error {
+	result := r.db.Save(object)
+	return result.Error
+}
