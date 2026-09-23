@@ -35,7 +35,13 @@ func (h *APIHandler) SearchAllProjectsPaged(w http.ResponseWriter, r *http.Reque
 }
 
 func (h *APIHandler) PostCreateNewProject(w http.ResponseWriter, r *http.Request) error {
+	var parsedReq CreateProjectRequest
+	if err := json.UnmarshalRead(r.Body, parsedReq); err != nil {
+		return err
+	}
+
 	project := new(repository.Project{})
+	project.Description = parsedReq.Description
 
 	err := h.repo.Save(project)
 
