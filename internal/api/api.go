@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json/v2"
 	"net/http"
+	"uuid"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/middleware"
 	"dev.kaesebrot.eu/go/ingestor/internal/repository"
@@ -22,6 +23,7 @@ func (h *APIHandler) APIMux() http.Handler {
 
 	mux.HandleFunc("GET /ping", middleware.Make(h.GetPing))
 	mux.HandleFunc("POST /project", middleware.Make(h.PostCreateNewProject))
+	mux.HandleFunc("GET /project/{id}", middleware.Make(h.GetProject))
 
 	return http.StripPrefix(h.prefix, mux)
 }
@@ -32,6 +34,20 @@ func (h *APIHandler) GetPing(w http.ResponseWriter, r *http.Request) error {
 
 func (h *APIHandler) SearchAllProjectsPaged(w http.ResponseWriter, r *http.Request) error {
 	return nil
+}
+
+func (h *APIHandler) GetProject(w http.ResponseWriter, r *http.Request) error {
+	id, err := uuid.Parse(r.PathValue("id"))
+	if err != nil {
+		return err
+	}
+
+	var project repository.Project
+	if result := h.repo.DB.First(&project, id); result.Error != nil {
+		return err
+	}
+
+	return writeJSON(w, ProjectResponseFromProject(project, false))
 }
 
 func (h *APIHandler) PostCreateNewProject(w http.ResponseWriter, r *http.Request) error {
