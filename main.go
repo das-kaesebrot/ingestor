@@ -15,9 +15,6 @@ import (
 	"path"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/api"
-	"dev.kaesebrot.eu/go/ingestor/internal/handler"
-	"dev.kaesebrot.eu/go/ingestor/internal/middleware"
-	"dev.kaesebrot.eu/go/ingestor/internal/renderer"
 	"dev.kaesebrot.eu/go/ingestor/internal/repository"
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 )
@@ -27,12 +24,10 @@ var (
 	GitHash = "0000000000000000000000000000000000000000"
 )
 
-//go:embed web
+//go:embed web/app/build
 var webFS embed.FS
 
-var templateFilesRoot = "web/template"
-var staticFilesRoot = "web/static"
-var webStaticFilesRoot = "static"
+var frontendFilesRoot = "web/app/build"
 
 func main() {
 	var logLevelStr, host string
@@ -87,25 +82,16 @@ func main() {
 	slog.Info("Starting up", "version", Version, "gitHash", GitHash)
 	slog.Debug("Using slog with specified level", "loglevel", logLevel)
 
-	renderer, err := renderer.New(webFS, staticFilesRoot, webStaticFilesRoot, templateFilesRoot, ".tmpl", map[string]any{
-		"StaticLibsSubDir": "/" + webStaticFilesRoot + "/libs",
-	})
-	if err != nil {
-		utility.HandleErr("Error while creating renderer", err)
-	}
-
-	h := handler.NewHandler(renderer, db)
 	apiPrefix := "/api/v1"
 	a := api.NewAPIHandler(db, apiPrefix)
 	mux := http.NewServeMux()
 
-	staticFS, err := fs.Sub(webFS, staticFilesRoot)
+	staticFS, err := fs.Sub(webFS, frontendFilesRoot)
 	if err != nil {
 		utility.HandleErr("Error while creating sub FS for static file server", err)
 	}
-	mux.Handle(fmt.Sprintf("GET /%s/", webStaticFilesRoot), http.StripPrefix("/"+webStaticFilesRoot+"/", http.FileServerFS(staticFS)))
 	mux.Handle(apiPrefix+"/", a.APIMux())
-	mux.HandleFunc("GET /{$}", middleware.Make(h.GetRoot))
+	mux.Handle("/", http.FileServerFS(staticFS))
 
 	slog.Info("Server ready", "host", host, "port", port)
 	http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), mux)
