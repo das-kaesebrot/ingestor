@@ -12,7 +12,7 @@ import (
 )
 
 type Repository struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 func New(dbFile string) (*Repository, error) {
@@ -32,10 +32,10 @@ func New(dbFile string) (*Repository, error) {
 
 	db.AutoMigrate(&Project{}, &UploadUser{})
 
-	return &Repository{db: db}, nil
+	return &Repository{DB: db}, nil
 }
 
 func (r *Repository) Save(object any) error {
-	result := r.db.Save(object)
+	result := r.DB.Save(object)
 	return result.Error
 }
