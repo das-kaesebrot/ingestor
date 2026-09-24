@@ -24,10 +24,10 @@ var (
 	GitHash = "0000000000000000000000000000000000000000"
 )
 
-//go:embed web/app/build
+//go:embed web/static
 var webFS embed.FS
 
-var frontendFilesRoot = "web/app/build"
+var frontendFilesRoot = "web/static"
 
 func main() {
 	var logLevelStr, host string
