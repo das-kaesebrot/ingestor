@@ -36,14 +36,9 @@ func (h *APIHandler) SearchAllProjectsPaged(w http.ResponseWriter, r *http.Reque
 }
 
 func (h *APIHandler) GetProject(w http.ResponseWriter, r *http.Request) error {
-	id, err := uuid.Parse(r.PathValue("id"))
-	if err != nil {
-		return err
-	}
-
 	var project repository.Project
-	if result := h.repo.DB.First(&project, id); result.Error != nil {
-		return err
+	if result := h.repo.DB.First(&project, &repository.Project{ShareToken: r.PathValue("token")}); result.Error != nil {
+		return result.Error
 	}
 
 	return writeJSON(w, ProjectResponseFromProject(project, false))
