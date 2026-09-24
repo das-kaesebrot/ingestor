@@ -271,3 +271,4 @@ $RECYCLE.BIN/
 
 *.db
 web/app/build
+web/static
