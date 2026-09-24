@@ -3,9 +3,7 @@ package api
 import (
 	"encoding/json/v2"
 	"net/http"
-	"uuid"
 
-	"dev.kaesebrot.eu/go/ingestor/internal/middleware"
 	"dev.kaesebrot.eu/go/ingestor/internal/repository"
 )
 
@@ -21,9 +19,10 @@ func NewAPIHandler(db *repository.Repository, prefix string) *APIHandler {
 func (h *APIHandler) APIMux() http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /ping", middleware.Make(h.GetPing))
-	mux.HandleFunc("POST /project", middleware.Make(h.PostCreateNewProject))
-	mux.HandleFunc("GET /project/{id}", middleware.Make(h.GetProject))
+	mux.HandleFunc("GET /ping", MakeMiddleware(h.GetPing))
+	mux.HandleFunc("POST /projects", MakeMiddleware(h.PostCreateNewProject))
+	mux.HandleFunc("GET /projects/{token}", MakeMiddleware(h.GetProject))
+	mux.HandleFunc("GET /projects/admin/{token}", MakeMiddleware(h.GetProjectByAdminToken))
 
 	return http.StripPrefix(h.prefix, mux)
 }
