@@ -44,6 +44,15 @@ func (h *APIHandler) GetProject(w http.ResponseWriter, r *http.Request) error {
 	return writeJSON(w, ProjectResponseFromProject(project, false))
 }
 
+func (h *APIHandler) GetProjectByAdminToken(w http.ResponseWriter, r *http.Request) error {
+	var project repository.Project
+	if result := h.repo.DB.First(&project, &repository.Project{AdminToken: r.PathValue("token")}); result.Error != nil {
+		return result.Error
+	}
+
+	return writeJSON(w, ProjectResponseFromProject(project, true))
+}
+
 func (h *APIHandler) PostCreateNewProject(w http.ResponseWriter, r *http.Request) error {
 	var parsedReq CreateProjectRequest
 	if err := json.UnmarshalRead(r.Body, &parsedReq); err != nil {
