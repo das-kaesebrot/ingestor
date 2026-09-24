@@ -1,12 +1,21 @@
 package api
 
 import (
+	"time"
 	"uuid"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/repository"
 )
 
-type ProblemDetails struct {
+type ErrorResponse struct {
+	Message   string         `json:"message"`
+	Code      int            `json:"code"`
+	Traceback string         `json:"traceback,omitempty"`
+	Details   map[string]any `json:"details,omitempty"`
+}
+
+type PagedProjectResponse struct {
+	Projects []ProjectResponse `json:"projects"`
 }
 
 type ProjectResponse struct {
