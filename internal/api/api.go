@@ -51,7 +51,7 @@ func (h *APIHandler) GetProject(w http.ResponseWriter, r *http.Request) error {
 
 func (h *APIHandler) PostCreateNewProject(w http.ResponseWriter, r *http.Request) error {
 	var parsedReq CreateProjectRequest
-	if err := json.UnmarshalRead(r.Body, parsedReq); err != nil {
+	if err := json.UnmarshalRead(r.Body, &parsedReq); err != nil {
 		return err
 	}
 
