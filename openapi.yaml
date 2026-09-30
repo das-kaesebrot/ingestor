@@ -18,6 +18,8 @@ paths:
     post:
       summary: Create a new project
       operationId: createProject
+      parameters:
+        - $ref: '#/components/parameters/RequestId'
       requestBody:
         required: true
         content:
@@ -50,6 +52,7 @@ paths:
       operationId: updateProject
       parameters:
         - $ref: '#/components/parameters/AdminToken'
+        - $ref: '#/components/parameters/RequestId'
       requestBody:
         required: true
         content:
@@ -70,6 +73,7 @@ paths:
       operationId: patchProject
       parameters:
         - $ref: '#/components/parameters/AdminToken'
+        - $ref: '#/components/parameters/RequestId'
       requestBody:
         required: true
         content:
@@ -128,6 +132,12 @@ components:
         minimum: 1
         maximum: 100
         default: 20
+    RequestId:
+      name: X-Request-ID
+      in: header
+      required: true
+      schema:
+        $ref: '#/components/schemas/RequestId'
   responses:
     ProjectResponse:
       description: "A single project"
@@ -181,7 +191,9 @@ components:
     ProjectId:
       type: string
       format: uuid
-      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
+    RequestId:
+      type: string
+      format: uuid
     Token:
       type: string
       pattern: "[abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789]{16}"
