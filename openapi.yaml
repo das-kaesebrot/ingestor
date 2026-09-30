@@ -1,55 +1,59 @@
-# Example from https://deliveroo.engineering/2022/06/27/openapi-design-first.html
-# © CC 4.0 BY-SA
 openapi: 3.1.0
 info:
   title: Ingestor API
   version: 1.0.0
 paths:
-  "/request/{request-id}":
+  "/projects/{token}":
     get:
-      summary: Get all requests
+      summary: Get a project by share token
       operationId: getRequest
       parameters:
-        - $ref: '#/components/parameters/RequestId'
-        - $ref: '#/components/parameters/TracingId'
+        - $ref: '#/components/parameters/ShareToken'
       responses:
-        '200':
-          description: "Stuff is here"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CareRequest'
+        "200":
+          $ref: '#/components/responses/ProjectResponse'
+        #"404":
+        #  $ref: "#/components/responses/NotFound"
+        #"500":
+        #  $ref: "#/components/responses/InternalServerErrror"
 components:
   parameters:
-    RequestId:
-      name: request-id
+    ShareToken:
+      name: token
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/RequestId'
-    TracingId:
-      description: A unique tracing ID that can be used for end-to-end tracing
-      name: tracing-id
-      in: header
-      required: false
-      schema:
-        type: string
-        format: uuid
-        pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
+        $ref: '#/components/schemas/Token'
+  responses:
+    ProjectResponse:
+      description: "Successfully retrieved a project by its share token"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Project'
   schemas:
-    CareRequest:
+    Project:
       type: object
+      required: [id, share_token, description, updated_at, created_at]
       properties:
         id:
-          $ref: '#/components/schemas/RequestId'
-        status:
-          $ref: '#/components/schemas/RequestStatus'
-    RequestId:
+          $ref: '#/components/schemas/ProjectId'
+        share_token:
+          $ref: '#/components/schemas/Token'
+        admin_token:
+          $ref: '#/components/schemas/Token'
+        description:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+    ProjectId:
       type: string
       format: uuid
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
-    RequestStatus:
+    Token:
       type: string
-      enum:
-        - active
-        - completed
+      pattern: "[abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789]{16}"
