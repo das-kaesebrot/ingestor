@@ -3,6 +3,13 @@ info:
   title: Ingestor API
   version: 1.0.0
 paths:
+  /ping:
+    get:
+      summary: Health check
+      operationId: getPing
+      responses:
+        "200":
+          $ref: '#/components/responses/PingResponse'
   /projects:
     get:
       summary: List projects (paged)
@@ -139,6 +146,12 @@ components:
       schema:
         $ref: '#/components/schemas/RequestId'
   responses:
+    PingResponse:
+      description: "The server is alive"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Pong'
     ProjectResponse:
       description: "A single project"
       content:
@@ -170,6 +183,13 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    Pong:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          enum: ["pong"]
     Project:
       type: object
       required: [id, share_token, description, updated_at, created_at]
