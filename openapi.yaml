@@ -1,0 +1,55 @@
+# Example from https://deliveroo.engineering/2022/06/27/openapi-design-first.html
+# © CC 4.0 BY-SA
+openapi: 3.1.0
+info:
+  title: Ingestor API
+  version: 1.0.0
+paths:
+  "/request/{request-id}":
+    get:
+      summary: Get all requests
+      operationId: getRequest
+      parameters:
+        - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/TracingId'
+      responses:
+        '200':
+          description: "Stuff is here"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CareRequest'
+components:
+  parameters:
+    RequestId:
+      name: request-id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/RequestId'
+    TracingId:
+      description: A unique tracing ID that can be used for end-to-end tracing
+      name: tracing-id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+        pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
+  schemas:
+    CareRequest:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/RequestId'
+        status:
+          $ref: '#/components/schemas/RequestStatus'
+    RequestId:
+      type: string
+      format: uuid
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
+    RequestStatus:
+      type: string
+      enum:
+        - active
+        - completed
