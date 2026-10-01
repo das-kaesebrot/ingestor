@@ -1,43 +1,21 @@
 package api
 
 import (
-	"time"
-	"uuid"
-
 	"dev.kaesebrot.eu/go/ingestor/internal/repository"
+	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 )
 
-type ErrorResponse struct {
-	Message   string         `json:"message"`
-	Code      int            `json:"code"`
-	Traceback string         `json:"traceback,omitempty"`
-	Details   map[string]any `json:"details,omitempty"`
-}
-
-type PagedProjectResponse struct {
-	Projects []ProjectResponse `json:"projects"`
-}
-
-type ProjectResponse struct {
-	ID          uuid.UUID `json:"id"`
-	ShareToken  string    `json:"share_token"`
-	AdminToken  string    `json:"admin_token,omitempty"`
-	Description string    `json:"description"`
-	UpdatedAt   string    `json:"updated_at"`
-	CreatedAt   string    `json:"created_at"`
-}
-
 func ProjectResponseFromProject(project repository.Project, withAdminToken bool) *ProjectResponse {
-	adminToken := ""
+	var adminToken = new(string)
 	if withAdminToken {
-		adminToken = project.AdminToken
+		*adminToken = (project.AdminToken)
 	}
 	return new(ProjectResponse{
-		ID:          project.ID,
+		Id:          (ProjectId)(utility.ToGoogleUUID(project.ID)),
 		ShareToken:  project.ShareToken,
 		AdminToken:  adminToken,
 		Description: project.Description,
-		UpdatedAt:   project.UpdatedAt.Format(time.RFC3339),
-		CreatedAt:   project.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   project.UpdatedAt,
+		CreatedAt:   project.CreatedAt,
 	})
 }
