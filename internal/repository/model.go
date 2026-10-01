@@ -1,7 +1,8 @@
 package repository
 
 import (
-	"uuid"
+	"time"
+	stdlibuuid "uuid"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 	"gorm.io/gorm"
@@ -9,15 +10,15 @@ import (
 
 type Project struct {
 	gorm.Model
-	ID          uuid.UUID `gorm:"primaryKey,type:uuid"`
-	ShareToken  string    `gorm:"unique"`
-	AdminToken  string    `gorm:"unique"`
+	ID          stdlibuuid.UUID `gorm:"primaryKey,type:uuid"`
+	ShareToken  string          `gorm:"unique"`
+	AdminToken  string          `gorm:"unique"`
 	Description string
 	UploadUsers []UploadUser
 }
 
 func (p *Project) BeforeCreate(tx *gorm.DB) error {
-	newUuid := uuid.NewV7()
+	newUuid := stdlibuuid.NewV7()
 	p.ID = newUuid
 
 	defaultTokenLength := 16
@@ -40,27 +41,54 @@ func (p *Project) BeforeCreate(tx *gorm.DB) error {
 
 type UploadUser struct {
 	gorm.Model
-	ID        uuid.UUID `gorm:"primaryKey,type:uuid"`
-	Name      string
-	ProjectID uuid.UUID
+	ID         stdlibuuid.UUID `gorm:"primaryKey,type:uuid"`
+	Name       string
+	ProjectID  stdlibuuid.UUID
+	ImageFiles []ImageFile
+	VideoFiles []VideoFile
 }
 
 func (u *UploadUser) BeforeCreate(tx *gorm.DB) (err error) {
-	newUuid := uuid.NewV7()
+	newUuid := stdlibuuid.NewV7()
 	u.ID = newUuid
 	return
 }
 
-type ImageFile struct {
+type MediaFile struct {
 	gorm.Model
-	UserID         uuid.UUID
-	FilepathOnDisk string
+	ID               stdlibuuid.UUID `gorm:"primaryKey,type:uuid"`
+	UserID           stdlibuuid.UUID
+	ProjectID        stdlibuuid.UUID
+	OriginalFilename string
+}
+
+func (m *MediaFile) BeforeCreate(tx *gorm.DB) (err error) {
+	newUuid := stdlibuuid.NewV7()
+	m.ID = newUuid
+	return
+}
+
+type VideoFile struct {
+	MediaFile
+	VideoMetadata
+}
+
+type ImageFile struct {
+	MediaFile
 	ImageMetadata
 }
 
 type ImageMetadata struct {
 	Width     int64
 	Height    int64
+	Codec     string
+	Container string
+}
+
+type VideoMetadata struct {
+	Width     int64
+	Height    int64
+	Duration  time.Duration
 	Codec     string
 	Container string
 }
