@@ -6,6 +6,9 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	stdlibuuid "uuid"
+
+	googleuuid "github.com/google/uuid"
 )
 
 func ParseLogLevelFromString(levelStr string) (slog.Level, error) {
@@ -51,4 +54,8 @@ func CheckFileAccess(path string) error {
 // log out pointers for debug purposes.
 func LogPtr[T any](ptr *T) {
 	slog.Debug(fmt.Sprintf("Pointer debugging: %T %v %p %v", ptr, &ptr, ptr, *ptr))
+}
+
+func ToGoogleUUID(id stdlibuuid.UUID) googleuuid.UUID {
+	return googleuuid.UUID(id)
 }
