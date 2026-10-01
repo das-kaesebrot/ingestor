@@ -53,6 +53,67 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+  /projects/{token}/media:
+    post:
+      summary: Upload media to a project
+      operationId: uploadMedia
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          $ref: '#/components/responses/MediaResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /projects/{token}/media/{media-id}:
+    get:
+      summary: Get media metadata
+      operationId: getMedia
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+        - $ref: '#/components/parameters/MediaId'
+      responses:
+        "200":
+          $ref: '#/components/responses/MediaResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update media metadata
+      operationId: updateMedia
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+        - $ref: '#/components/parameters/MediaId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaUpdate'
+      responses:
+        "200":
+          $ref: '#/components/responses/MediaResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
   /projects/admin/{token}:
     put:
       summary: Fully update a project
@@ -108,6 +169,20 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+  /projects/admin/{token}/media/{media-id}:
+    delete:
+      summary: Delete media from a project
+      operationId: deleteMedia
+      parameters:
+        - $ref: '#/components/parameters/AdminToken'
+        - $ref: '#/components/parameters/MediaId'
+      responses:
+        "204":
+          description: "The media was deleted"
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
 components:
   parameters:
     ShareToken:
@@ -122,6 +197,12 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Token'
+    MediaId:
+      name: media-id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/MediaId'
     Page:
       name: page
       in: query
@@ -164,6 +245,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PagedProjects'
+    MediaResponse:
+      description: "Media metadata"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Media'
     NotFound:
       description: "The requested project was not found"
       content:
@@ -211,12 +298,28 @@ components:
     ProjectId:
       type: string
       format: uuid
-    RequestId:
+    MediaId:
       type: string
       format: uuid
     Token:
       type: string
       pattern: "[abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789]{16}"
+    RequestId:
+      type: string
+      format: uuid
+    ErrorResponse:
+      type: object
+      required: [message, code]
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        traceback:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
     ProblemDetails:
       # https://www.rfc-editor.org/info/rfc9457/
       type: object
@@ -268,3 +371,67 @@ components:
           type: integer
         total:
           type: integer
+    Image:
+      type: object
+      required: [id, type, original_filename, generated_filename, width, height, image_codec]
+      properties:
+        id:
+          $ref: '#/components/schemas/MediaId'
+        type:
+          type: string
+          enum: [image]
+        original_filename:
+          type: string
+        generated_filename:
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer
+        image_codec:
+          type: string
+        time_correction_offset:
+          type: string
+          format: duration
+    Video:
+      type: object
+      required: [id, type, original_filename, generated_filename, width, height, length, video_codec]
+      properties:
+        id:
+          $ref: '#/components/schemas/MediaId'
+        type:
+          type: string
+          enum: [video]
+        original_filename:
+          type: string
+        generated_filename:
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer
+        length:
+          type: string
+          format: duration
+        video_codec:
+          type: string
+        time_correction_offset:
+          type: string
+          format: duration
+    Media:
+      oneOf:
+        - $ref: '#/components/schemas/Image'
+        - $ref: '#/components/schemas/Video'
+      discriminator:
+        propertyName: type
+        mapping:
+          image: '#/components/schemas/Image'
+          video: '#/components/schemas/Video'
+    MediaUpdate:
+      type: object
+      properties:
+        original_filename:
+          type: string
+        time_correction_offset:
+          type: string
+          format: duration
