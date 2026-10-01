@@ -279,7 +279,7 @@ components:
           enum: ["pong"]
     Project:
       type: object
-      required: [id, share_token, description, updated_at, created_at]
+      required: [id, share_token, description, filename_format, updated_at, created_at]
       properties:
         id:
           $ref: '#/components/schemas/ProjectId'
@@ -289,6 +289,8 @@ components:
           $ref: '#/components/schemas/Token'
         description:
           type: string
+        filename_format:
+          $ref: '#/components/schemas/FilenameFormat'
         updated_at:
           type: string
           format: date-time
@@ -352,11 +354,15 @@ components:
       properties:
         description:
           type: string
+        filename_format:
+          $ref: '#/components/schemas/FilenameFormat'
     ProjectPatch:
       type: object
       properties:
         description:
           type: string
+        filename_format:
+          $ref: '#/components/schemas/FilenameFormat'
     PagedProjects:
       type: object
       required: [projects, page, per_page, total]
@@ -435,3 +441,6 @@ components:
         time_correction_offset:
           type: string
           format: duration
+    FilenameFormat:
+      type: string
+      description: "A time format that follows the go Time.Format specification. See https://pkg.go.dev/time#Layout"
