@@ -23,7 +23,7 @@ func TestTokenGenerator(t *testing.T) {
 		token, err := GenerateRandomToken(tt.length, tt.alphabet)
 
 		if err != nil {
-			t.Errorf("Token generator returned error, %w", err)
+			t.Errorf("Token generator returned error, %v", err)
 		}
 
 		if len(token) != tt.length {
