@@ -53,6 +53,72 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+  /projects/{token}/users:
+    get:
+      summary: List a project's users (paged)
+      operationId: listUsers
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/ShareToken'
+      responses:
+        "200":
+          $ref: '#/components/responses/PagedUsersResponse'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create a new project user
+      operationId: createUser
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        "201":
+          $ref: '#/components/responses/UserResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /projects/{token}/users/{user-id}:
+    get:
+      summary: Get a project's user by id
+      operationId: getUser
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        "200":
+          $ref: '#/components/responses/UserResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update a user
+      operationId: patchUser
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        "200":
+          $ref: '#/components/responses/UserResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
   /projects/{token}/media:
     post:
       summary: Upload media to a project
@@ -203,6 +269,12 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/MediaId'
+    UserId:
+      name: user-id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UserId'
     Page:
       name: page
       in: query
@@ -239,12 +311,24 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Project'
+    UserResponse:
+      description: "A single user"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
     PagedProjectsResponse:
       description: "A page of projects"
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PagedProjects'
+    PagedUsersResponse:
+      description: "A page of users for a project"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PagedUsers'
     MediaResponse:
       description: "Media metadata"
       content:
@@ -288,9 +372,23 @@ components:
         admin_token:
           $ref: '#/components/schemas/Token'
         description:
-          type: string
+          $ref: '#/components/schemas/ProjectDescription'
         filename_format:
           $ref: '#/components/schemas/FilenameFormat'
+        updated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+    User:
+      type: object
+      required: [id, name, updated_at, created_at]
+      properties:
+        id:
+          $ref: '#/components/schemas/UserId'
+        name:
+          $ref: '#/components/schemas/Username'
         updated_at:
           type: string
           format: date-time
@@ -301,6 +399,9 @@ components:
       type: string
       format: uuid
     MediaId:
+      type: string
+      format: uuid
+    UserId:
       type: string
       format: uuid
     Token:
@@ -353,14 +454,14 @@ components:
       required: [description]
       properties:
         description:
-          type: string
+          $ref: '#/components/schemas/ProjectDescription'
         filename_format:
           $ref: '#/components/schemas/FilenameFormat'
     ProjectPatch:
       type: object
       properties:
         description:
-          type: string
+          $ref: '#/components/schemas/ProjectDescription'
         filename_format:
           $ref: '#/components/schemas/FilenameFormat'
     PagedProjects:
@@ -377,6 +478,26 @@ components:
           type: integer
         total:
           type: integer
+    PagedUsers:
+      type: object
+      required: [users, page, per_page, total]
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+    NewUser:
+      type: object
+      required: [name]
+      properties:
+        name:
+          $ref: '#/components/schemas/Username'
     Image:
       type: object
       required: [id, type, original_filename, generated_filename, width, height, image_codec]
@@ -441,6 +562,18 @@ components:
         time_correction_offset:
           type: string
           format: duration
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/Username'
     FilenameFormat:
       type: string
       description: "A time format that follows the go Time.Format specification. See https://pkg.go.dev/time#Layout"
+    ProjectDescription:
+      type: string
+      maxLength: 64
+    Username:
+      type: string
+      description: "A user's name"
+      pattern: "[a-zA-Z0-9]{32}"
