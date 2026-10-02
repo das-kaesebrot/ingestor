@@ -1,3 +1,4 @@
+import { heyApiPlugin } from '@hey-api/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
@@ -5,6 +6,12 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [
+		heyApiPlugin({
+			config: {
+				input: '../../openapi.yaml',
+				output: 'src/lib/client',
+			},
+		}),
 		tailwindcss(),
 		sveltekit({
 			compilerOptions: {
