@@ -558,7 +558,7 @@ components:
           $ref: '#/components/schemas/Username'
     Image:
       type: object
-      required: [id, type, original_filename, generated_filename, width, height, image_codec]
+      required: [id, type, original_filename, generated_filename, width, height, image_codec, original_capture_time, time_correction_offset]
       properties:
         id:
           $ref: '#/components/schemas/MediaId'
@@ -575,12 +575,15 @@ components:
           type: integer
         image_codec:
           type: string
+        original_capture_time:
+          type: string
+          format: date-time
         time_correction_offset:
           type: string
           format: duration
     Video:
       type: object
-      required: [id, type, original_filename, generated_filename, width, height, length, video_codec]
+      required: [id, type, original_filename, generated_filename, width, height, length, video_codec, original_capture_time, time_correction_offset]
       properties:
         id:
           $ref: '#/components/schemas/MediaId'
@@ -600,6 +603,9 @@ components:
           format: duration
         video_codec:
           type: string
+        original_capture_time:
+          type: string
+          format: date-time
         time_correction_offset:
           type: string
           format: duration
