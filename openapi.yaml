@@ -505,6 +505,16 @@ components:
           format: uri-reference
           description: A URI reference that identifies the specific occurrence of the problem.
       additionalProperties: true
+    Page:
+      type: object
+      required: [page_num, per_page, total]
+      properties:
+        page_num:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
     NewProject:
       type: object
       required: [description]
@@ -522,32 +532,24 @@ components:
           $ref: '#/components/schemas/FilenameFormat'
     PagedProjects:
       type: object
-      required: [projects, page, per_page, total]
+      required: [projects, page]
       properties:
+        page:
+          $ref: '#/components/schemas/Page'
         projects:
           type: array
           items:
             $ref: '#/components/schemas/Project'
-        page:
-          type: integer
-        per_page:
-          type: integer
-        total:
-          type: integer
     PagedUsers:
       type: object
-      required: [users, page, per_page, total]
+      required: [users, page]
       properties:
         users:
           type: array
           items:
             $ref: '#/components/schemas/User'
         page:
-          type: integer
-        per_page:
-          type: integer
-        total:
-          type: integer
+          $ref: '#/components/schemas/Page'
     NewUser:
       type: object
       required: [name]
