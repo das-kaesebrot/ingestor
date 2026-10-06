@@ -406,7 +406,7 @@ components:
       format: uuid
     Token:
       type: string
-      pattern: "[abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789]{16}"
+      pattern: "^[abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789]{16}$"
     RequestId:
       type: string
       format: uuid
@@ -576,4 +576,4 @@ components:
     Username:
       type: string
       description: "A user's name"
-      pattern: "[a-zA-Z0-9]{32}"
+      pattern: "^[a-zA-Z0-9]{32}$"
