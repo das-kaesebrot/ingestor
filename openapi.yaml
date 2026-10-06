@@ -264,6 +264,39 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+  /projects/admin/{admin-token}/user/{user-id}:
+    delete:
+      summary: Delete a user from a project
+      operationId: deleteProjectUser
+      parameters:
+        - $ref: '#/components/parameters/AdminToken'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        "204":
+          description: "The user was deleted"
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /projects/admin/{admin-token}/media/delete:
+    post:
+      summary: Delete media from a project (batched)
+      operationId: deleteProjectMediaBatched
+      parameters:
+        - $ref: '#/components/parameters/AdminToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaBatchDeletionRequest'
+      responses:
+        "204":
+          description: "The media files were deleted"
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
   /projects/admin/{admin-token}/media/{media-id}:
     delete:
       summary: Delete media from a project
@@ -530,6 +563,13 @@ components:
           $ref: '#/components/schemas/ProjectDescription'
         filename_format:
           $ref: '#/components/schemas/FilenameFormat'
+    MediaBatchDeletionRequest:
+      type: object
+      properties:
+        media_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaId'
     PagedProjects:
       type: object
       required: [projects, page]
