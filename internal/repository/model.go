@@ -56,10 +56,12 @@ func (u *UploadUser) BeforeCreate(tx *gorm.DB) (err error) {
 
 type MediaFile struct {
 	gorm.Model
-	ID               stdlibuuid.UUID `gorm:"primaryKey,type:uuid"`
-	UserID           stdlibuuid.UUID
-	ProjectID        stdlibuuid.UUID
-	OriginalFilename string
+	ID                      stdlibuuid.UUID `gorm:"primaryKey,type:uuid"`
+	UploadUserID            stdlibuuid.UUID
+	ProjectID               stdlibuuid.UUID
+	OriginalFilename        string
+	CaptureTime             time.Time
+	CaptureCorrectionOffset time.Duration
 }
 
 func (m *MediaFile) BeforeCreate(tx *gorm.DB) (err error) {
