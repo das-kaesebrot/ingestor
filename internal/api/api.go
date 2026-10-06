@@ -71,12 +71,15 @@ func (h *APIHandler) PostCreateNewProject(w http.ResponseWriter, r *http.Request
 	return writeJSON(w, ProjectResponseFromProject(*project, true))
 }
 
-func writeJSON(w http.ResponseWriter, object any) error {
+func writeJSON(w http.ResponseWriter, status int, object any) {
 	jData, err := json.Marshal(object)
 	if err != nil {
-		return err
+		panic(err)
 	}
+	w.WriteHeader(status)
 	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write(jData)
-	return err
+	if err != nil {
+		panic(err)
+	}
 }
