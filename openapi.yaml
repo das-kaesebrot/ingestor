@@ -138,7 +138,7 @@ paths:
                   format: binary
       responses:
         "201":
-          $ref: '#/components/responses/MediaResponse'
+          $ref: '#/components/responses/MediaMetadataResponse'
         "400":
           $ref: '#/components/responses/BadRequest'
         "404":
@@ -168,7 +168,7 @@ paths:
         - $ref: '#/components/parameters/MediaId'
       responses:
         "200":
-          $ref: '#/components/responses/MediaResponse'
+          $ref: '#/components/responses/MediaMetadataResponse'
         "404":
           $ref: '#/components/responses/NotFound'
         "500":
@@ -184,10 +184,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MediaUpdate'
+              $ref: '#/components/schemas/MediaMetadataUpdate'
       responses:
         "200":
-          $ref: '#/components/responses/MediaResponse'
+          $ref: '#/components/responses/MediaMetadataResponse'
         "400":
           $ref: '#/components/responses/BadRequest'
         "404":
@@ -385,12 +385,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PagedUsers'
-    MediaResponse:
+    MediaMetadataResponse:
       description: "Media metadata"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Media'
+            $ref: '#/components/schemas/MediaMetadata'
     NotFound:
       description: "The requested object was not found"
       content:
@@ -556,7 +556,7 @@ components:
       properties:
         name:
           $ref: '#/components/schemas/Username'
-    Image:
+    ImageMetadata:
       type: object
       required: [id, type, original_filename, generated_filename, width, height, image_codec, original_capture_time, time_correction_offset]
       properties:
@@ -581,7 +581,7 @@ components:
         time_correction_offset:
           type: string
           format: duration
-    Video:
+    VideoMetadata:
       type: object
       required: [id, type, original_filename, generated_filename, width, height, length, video_codec, original_capture_time, time_correction_offset]
       properties:
@@ -609,16 +609,16 @@ components:
         time_correction_offset:
           type: string
           format: duration
-    Media:
+    MediaMetadata:
       oneOf:
-        - $ref: '#/components/schemas/Image'
-        - $ref: '#/components/schemas/Video'
+        - $ref: '#/components/schemas/ImageMetadata'
+        - $ref: '#/components/schemas/VideoMetadata'
       discriminator:
         propertyName: type
         mapping:
-          image: '#/components/schemas/Image'
-          video: '#/components/schemas/Video'
-    MediaUpdate:
+          image: '#/components/schemas/ImageMetadata'
+          video: '#/components/schemas/VideoMetadata'
+    MediaMetadataUpdate:
       type: object
       properties:
         original_filename:
