@@ -43,7 +43,7 @@ paths:
   /projects/{token}:
     get:
       summary: Get a project by share token
-      operationId: getRequest
+      operationId: getProjectByShareToken
       parameters:
         - $ref: '#/components/parameters/ShareToken'
       responses:
@@ -56,7 +56,7 @@ paths:
   /projects/{token}/users:
     get:
       summary: List a project's users (paged)
-      operationId: listUsers
+      operationId: listProjectUsers
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PerPage'
@@ -68,7 +68,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
     post:
       summary: Create a new project user
-      operationId: createUser
+      operationId: createProjectUser
       parameters:
         - $ref: '#/components/parameters/ShareToken'
       requestBody:
@@ -87,7 +87,7 @@ paths:
   /projects/{token}/users/{user-id}:
     get:
       summary: Get a project's user by id
-      operationId: getUser
+      operationId: getProjectUser
       parameters:
         - $ref: '#/components/parameters/ShareToken'
         - $ref: '#/components/parameters/UserId'
@@ -100,7 +100,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
     patch:
       summary: Update a user
-      operationId: patchUser
+      operationId: patchProjectUser
       parameters:
         - $ref: '#/components/parameters/ShareToken'
         - $ref: '#/components/parameters/UserId'
@@ -122,7 +122,7 @@ paths:
   /projects/{token}/media:
     post:
       summary: Upload media to a project
-      operationId: uploadMedia
+      operationId: uploadProjectMedia
       parameters:
         - $ref: '#/components/parameters/ShareToken'
       requestBody:
@@ -148,7 +148,7 @@ paths:
   /projects/{token}/media/{media-id}:
     get:
       summary: Get media metadata
-      operationId: getMedia
+      operationId: getProjectMedia
       parameters:
         - $ref: '#/components/parameters/ShareToken'
         - $ref: '#/components/parameters/MediaId'
@@ -161,7 +161,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
     patch:
       summary: Update media metadata
-      operationId: updateMedia
+      operationId: updateProjectMedia
       parameters:
         - $ref: '#/components/parameters/ShareToken'
         - $ref: '#/components/parameters/MediaId'
@@ -238,7 +238,7 @@ paths:
   /projects/admin/{token}/media/{media-id}:
     delete:
       summary: Delete media from a project
-      operationId: deleteMedia
+      operationId: deleteProjectMedia
       parameters:
         - $ref: '#/components/parameters/AdminToken'
         - $ref: '#/components/parameters/MediaId'
