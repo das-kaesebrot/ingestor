@@ -88,9 +88,9 @@ func main() {
 	if err != nil {
 		utility.HandleErr("Error while creating sub FS for static file server", err)
 	}
-	mux.Handle(apiPrefix+"/", a.APIMux())
 	mux.Handle("/", http.FileServerFS(staticFS))
+	h := api.HandlerFromMuxWithBaseURL(a, mux, apiPrefix)
 
 	slog.Info("Server ready", "host", host, "port", port)
-	http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), mux)
+	http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), h)
 }
