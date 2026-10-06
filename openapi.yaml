@@ -145,6 +145,19 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+  /projects/{share-token}/media/download:
+    get:
+      summary: Download a project's media
+      operationId: downloadProjectMediaArchive
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+      responses:
+        "200":
+          $ref: '#/components/responses/ProjectMediaArchiveDownloadResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
   /projects/{share-token}/media/{media-id}:
     get:
       summary: Get media metadata
@@ -176,6 +189,20 @@ paths:
           $ref: '#/components/responses/MediaResponse'
         "400":
           $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /projects/{share-token}/media/{media-id}/download:
+    get:
+      summary: Download a media file
+      operationId: downloadProjectMediaFile
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+        - $ref: '#/components/parameters/MediaId'
+      responses:
+        "200":
+          $ref: '#/components/responses/ProjectMediaDownloadResponse'
         "404":
           $ref: '#/components/responses/NotFound'
         "500":
@@ -305,6 +332,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Pong'
+    ProjectMediaArchiveDownloadResponse:
+      description: "All media in a project, archived as a zip file"
+      content:
+        application/octet-stream:
+          schema:
+            $ref: '#/components/schemas/DownloadFile'
+    ProjectMediaDownloadResponse:
+      description: "A single media file"
+      content:
+        application/octet-stream:
+          schema:
+            $ref: '#/components/schemas/DownloadFile'
     ProjectResponse:
       description: "A single project"
       content:
@@ -577,3 +616,6 @@ components:
       type: string
       description: "A user's name"
       pattern: "^[a-zA-Z0-9]{32}$"
+    DownloadFile:
+      type: string
+      format: binary
