@@ -392,7 +392,7 @@ components:
           schema:
             $ref: '#/components/schemas/Media'
     NotFound:
-      description: "The requested project was not found"
+      description: "The requested object was not found"
       content:
         application/problem+json:
           schema:
