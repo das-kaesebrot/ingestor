@@ -40,7 +40,7 @@ paths:
           $ref: '#/components/responses/BadRequest'
         "500":
           $ref: '#/components/responses/InternalServerError'
-  /projects/{token}:
+  /projects/{share-token}:
     get:
       summary: Get a project by share token
       operationId: getProjectByShareToken
@@ -53,7 +53,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
-  /projects/{token}/users:
+  /projects/{share-token}/users:
     get:
       summary: List a project's users (paged)
       operationId: listProjectUsers
@@ -84,7 +84,7 @@ paths:
           $ref: '#/components/responses/BadRequest'
         "500":
           $ref: '#/components/responses/InternalServerError'
-  /projects/{token}/users/{user-id}:
+  /projects/{share-token}/users/{user-id}:
     get:
       summary: Get a project's user by id
       operationId: getProjectUser
@@ -119,7 +119,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
-  /projects/{token}/media:
+  /projects/{share-token}/media:
     post:
       summary: Upload media to a project
       operationId: uploadProjectMedia
@@ -145,7 +145,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
-  /projects/{token}/media/{media-id}:
+  /projects/{share-token}/media/{media-id}:
     get:
       summary: Get media metadata
       operationId: getProjectMedia
@@ -180,7 +180,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
-  /projects/admin/{token}:
+  /projects/admin/{admin-token}:
     put:
       summary: Fully update a project
       operationId: updateProject
@@ -235,7 +235,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
-  /projects/admin/{token}/media/{media-id}:
+  /projects/admin/{admin-token}/media/{media-id}:
     delete:
       summary: Delete media from a project
       operationId: deleteProjectMedia
@@ -252,13 +252,13 @@ paths:
 components:
   parameters:
     ShareToken:
-      name: token
+      name: share-token
       in: path
       required: true
       schema:
         $ref: '#/components/schemas/Token'
     AdminToken:
-      name: token
+      name: admin-token
       in: path
       required: true
       schema:
