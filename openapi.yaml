@@ -341,9 +341,18 @@ components:
           schema:
             $ref: '#/components/schemas/Pong'
     ProjectMediaArchiveDownloadResponse:
-      description: "All media in a project, archived as a zip file"
+      description: "All media in a project, archived as a zip or tar file. If mime type is application/octet-stream, the zip file is served."
       content:
         application/octet-stream:
+          schema:
+            $ref: '#/components/schemas/DownloadFile'
+        application/x-tar:
+          schema:
+            $ref: '#/components/schemas/DownloadFile'
+        application/gzip:
+          schema:
+            $ref: '#/components/schemas/DownloadFile'
+        application/zip:
           schema:
             $ref: '#/components/schemas/DownloadFile'
     ProjectMediaDownloadResponse:
