@@ -151,6 +151,7 @@ paths:
       operationId: downloadProjectMediaArchive
       parameters:
         - $ref: '#/components/parameters/ShareToken'
+        - $ref: '#/components/parameters/FilenameFormat'
       responses:
         "200":
           $ref: '#/components/responses/ProjectMediaArchiveDownloadResponse'
@@ -200,6 +201,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/ShareToken'
         - $ref: '#/components/parameters/MediaId'
+        - $ref: '#/components/parameters/FilenameFormat'
       responses:
         "200":
           $ref: '#/components/responses/ProjectMediaDownloadResponse'
@@ -318,7 +320,13 @@ components:
         type: integer
         minimum: 1
         maximum: 100
-        default: 20
+        default: 2
+    FilenameFormat:
+      name: filename_format
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/FilenameFormat'
     RequestId:
       name: X-Request-ID
       in: header
