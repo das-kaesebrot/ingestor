@@ -15,8 +15,8 @@ paths:
       summary: List projects (paged)
       operationId: listProjects
       parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/PageNum'
+        - $ref: '#/components/parameters/PageSize'
       responses:
         "200":
           $ref: '#/components/responses/PagedProjectsResponse'
@@ -58,8 +58,8 @@ paths:
       summary: List a project's users (paged)
       operationId: listProjectUsers
       parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/PageNum'
+        - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/ShareToken'
       responses:
         "200":
@@ -304,7 +304,7 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/UserId'
-    Page:
+    PageNum:
       name: page
       in: query
       required: false
@@ -312,7 +312,7 @@ components:
         type: integer
         minimum: 1
         default: 1
-    PerPage:
+    PageSize:
       name: per_page
       in: query
       required: false
