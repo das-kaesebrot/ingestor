@@ -760,7 +760,7 @@ components:
     Username:
       type: string
       description: "A user's name"
-      pattern: "^[a-zA-Z0-9]{32}$"
+      pattern: "^[a-zA-Z0-9\\s_-]{32}$"
     DownloadFile:
       type: string
       format: binary
