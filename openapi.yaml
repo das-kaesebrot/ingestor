@@ -471,7 +471,7 @@ components:
           enum: ["pong"]
     Project:
       type: object
-      required: [id, share_token, description, filename_format, updated_at, created_at]
+      required: [id, share_token, description, filename_format, start, end, expires_at, updated_at, created_at]
       properties:
         id:
           $ref: '#/components/schemas/ProjectId'
@@ -483,6 +483,12 @@ components:
           $ref: '#/components/schemas/ProjectDescription'
         filename_format:
           $ref: '#/components/schemas/FilenameFormat'
+        start:
+          $ref: '#/components/schemas/ProjectStart'
+        end:
+          $ref: '#/components/schemas/ProjectEnd'
+        expires_at:
+          $ref: '#/components/schemas/ProjectExpiry'
         updated_at:
           type: string
           format: date-time
@@ -582,6 +588,12 @@ components:
           $ref: '#/components/schemas/ProjectDescription'
         filename_format:
           $ref: '#/components/schemas/FilenameFormat'
+        start:
+          $ref: '#/components/schemas/ProjectStart'
+        end:
+          $ref: '#/components/schemas/ProjectEnd'
+        expires_at:
+          $ref: '#/components/schemas/ProjectExpiry'
     MediaBatchDeletionRequest:
       type: object
       properties:
@@ -706,6 +718,18 @@ components:
     ProjectDescription:
       type: string
       maxLength: 64
+    ProjectStart:
+      type: string
+      format: date-time
+      description: 'The start date and time of the project (event). Used for finding media that does not fall into the project time range.'
+    ProjectEnd:
+      type: string
+      format: date-time
+      description: 'The end date and time of the project (event). Used for finding media that does not fall into the project time range.'
+    ProjectExpiry:
+      type: string
+      format: date-time
+      description: 'Expiry date for the project. After that time, the project is automatically deleted.'
     Username:
       type: string
       description: "A user's name"
