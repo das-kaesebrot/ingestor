@@ -120,6 +120,19 @@ paths:
         "500":
           $ref: '#/components/responses/InternalServerError'
   /projects/{share-token}/media:
+    get:
+      summary: List a project's media (paged)
+      operationId: listProjectMediaMetadata
+      parameters:
+        - $ref: '#/components/parameters/PageNum'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/ShareToken'
+      responses:
+        "200":
+          $ref: '#/components/responses/PagedMediaMetadataResponse'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /projects/{share-token}/media/upload:
     post:
       summary: Upload media to a project
       operationId: uploadProjectMedia
@@ -418,6 +431,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PagedUsers'
+    PagedMediaMetadataResponse:
+      description: "A page of media metadata"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PagedMediaMetadata'
     MediaMetadataResponse:
       description: "Media metadata"
       content:
@@ -580,6 +599,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Project'
+    PagedMediaMetadata:
+      type: object
+      required: [media_metadata, page]
+      properties:
+        page:
+          $ref: '#/components/schemas/Page'
+        media_metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaMetadata'
     PagedUsers:
       type: object
       required: [users, page]
