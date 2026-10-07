@@ -207,6 +207,26 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+  /projects/{share-token}/media/{media-id}/sync:
+    post:
+      summary: Synchronise the capture time of one or more media files to the media file in the path.
+      operationId: syncProjectMediaFile
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+        - $ref: '#/components/parameters/MediaId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaMetadataTimesync'
+      responses:
+        "200":
+          $ref: '#/components/responses/PagedMediaMetadataResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
   /projects/{share-token}/media/{media-id}/download:
     get:
       summary: Download a media file
@@ -707,6 +727,13 @@ components:
         time_correction_offset:
           type: string
           format: duration
+    MediaMetadataTimesync:
+      type: object
+      properties:
+        media_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaId'
     UserUpdate:
       type: object
       properties:
