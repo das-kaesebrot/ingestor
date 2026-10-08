@@ -10,7 +10,9 @@ tags:
   - name: users
     description: Poject user operations for share token clients.
   - name: media
-    description: Poject media operations for share token clients. Includes download and upload.
+    description: Poject media operations for share token clients.
+  - name: download
+    description: Poject download media operations for share token clients.
   - name: jobs
     description: Poject job operations for share token clients.
   - name: admin-projects
@@ -235,7 +237,49 @@ paths:
         "500":
           $ref: '#/components/responses/InternalServerError'
       tags:
-        - media
+        - download
+  /projects/{share-token}/media/download/filtered:
+    post:
+      summary: Create a custom filtered download archive
+      operationId: createDownloadProjectFilteredMediaArchive
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewFilteredDownload'
+      responses:
+        "200":
+          $ref: '#/components/responses/FilteredDownloadResponse'
+        "403":
+          $ref: '#/components/responses/DownloadNotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+      tags:
+        - download
+  /projects/{share-token}/media/download/filtered/{download-token}:
+    get:
+      summary: Download a custom filtered download archive
+      operationId: downloadProjectFilteredMediaArchive
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+        - $ref: '#/components/parameters/FilteredDownloadToken'
+        - $ref: '#/components/parameters/FilenameFormat'
+      responses:
+        "200":
+          $ref: '#/components/responses/ProjectMediaArchiveDownloadResponse'
+        "403":
+          $ref: '#/components/responses/DownloadNotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+      tags:
+        - download
   /projects/{share-token}/media/{media-id}:
     get:
       summary: Get media metadata
@@ -299,7 +343,7 @@ paths:
         - media
   /projects/{share-token}/media/{media-id}/download:
     get:
-      summary: Download a media file
+      summary: Download a media single file
       operationId: downloadProjectMediaFile
       parameters:
         - $ref: '#/components/parameters/ShareToken'
@@ -315,7 +359,7 @@ paths:
         "500":
           $ref: '#/components/responses/InternalServerError'
       tags:
-        - media
+        - download
   /projects/admin/{admin-token}:
     patch:
       summary: Partially update a project
@@ -433,6 +477,12 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/UserId'
+    FilteredDownloadToken:
+      name: download-token
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/FilteredDownloadToken'
     PageNum:
       name: page
       in: query
@@ -486,7 +536,7 @@ components:
           schema:
             $ref: '#/components/schemas/Pong'
     ProjectMediaArchiveDownloadResponse:
-      description: "All media in a project, archived as a zip or tar file. If mime type is application/octet-stream, the zip file is served."
+      description: "Project media, archived as a zip or tar file. If mime type is application/octet-stream, the zip file is served."
       content:
         application/octet-stream:
           schema:
@@ -518,6 +568,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/User'
+    FilteredDownloadResponse:
+      description: "A single filtered download"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FilteredDownload'
     PagedProjectsResponse:
       description: "A page of projects"
       content:
@@ -659,6 +715,8 @@ components:
     JobId:
       type: string
       format: uuid
+    FilteredDownloadToken:
+      $ref: '#/components/schemas/Token'
     Token:
       type: string
       pattern: "^[abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789]{16}$"
@@ -867,6 +925,61 @@ components:
       properties:
         name:
           $ref: '#/components/schemas/Username'
+    NewFilteredDownload:
+      type: object
+      required: [included_media_ids, excluded_media_ids, included_user_ids, excluded_user_ids]
+      properties:
+        included_media_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaId'
+        excluded_media_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaId'
+        included_user_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserId'
+        excluded_user_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserId'
+        capture_time_start:
+          $ref: '#/components/schemas/CaptureRangeStartInclusive'
+        capture_time_end:
+          $ref: '#/components/schemas/CaptureRangeEndExclusive'
+        expires_at:
+          $ref: '#/components/schemas/FilteredDownloadExpiry'
+    FilteredDownload:
+      type: object
+      required: [download_token, included_media_ids, excluded_media_ids, included_user_ids, excluded_user_ids, capture_time_start, capture_time_end, expires_at]
+      properties:
+        download_token:
+          $ref: '#/components/schemas/FilteredDownloadToken'
+        included_media_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaId'
+        excluded_media_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaId'
+        included_user_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserId'
+        excluded_user_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserId'
+        capture_time_start:
+          $ref: '#/components/schemas/CaptureRangeStartInclusive'
+        capture_time_end:
+          $ref: '#/components/schemas/CaptureRangeEndExclusive'
+        expires_at:
+          type: string
+          format: date-time
     FilenameFormat:
       type: string
       description: "A time format that follows the go Time.Format specification. See https://pkg.go.dev/time#Layout"
@@ -885,6 +998,18 @@ components:
       type: string
       format: date-time
       description: 'Expiry date for the project. After that time, the project is automatically deleted.'
+    CaptureRangeStartInclusive:
+      type: string
+      format: date-time
+      description: 'Exclude media that has a capture time (with correction offset) before this time.'
+    CaptureRangeEndExclusive:
+      type: string
+      format: date-time
+      description: 'Exclude media that has a capture time (with correction offset) at or after this time.'
+    FilteredDownloadExpiry:
+      type: string
+      format: date-time
+      description: 'The time at or after the prepared download link will automatically be deleted. Does not influence any media deletions.'
     ProjectShareTokenPermission:
       type: string
       description: 'The actions allowed to perform via the share token.'
