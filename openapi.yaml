@@ -6,23 +6,23 @@ tags:
   - name: system
     description: General system operations.
   - name: projects
-    description: Poject operations for share token clients.
+    description: Project operations for share token clients.
   - name: users
-    description: Poject user operations for share token clients.
+    description: Project user operations for share token clients.
   - name: media
-    description: Poject media operations for share token clients.
+    description: Project media operations for share token clients.
   - name: download
-    description: Poject download media operations for share token clients.
+    description: Project download media operations for share token clients.
   - name: jobs
-    description: Poject job operations for share token clients.
+    description: Project job operations for share token clients.
   - name: admin-projects
-    description: Poject operations for admin clients.
+    description: Project operations for admin clients.
   - name: admin-users
-    description: Poject user operations for admin clients.
+    description: Project user operations for admin clients.
   - name: admin-media
-    description: Poject media operations for admin clients.
+    description: Project media operations for admin clients.
   - name: admin-jobs
-    description: Poject job operations for admin clients.
+    description: Project job operations for admin clients.
 paths:
   /ping:
     get:
