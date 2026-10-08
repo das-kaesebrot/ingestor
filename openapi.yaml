@@ -33,6 +33,15 @@ paths:
           $ref: '#/components/responses/PingResponse'
       tags:
         - system
+  /capabilities:
+    get:
+      summary: Get all system capabilities
+      operationId: getSystemCapabilities
+      responses:
+        "200":
+          $ref: '#/components/responses/SystemCapabilitiesResponse'
+      tags:
+        - system
   /projects:
     get:
       summary: List projects (paged)
@@ -535,6 +544,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Pong'
+    SystemCapabilitiesResponse:
+      description: "The system's capabilities, such as supported transcoding qualities."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SystemCapabilities'
     ProjectMediaArchiveDownloadResponse:
       description: "Project media, archived as a zip or tar file. If mime type is application/octet-stream, the zip file is served."
       content:
@@ -642,6 +657,19 @@ components:
         message:
           type: string
           enum: ["pong"]
+    SystemCapabilities:
+      type: object
+      required: [supported_transcoding_presets, ffmpeg_path, ffmpeg_version]
+      properties:
+        supported_transcoding_presets:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscodePreset'
+        ffmpeg_path:
+          type: string
+        ffmpeg_version:
+          type: string
+          description: 'The ffmpeg version, as reported by ffmpeg -version'
     Project:
       type: object
       required: [id, share_token, description, share_token_permissions, start, end, expires_at, updated_at, created_at]
@@ -1020,6 +1048,19 @@ components:
       type: string
       description: "A user's name"
       pattern: "^[a-zA-Z0-9\\s_-]{32}$"
+    TranscodePreset:
+      type: string
+      enum:
+        - "h264-2160p"
+        - "h264-1440p"
+        - "h264-1080p"
+        - "h264-720p"
+        - "h264-480p"
+        - "h265-2160p"
+        - "h265-1440p"
+        - "h265-1080p"
+        - "h265-720p"
+        - "h265-480p"
     JobType:
       type: string
       description: "A job's type"
