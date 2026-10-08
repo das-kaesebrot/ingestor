@@ -171,6 +171,8 @@ paths:
           $ref: '#/components/responses/MediaMetadataResponse'
         "400":
           $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/UploadNotAllowed'
         "404":
           $ref: '#/components/responses/NotFound'
         "500":
@@ -185,6 +187,8 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/ProjectMediaArchiveDownloadResponse'
+        "403":
+          $ref: '#/components/responses/DownloadNotAllowed'
         "404":
           $ref: '#/components/responses/NotFound'
         "500":
@@ -255,6 +259,8 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/ProjectMediaDownloadResponse'
+        "403":
+          $ref: '#/components/responses/DownloadNotAllowed'
         "404":
           $ref: '#/components/responses/NotFound'
         "500":
@@ -514,6 +520,18 @@ components:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemDetails'
+    DownloadNotAllowed:
+      description: "The admin has not yet enabled downloads for this project."
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    UploadNotAllowed:
+      description: "The admin has not yet enabled uploads for this project."
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
     InternalServerError:
       description: "An internal server error occurred"
       content:
@@ -530,7 +548,7 @@ components:
           enum: ["pong"]
     Project:
       type: object
-      required: [id, share_token, description, filename_format, start, end, expires_at, updated_at, created_at]
+      required: [id, share_token, description, share_token_permissions, start, end, expires_at, updated_at, created_at]
       properties:
         id:
           $ref: '#/components/schemas/ProjectId'
@@ -540,8 +558,10 @@ components:
           $ref: '#/components/schemas/Token'
         description:
           $ref: '#/components/schemas/ProjectDescription'
-        filename_format:
-          $ref: '#/components/schemas/FilenameFormat'
+        share_token_permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectShareTokenPermission'
         start:
           $ref: '#/components/schemas/ProjectStart'
         end:
@@ -657,21 +677,31 @@ components:
       properties:
         description:
           $ref: '#/components/schemas/ProjectDescription'
-        filename_format:
-          $ref: '#/components/schemas/FilenameFormat'
-    ProjectPatch:
-      type: object
-      properties:
-        description:
-          $ref: '#/components/schemas/ProjectDescription'
-        filename_format:
-          $ref: '#/components/schemas/FilenameFormat'
         start:
           $ref: '#/components/schemas/ProjectStart'
         end:
           $ref: '#/components/schemas/ProjectEnd'
         expires_at:
           $ref: '#/components/schemas/ProjectExpiry'
+        share_token_permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectShareTokenPermission'
+    ProjectPatch:
+      type: object
+      properties:
+        description:
+          $ref: '#/components/schemas/ProjectDescription'
+        start:
+          $ref: '#/components/schemas/ProjectStart'
+        end:
+          $ref: '#/components/schemas/ProjectEnd'
+        expires_at:
+          $ref: '#/components/schemas/ProjectExpiry'
+        share_token_permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectShareTokenPermission'
     MediaBatchDeletionRequest:
       type: object
       properties:
@@ -825,6 +855,12 @@ components:
       type: string
       format: date-time
       description: 'Expiry date for the project. After that time, the project is automatically deleted.'
+    ProjectShareTokenPermission:
+      type: string
+      description: 'The actions allowed to perform via the share token.'
+      enum:
+        - upload
+        - download
     Username:
       type: string
       description: "A user's name"
