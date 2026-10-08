@@ -625,19 +625,6 @@ components:
     RequestId:
       type: string
       format: uuid
-    ErrorResponse:
-      type: object
-      required: [message, code]
-      properties:
-        message:
-          type: string
-        code:
-          type: integer
-        traceback:
-          type: string
-        details:
-          type: object
-          additionalProperties: true
     ProblemDetails:
       # https://www.rfc-editor.org/info/rfc9457/
       type: object
