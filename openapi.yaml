@@ -616,6 +616,9 @@ components:
     UserId:
       type: string
       format: uuid
+    JobId:
+      type: string
+      format: uuid
     Token:
       type: string
       pattern: "^[abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789]{16}$"
