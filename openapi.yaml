@@ -119,6 +119,23 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+  /projects/{share-token}/jobs:
+    get:
+      summary: Get a project's background jobs
+      operationId: getProjectBackgroundJobs
+      parameters:
+        - $ref: '#/components/parameters/PageNum'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/ShareToken'
+        - $ref: '#/components/parameters/FilterJobType'
+        - $ref: '#/components/parameters/FilterJobStatus'
+      responses:
+        "200":
+          $ref: '#/components/responses/PagedJobsResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
   /projects/{share-token}/media:
     get:
       summary: List a project's media (paged)
@@ -386,7 +403,23 @@ components:
         type: integer
         minimum: 1
         maximum: 100
-        default: 2
+        default: 50
+    FilterJobType:
+      name: type
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/JobType'
+    FilterJobStatus:
+      name: status
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/JobStatus'
     FilenameFormat:
       name: filename_format
       in: query
@@ -451,6 +484,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PagedUsers'
+    PagedJobsResponse:
+      description: "A page of jobs"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PagedJobs'
     PagedMediaMetadataResponse:
       description: "A page of media metadata"
       content:
@@ -529,6 +568,25 @@ components:
         created_at:
           type: string
           format: date-time
+    Job:
+      type: object
+      required: [id, type, status, description, updated_at, created_at]
+      properties:
+        id:
+          $ref: '#/components/schemas/JobId'
+        type:
+          $ref: '#/components/schemas/JobType'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        description:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+      additionalProperties: true
     ProjectId:
       type: string
       format: uuid
@@ -651,6 +709,16 @@ components:
             $ref: '#/components/schemas/User'
         page:
           $ref: '#/components/schemas/Page'
+    PagedJobs:
+      type: object
+      required: [jobs, page]
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'
+        page:
+          $ref: '#/components/schemas/Page'
     NewUser:
       type: object
       required: [name]
@@ -761,6 +829,20 @@ components:
       type: string
       description: "A user's name"
       pattern: "^[a-zA-Z0-9\\s_-]{32}$"
+    JobType:
+      type: string
+      description: "A job's type"
+      enum:
+        - transcode
+        - thumbnail
+    JobStatus:
+      type: string
+      description: "A job's status"
+      enum:
+        - created
+        - running
+        - success
+        - failed
     DownloadFile:
       type: string
       format: binary
