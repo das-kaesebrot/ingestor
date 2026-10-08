@@ -266,27 +266,6 @@ paths:
         "500":
           $ref: '#/components/responses/InternalServerError'
   /projects/admin/{admin-token}:
-    put:
-      summary: Fully update a project
-      operationId: updateProject
-      parameters:
-        - $ref: '#/components/parameters/AdminToken'
-        - $ref: '#/components/parameters/RequestId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NewProject'
-      responses:
-        "200":
-          $ref: '#/components/responses/ProjectResponse'
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
     patch:
       summary: Partially update a project
       operationId: patchProject
