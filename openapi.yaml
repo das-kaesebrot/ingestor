@@ -421,7 +421,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProjectPatch'
+              $ref: '#/components/schemas/ProjectUpdate'
       responses:
         "200":
           $ref: '#/components/responses/ProjectResponse'
@@ -447,7 +447,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
       tags:
         - admin-projects
-  /projects-admin/{admin-token}/user/{user-id}:
+  /projects-admin/{admin-token}/users/{user-id}:
     delete:
       summary: Delete a user from a project
       operationId: deleteProjectUser
@@ -813,7 +813,6 @@ components:
     ProblemDetails:
       # https://www.rfc-editor.org/info/rfc9457/
       type: object
-      required: [type, title, status, detail]
       properties:
         type:
           type: string
@@ -836,16 +835,23 @@ components:
           format: uri-reference
           description: A URI reference that identifies the specific occurrence of the problem.
       additionalProperties: true
+      minProperties: 1
     Page:
       type: object
       required: [page_num, per_page, total]
       properties:
         page_num:
-          type: integer
+          minimum: 1
+          default: 1
         per_page:
           type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
         total:
           type: integer
+          minimum: 0
+          maximum: 100
     NewProject:
       type: object
       required: [description]
@@ -862,7 +868,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProjectShareTokenPermission'
-    ProjectPatch:
+    ProjectUpdate:
       type: object
       properties:
         description:
@@ -877,6 +883,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProjectShareTokenPermission'
+      minProperties: 1
     MediaBatchDeletionRequest:
       type: object
       properties:
@@ -1000,10 +1007,12 @@ components:
         time_correction_offset:
           type: string
           format: duration
+      minProperties: 1
     MediaMetadataTimesync:
       type: object
+      required: [media_ids_to_sync]
       properties:
-        media_ids:
+        media_ids_to_sync:
           type: array
           items:
             $ref: '#/components/schemas/MediaId'
@@ -1012,6 +1021,7 @@ components:
       properties:
         name:
           $ref: '#/components/schemas/Username'
+      minProperties: 1
     NewFilteredDownload:
       type: object
       required: [included_media_ids, excluded_media_ids, included_user_ids, excluded_user_ids]
@@ -1038,6 +1048,7 @@ components:
           $ref: '#/components/schemas/CaptureRangeEndExclusive'
         expires_at:
           $ref: '#/components/schemas/FilteredDownloadExpiry'
+          description: "If no value is given, this is set automatically by the server to a reasonable time."
     FilteredDownload:
       type: object
       required: [download_token, included_media_ids, excluded_media_ids, included_user_ids, excluded_user_ids, capture_time_start, capture_time_end, expires_at]
@@ -1061,12 +1072,15 @@ components:
           items:
             $ref: '#/components/schemas/UserId'
         capture_time_start:
-          $ref: '#/components/schemas/CaptureRangeStartInclusive'
+          oneOf:
+            - $ref: '#/components/schemas/CaptureRangeStartInclusive'
+            - type: "null"
         capture_time_end:
-          $ref: '#/components/schemas/CaptureRangeEndExclusive'
+          oneOf:
+            - $ref: '#/components/schemas/CaptureRangeEndExclusive'
+            - type: "null"
         expires_at:
-          type: string
-          format: date-time
+          $ref: '#/components/schemas/FilteredDownloadExpiry'
     FilenameFormat:
       type: string
       description: "A time format that follows the go Time.Format specification. See https://pkg.go.dev/time#Layout"
@@ -1106,7 +1120,7 @@ components:
     Username:
       type: string
       description: "A user's name"
-      pattern: "^[a-zA-Z0-9\\s_-]{32}$"
+      pattern: "^[a-zA-Z0-9\\s_-]{1,32}$"
     TranscodePreset:
       type: string
       enum:
