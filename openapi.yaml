@@ -100,6 +100,10 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/PagedUsersResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
       tags:
@@ -120,6 +124,8 @@ paths:
           $ref: '#/components/responses/UserResponse'
         "400":
           $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
       tags:
@@ -176,6 +182,8 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/PagedJobsResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
         "404":
           $ref: '#/components/responses/NotFound'
         "500":
@@ -193,6 +201,10 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/PagedMediaMetadataResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
       tags:
@@ -237,6 +249,8 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/ProjectMediaArchiveDownloadResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
         "403":
           $ref: '#/components/responses/DownloadNotAllowed'
         "404":
@@ -260,6 +274,8 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/FilteredDownloadResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
         "403":
           $ref: '#/components/responses/DownloadNotAllowed'
         "404":
@@ -279,6 +295,8 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/ProjectMediaArchiveDownloadResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
         "403":
           $ref: '#/components/responses/DownloadNotAllowed'
         "404":
@@ -342,6 +360,8 @@ paths:
       responses:
         "204":
           description: "The operation was performed successfully."
+        "400":
+          $ref: '#/components/responses/BadRequest'
         "404":
           $ref: '#/components/responses/NotFound'
         "500":
@@ -359,6 +379,8 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/ProjectMediaDownloadResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
         "403":
           $ref: '#/components/responses/DownloadNotAllowed'
         "404":
@@ -380,6 +402,8 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/ThumbnailResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
         "404":
           $ref: '#/components/responses/NotFound'
         "500":
