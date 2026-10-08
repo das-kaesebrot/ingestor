@@ -352,7 +352,7 @@ paths:
         - media
   /projects/{share-token}/media/{media-id}/download:
     get:
-      summary: Download a media single file
+      summary: Download a single media file
       operationId: downloadProjectMediaFile
       parameters:
         - $ref: '#/components/parameters/ShareToken'
@@ -363,6 +363,25 @@ paths:
           $ref: '#/components/responses/ProjectMediaDownloadResponse'
         "403":
           $ref: '#/components/responses/DownloadNotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+      tags:
+        - download
+  /projects/{share-token}/media/{media-id}/thumb:
+    get:
+      summary: Download a media thumbnail
+      operationId: downloadProjectMediaThumbnail
+      parameters:
+        - $ref: '#/components/parameters/ShareToken'
+        - $ref: '#/components/parameters/MediaId'
+        - $ref: '#/components/parameters/ThumbnailWidth'
+        - $ref: '#/components/parameters/ThumbnailHeight'
+        - $ref: '#/components/parameters/ThumbnailCropMode'
+      responses:
+        "200":
+          $ref: '#/components/responses/ThumbnailResponse'
         "404":
           $ref: '#/components/responses/NotFound'
         "500":
@@ -480,6 +499,28 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/MediaId'
+    ThumbnailWidth:
+      name: w
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: -1
+        default: -1
+    ThumbnailHeight:
+      name: h
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: -1
+        default: -1
+    ThumbnailCropMode:
+      name: c
+      in: query
+      required: false
+      schema:
+       $ref: '#/components/schemas/ThumbnailCropMode'
     UserId:
       name: user-id
       in: path
@@ -569,6 +610,12 @@ components:
       description: "A single media file"
       content:
         application/octet-stream:
+          schema:
+            $ref: '#/components/schemas/DownloadFile'
+    ThumbnailResponse:
+      description: "A media's thumbnail."
+      content:
+        image/jpeg:
           schema:
             $ref: '#/components/schemas/DownloadFile'
     ProjectResponse:
@@ -1078,3 +1125,15 @@ components:
     DownloadFile:
       type: string
       format: binary
+    ThumbnailCropMode:
+      type: string
+      enum:
+        - center
+        - stretch
+        - box
+      description: |
+        Crop mode:
+        - `center`: Image dimensions are kept and the image is scaled to fit the given width and height. No black bars are present.
+        - `stretch`: Image dimensions are *not* kept and the image is scaled and stretched to fit the given width and height. No black bars are present.
+        - `box`: Image dimensions are kept and the image is scaled to fit inside the given width and height. Black bars (pillorboxing/letterboxing) might occur.
+      default: center
