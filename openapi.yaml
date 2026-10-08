@@ -2,6 +2,25 @@ openapi: 3.1.0
 info:
   title: Ingestor API
   version: 1.0.0
+tags:
+  - name: system
+    description: General system operations.
+  - name: projects
+    description: Poject operations for share token clients.
+  - name: users
+    description: Poject user operations for share token clients.
+  - name: media
+    description: Poject media operations for share token clients. Includes download and upload.
+  - name: jobs
+    description: Poject job operations for share token clients.
+  - name: admin-projects
+    description: Poject operations for admin clients.
+  - name: admin-users
+    description: Poject user operations for admin clients.
+  - name: admin-media
+    description: Poject media operations for admin clients.
+  - name: admin-jobs
+    description: Poject job operations for admin clients.
 paths:
   /ping:
     get:
@@ -10,6 +29,8 @@ paths:
       responses:
         "200":
           $ref: '#/components/responses/PingResponse'
+      tags:
+        - system
   /projects:
     get:
       summary: List projects (paged)
@@ -22,6 +43,8 @@ paths:
           $ref: '#/components/responses/PagedProjectsResponse'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - projects
     post:
       summary: Create a new project
       operationId: createProject
@@ -40,6 +63,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - projects
   /projects/{share-token}:
     get:
       summary: Get a project by share token
@@ -53,6 +78,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - projects
   /projects/{share-token}/users:
     get:
       summary: List a project's users (paged)
@@ -66,6 +93,8 @@ paths:
           $ref: '#/components/responses/PagedUsersResponse'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - users
     post:
       summary: Create a new project user
       operationId: createProjectUser
@@ -84,6 +113,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - users
   /projects/{share-token}/users/{user-id}:
     get:
       summary: Get a project's user by id
@@ -98,6 +129,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - users
     patch:
       summary: Update a user
       operationId: patchProjectUser
@@ -119,6 +152,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - users
   /projects/{share-token}/jobs:
     get:
       summary: Get a project's background jobs
@@ -136,6 +171,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - jobs
   /projects/{share-token}/media:
     get:
       summary: List a project's media (paged)
@@ -149,6 +186,8 @@ paths:
           $ref: '#/components/responses/PagedMediaMetadataResponse'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - media
   /projects/{share-token}/media/upload:
     post:
       summary: Upload media to a project
@@ -177,6 +216,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - media
   /projects/{share-token}/media/download:
     get:
       summary: Download a project's media
@@ -193,6 +234,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - media
   /projects/{share-token}/media/{media-id}:
     get:
       summary: Get media metadata
@@ -207,6 +250,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - media
     patch:
       summary: Update media metadata
       operationId: updateProjectMedia
@@ -228,6 +273,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - media
   /projects/{share-token}/media/{media-id}/sync:
     post:
       summary: Synchronise the capture time of one or more media files to the media file in the path.
@@ -248,6 +295,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - media
   /projects/{share-token}/media/{media-id}/download:
     get:
       summary: Download a media file
@@ -265,6 +314,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - media
   /projects/admin/{admin-token}:
     patch:
       summary: Partially update a project
@@ -287,6 +338,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - admin-projects
     delete:
       summary: Delete a project
       operationId: deleteProject
@@ -299,6 +352,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - admin-projects
   /projects/admin/{admin-token}/user/{user-id}:
     delete:
       summary: Delete a user from a project
@@ -313,6 +368,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - admin-users
   /projects/admin/{admin-token}/media/delete:
     post:
       summary: Delete media from a project (batched)
@@ -332,6 +389,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - admin-media
   /projects/admin/{admin-token}/media/{media-id}:
     delete:
       summary: Delete media from a project
@@ -346,6 +405,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
+      tags:
+        - admin-media
 components:
   parameters:
     ShareToken:
