@@ -388,7 +388,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
       tags:
         - download
-  /projects/admin/{admin-token}:
+  /projects-admin/{admin-token}:
     patch:
       summary: Partially update a project
       operationId: patchProject
@@ -426,7 +426,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
       tags:
         - admin-projects
-  /projects/admin/{admin-token}/user/{user-id}:
+  /projects-admin/{admin-token}/user/{user-id}:
     delete:
       summary: Delete a user from a project
       operationId: deleteProjectUser
@@ -442,7 +442,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
       tags:
         - admin-users
-  /projects/admin/{admin-token}/media/delete:
+  /projects-admin/{admin-token}/media/delete:
     post:
       summary: Delete media from a project (batched)
       operationId: deleteProjectMediaBatched
@@ -463,7 +463,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
       tags:
         - admin-media
-  /projects/admin/{admin-token}/media/{media-id}:
+  /projects-admin/{admin-token}/media/{media-id}:
     delete:
       summary: Delete media from a project
       operationId: deleteProjectMedia
