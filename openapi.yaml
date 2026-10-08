@@ -59,8 +59,6 @@ paths:
     post:
       summary: Create a new project
       operationId: createProject
-      parameters:
-        - $ref: '#/components/parameters/RequestId'
       requestBody:
         required: true
         content:
@@ -394,7 +392,6 @@ paths:
       operationId: patchProject
       parameters:
         - $ref: '#/components/parameters/AdminToken'
-        - $ref: '#/components/parameters/RequestId'
       requestBody:
         required: true
         content:
@@ -572,12 +569,6 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/FilenameFormat'
-    RequestId:
-      name: X-Request-ID
-      in: header
-      required: true
-      schema:
-        $ref: '#/components/schemas/RequestId'
   responses:
     PingResponse:
       description: "The server is alive"
@@ -795,9 +786,6 @@ components:
     Token:
       type: string
       pattern: "^[abcdefgijkmnopqrstwxyzABCDEFGHJKLMNPQRSTWXYZ23456789]{16}$"
-    RequestId:
-      type: string
-      format: uuid
     ProblemDetails:
       # https://www.rfc-editor.org/info/rfc9457/
       type: object
