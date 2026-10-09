@@ -224,14 +224,15 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              required: [file]
               properties:
                 file:
-                  type: string
+                  type: array
+                  items:
                   format: binary
+                  minItems: 1
       responses:
         "201":
-          $ref: '#/components/responses/MediaMetadataResponse'
+          $ref: '#/components/responses/MediaMetadataUploadResponse'
         "400":
           $ref: '#/components/responses/BadRequest'
         "403":
@@ -678,6 +679,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PagedMediaMetadata'
+    MediaMetadataUploadResponse:
+      description: "Media metadata ids for all uploaded files."
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [created_media_ids]
+            properties:
+              created_media_ids:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MediaId'
     MediaMetadataResponse:
       description: "Media metadata"
       content:
