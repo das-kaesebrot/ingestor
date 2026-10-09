@@ -5,6 +5,12 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+	server: {
+		proxy: {
+			'/api/openapi.yaml': 'http://localhost:8000',
+			'/api/v1': 'http://localhost:8000'
+		}
+	},
 	plugins: [
 		heyApiPlugin({
 			config: {
