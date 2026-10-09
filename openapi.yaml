@@ -228,7 +228,7 @@ paths:
                 file:
                   type: array
                   items:
-                  format: binary
+                    format: binary
                   minItems: 1
       responses:
         "201":
@@ -712,31 +712,91 @@ components:
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            allOf:
+              - $ref: '#/components/schemas/ProblemDetails'
+              - schema:
+                type: object
+                required: [title, status]
+                properties:
+                  title:
+                    enum: ["The requested object was not found."]
+                  status:
+                    enum: [404]
+    PreviewUnsupported:
+      description: "The server doesn't support previews for this media type."
+      content:
+        application/problem+json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ProblemDetails'
+              - schema:
+                type: object
+                required: [title, status]
+                properties:
+                  title:
+                    enum: ["The server doesn't support previews for this media type."]
+                  status:
+                    enum: [422]
     BadRequest:
       description: "The request was malformed or invalid"
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            allOf:
+              - $ref: '#/components/schemas/ProblemDetails'
+              - schema:
+                type: object
+                required: [title, status]
+                properties:
+                  title:
+                    enum: ["The request was malformed or invalid."]
+                  status:
+                    enum: [400]
     DownloadNotAllowed:
       description: "The admin has not yet enabled downloads for this project."
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            allOf:
+              - $ref: '#/components/schemas/ProblemDetails'
+              - schema:
+                type: object
+                required: [title, status]
+                properties:
+                  title:
+                    enum: ["The admin has not yet enabled downloads for this project."]
+                  status:
+                    enum: [403]
     UploadNotAllowed:
       description: "The admin has not yet enabled uploads for this project."
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            allOf:
+              - $ref: '#/components/schemas/ProblemDetails'
+              - schema:
+                type: object
+                required: [title, status]
+                properties:
+                  title:
+                    enum: ["The admin has not yet enabled uploads for this project."]
+                  status:
+                    enum: [403]
     InternalServerError:
       description: "An internal server error occurred"
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            allOf:
+              - $ref: '#/components/schemas/ProblemDetails'
+              - schema:
+                type: object
+                required: [title, status]
+                properties:
+                  title:
+                    enum: ["An internal server error has occured."]
+                  status:
+                    enum: [500]
   schemas:
     Pong:
       type: object
@@ -909,6 +969,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProjectShareTokenPermission'
+        rotate_share_token:
+          type: boolean
+          description: 'Invalidate the previous share token and let the server generate a new one.'
+        rotate_admin_token:
+          type: boolean
+          description: 'Invalidate the previous admin token and let the server generate a new one. Be aware that when rotated, the admin token (used in this request) will not work anymore.'
       minProperties: 1
     MediaBatchDeletionRequest:
       type: object
@@ -965,7 +1031,7 @@ components:
           $ref: '#/components/schemas/Username'
     ImageMetadata:
       type: object
-      required: [id, type, original_filename, generated_filename, width, height, image_codec, original_capture_time, time_correction_offset]
+      required: [id, type, original_filename, generated_filename, width, height, image_codec, mime_type, original_capture_time, time_correction_offset]
       properties:
         id:
           $ref: '#/components/schemas/MediaId'
@@ -982,6 +1048,8 @@ components:
           type: integer
         image_codec:
           type: string
+        mime_type:
+          type: string
         original_capture_time:
           type: string
           format: date-time
@@ -990,7 +1058,7 @@ components:
           format: duration
     VideoMetadata:
       type: object
-      required: [id, type, original_filename, generated_filename, width, height, length, video_codec, original_capture_time, time_correction_offset]
+      required: [id, type, original_filename, generated_filename, width, height, length, video_codec, mime_type, original_capture_time, time_correction_offset]
       properties:
         id:
           $ref: '#/components/schemas/MediaId'
@@ -1009,6 +1077,8 @@ components:
           type: string
           format: duration
         video_codec:
+          type: string
+        mime_type:
           type: string
         original_capture_time:
           type: string
