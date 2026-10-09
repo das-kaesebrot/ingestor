@@ -2,7 +2,8 @@ package repository
 
 import (
 	"time"
-	stdlibuuid "uuid"
+
+	"github.com/google/uuid"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 	"gorm.io/gorm"
@@ -10,7 +11,7 @@ import (
 
 type Project struct {
 	gorm.Model
-	ID          stdlibuuid.UUID `gorm:"primaryKey,type:uuid"`
+	ID          uuid.UUID `gorm:"primaryKey,type:uuid"`
 	ShareToken  string          `gorm:"unique"`
 	AdminToken  string          `gorm:"unique"`
 	Description string
@@ -18,7 +19,10 @@ type Project struct {
 }
 
 func (p *Project) BeforeCreate(tx *gorm.DB) error {
-	newUuid := stdlibuuid.NewV7()
+	newUuid, err := uuid.NewV7()
+	if err != nil {
+		return err
+	}
 	p.ID = newUuid
 
 	defaultTokenLength := 16
@@ -41,33 +45,39 @@ func (p *Project) BeforeCreate(tx *gorm.DB) error {
 
 type UploadUser struct {
 	gorm.Model
-	ID         stdlibuuid.UUID `gorm:"primaryKey,type:uuid"`
+	ID         uuid.UUID `gorm:"primaryKey,type:uuid"`
 	Name       string
-	ProjectID  stdlibuuid.UUID
+	ProjectID  uuid.UUID
 	ImageFiles []ImageFile
 	VideoFiles []VideoFile
 }
 
-func (u *UploadUser) BeforeCreate(tx *gorm.DB) (err error) {
-	newUuid := stdlibuuid.NewV7()
+func (u *UploadUser) BeforeCreate(tx *gorm.DB) error {
+	newUuid, err := uuid.NewV7()
+	if err != nil {
+		return err
+	}
 	u.ID = newUuid
-	return
+	return nil
 }
 
 type MediaFile struct {
 	gorm.Model
-	ID                      stdlibuuid.UUID `gorm:"primaryKey,type:uuid"`
-	UploadUserID            stdlibuuid.UUID
-	ProjectID               stdlibuuid.UUID
+	ID                      uuid.UUID `gorm:"primaryKey,type:uuid"`
+	UploadUserID            uuid.UUID
+	ProjectID               uuid.UUID
 	OriginalFilename        string
 	CaptureTime             time.Time
 	CaptureCorrectionOffset time.Duration
 }
 
-func (m *MediaFile) BeforeCreate(tx *gorm.DB) (err error) {
-	newUuid := stdlibuuid.NewV7()
+func (m *MediaFile) BeforeCreate(tx *gorm.DB) error {
+	newUuid, err := uuid.NewV7()
+	if err != nil {
+		return err
+	}
 	m.ID = newUuid
-	return
+	return nil
 }
 
 type VideoFile struct {
