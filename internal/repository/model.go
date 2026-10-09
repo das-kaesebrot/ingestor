@@ -12,8 +12,8 @@ import (
 type Project struct {
 	gorm.Model
 	ID          uuid.UUID `gorm:"primaryKey,type:uuid"`
-	ShareToken  string          `gorm:"unique"`
-	AdminToken  string          `gorm:"unique"`
+	ShareToken  string    `gorm:"not null;uniqueIndex"`
+	AdminToken  string    `gorm:"not null;uniqueIndex"`
 	Description string
 	UploadUsers []UploadUser
 }
