@@ -393,21 +393,25 @@ paths:
           $ref: '#/components/responses/InternalServerError'
       tags:
         - download
-  /projects/{share-token}/media/{media-id}/thumb:
+  /projects/{share-token}/media/{media-id}/preview:
     get:
-      summary: Download a media thumbnail
-      operationId: downloadProjectMediaThumbnail
+      summary: Download a media preview image
+      operationId: downloadProjectMediaPreview
       parameters:
         - $ref: '#/components/parameters/ShareToken'
         - $ref: '#/components/parameters/MediaId'
-        - $ref: '#/components/parameters/ThumbnailWidth'
-        - $ref: '#/components/parameters/ThumbnailHeight'
-        - $ref: '#/components/parameters/ThumbnailCropMode'
+        - $ref: '#/components/parameters/PreviewWidth'
+        - $ref: '#/components/parameters/PreviewHeight'
+        - $ref: '#/components/parameters/PreviewCropMode'
       responses:
         "200":
-          $ref: '#/components/responses/ThumbnailResponse'
+          $ref: '#/components/responses/ProjectMediaPreviewResponse'
+        "202":
+          $ref: '#/components/responses/ProjectMediaPreviewNotReadyYetResponse'
         "400":
           $ref: '#/components/responses/BadRequest'
+        "422":
+          $ref: '#/components/responses/PreviewUnsupported'
         "404":
           $ref: '#/components/responses/NotFound'
         "500":
@@ -524,7 +528,7 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/MediaId'
-    ThumbnailWidth:
+    PreviewWidth:
       name: w
       in: query
       required: false
@@ -532,7 +536,7 @@ components:
         type: integer
         minimum: -1
         default: -1
-    ThumbnailHeight:
+    PreviewHeight:
       name: h
       in: query
       required: false
@@ -540,12 +544,12 @@ components:
         type: integer
         minimum: -1
         default: -1
-    ThumbnailCropMode:
+    PreviewCropMode:
       name: c
       in: query
       required: false
       schema:
-       $ref: '#/components/schemas/ThumbnailCropMode'
+       $ref: '#/components/schemas/PreviewCropMode'
     UserId:
       name: user-id
       in: path
@@ -631,12 +635,18 @@ components:
         application/octet-stream:
           schema:
             $ref: '#/components/schemas/DownloadFile'
-    ThumbnailResponse:
-      description: "A media's thumbnail."
+    ProjectMediaPreviewResponse:
+      description: "A media's preview image."
       content:
         image/jpeg:
           schema:
             $ref: '#/components/schemas/DownloadFile'
+    ProjectMediaPreviewNotReadyYetResponse:
+      description: "The media preview image has not been created yet. Try again later."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProjectMediaPreviewNotReadyYet'
     ProjectResponse:
       description: "A single project"
       content:
@@ -1167,7 +1177,7 @@ components:
     DownloadFile:
       type: string
       format: binary
-    ThumbnailCropMode:
+    PreviewCropMode:
       type: string
       enum:
         - center
@@ -1179,3 +1189,12 @@ components:
         - `stretch`: Image dimensions are *not* kept and the image is scaled and stretched to fit the given width and height. No black bars are present.
         - `box`: Image dimensions are kept and the image is scaled to fit inside the given width and height. Black bars (pillorboxing/letterboxing) might occur.
       default: center
+    ProjectMediaPreviewNotReadyYet:
+      type: object
+      required: [preview_status]
+      properties:
+        preview_status:
+          type: string
+          enum:
+            - pending
+      description: "The requested preview image has not been created yet, try again later."
