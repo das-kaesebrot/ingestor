@@ -2,7 +2,7 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateProjectData, CreateProjectErrors, CreateProjectResponses, CreateUserData, CreateUserErrors, CreateUserResponses, DeleteMediaData, DeleteMediaErrors, DeleteMediaResponses, DeleteProjectData, DeleteProjectErrors, DeleteProjectResponses, GetMediaData, GetMediaErrors, GetMediaResponses, GetPingData, GetPingResponses, GetRequestData, GetRequestErrors, GetRequestResponses, GetUserData, GetUserErrors, GetUserResponses, ListProjectsData, ListProjectsErrors, ListProjectsResponses, ListUsersData, ListUsersErrors, ListUsersResponses, PatchProjectData, PatchProjectErrors, PatchProjectResponses, PatchUserData, PatchUserErrors, PatchUserResponses, UpdateMediaData, UpdateMediaErrors, UpdateMediaResponses, UpdateProjectData, UpdateProjectErrors, UpdateProjectResponses, UploadMediaData, UploadMediaErrors, UploadMediaResponses } from './types.gen';
+import type { CreateDownloadProjectFilteredMediaArchiveData, CreateDownloadProjectFilteredMediaArchiveErrors, CreateDownloadProjectFilteredMediaArchiveResponses, CreateProjectData, CreateProjectErrors, CreateProjectResponses, CreateProjectUserData, CreateProjectUserErrors, CreateProjectUserResponses, DeleteProjectData, DeleteProjectErrors, DeleteProjectMediaBatchedData, DeleteProjectMediaBatchedErrors, DeleteProjectMediaBatchedResponses, DeleteProjectMediaData, DeleteProjectMediaErrors, DeleteProjectMediaResponses, DeleteProjectResponses, DeleteProjectUserData, DeleteProjectUserErrors, DeleteProjectUserResponses, DownloadProjectFilteredMediaArchiveData, DownloadProjectFilteredMediaArchiveErrors, DownloadProjectFilteredMediaArchiveResponses, DownloadProjectMediaArchiveData, DownloadProjectMediaArchiveErrors, DownloadProjectMediaArchiveResponses, DownloadProjectMediaFileData, DownloadProjectMediaFileErrors, DownloadProjectMediaFileResponses, DownloadProjectMediaPreviewData, DownloadProjectMediaPreviewErrors, DownloadProjectMediaPreviewResponses, GetPingData, GetPingResponses, GetProjectBackgroundJobsData, GetProjectBackgroundJobsErrors, GetProjectBackgroundJobsResponses, GetProjectByShareTokenData, GetProjectByShareTokenErrors, GetProjectByShareTokenResponses, GetProjectMediaData, GetProjectMediaErrors, GetProjectMediaResponses, GetProjectUserData, GetProjectUserErrors, GetProjectUserResponses, GetSystemCapabilitiesData, GetSystemCapabilitiesResponses, ListProjectMediaMetadataData, ListProjectMediaMetadataErrors, ListProjectMediaMetadataResponses, ListProjectsData, ListProjectsErrors, ListProjectsResponses, ListProjectUsersData, ListProjectUsersErrors, ListProjectUsersResponses, PatchProjectData, PatchProjectErrors, PatchProjectResponses, PatchProjectUserData, PatchProjectUserErrors, PatchProjectUserResponses, SyncProjectMediaFileData, SyncProjectMediaFileErrors, SyncProjectMediaFileResponses, UpdateProjectMediaData, UpdateProjectMediaErrors, UpdateProjectMediaResponses, UploadProjectMediaData, UploadProjectMediaErrors, UploadProjectMediaResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -24,6 +24,11 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 export const getPing = <ThrowOnError extends boolean = false>(options?: Options<GetPingData, ThrowOnError>): RequestResult<GetPingResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetPingResponses, unknown, ThrowOnError>({ url: '/ping', ...options });
 
 /**
+ * Get all system capabilities
+ */
+export const getSystemCapabilities = <ThrowOnError extends boolean = false>(options?: Options<GetSystemCapabilitiesData, ThrowOnError>): RequestResult<GetSystemCapabilitiesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetSystemCapabilitiesResponses, unknown, ThrowOnError>({ url: '/capabilities', ...options });
+
+/**
  * List projects (paged)
  */
 export const listProjects = <ThrowOnError extends boolean = false>(options?: Options<ListProjectsData, ThrowOnError>): RequestResult<ListProjectsResponses, ListProjectsErrors, ThrowOnError> => (options?.client ?? client).get<ListProjectsResponses, ListProjectsErrors, ThrowOnError>({ url: '/projects', ...options });
@@ -43,18 +48,18 @@ export const createProject = <ThrowOnError extends boolean = false>(options: Opt
 /**
  * Get a project by share token
  */
-export const getRequest = <ThrowOnError extends boolean = false>(options: Options<GetRequestData, ThrowOnError>): RequestResult<GetRequestResponses, GetRequestErrors, ThrowOnError> => (options.client ?? client).get<GetRequestResponses, GetRequestErrors, ThrowOnError>({ url: '/projects/{token}', ...options });
+export const getProjectByShareToken = <ThrowOnError extends boolean = false>(options: Options<GetProjectByShareTokenData, ThrowOnError>): RequestResult<GetProjectByShareTokenResponses, GetProjectByShareTokenErrors, ThrowOnError> => (options.client ?? client).get<GetProjectByShareTokenResponses, GetProjectByShareTokenErrors, ThrowOnError>({ url: '/projects/{share-token}', ...options });
 
 /**
  * List a project's users (paged)
  */
-export const listUsers = <ThrowOnError extends boolean = false>(options: Options<ListUsersData, ThrowOnError>): RequestResult<ListUsersResponses, ListUsersErrors, ThrowOnError> => (options.client ?? client).get<ListUsersResponses, ListUsersErrors, ThrowOnError>({ url: '/projects/{token}/users', ...options });
+export const listProjectUsers = <ThrowOnError extends boolean = false>(options: Options<ListProjectUsersData, ThrowOnError>): RequestResult<ListProjectUsersResponses, ListProjectUsersErrors, ThrowOnError> => (options.client ?? client).get<ListProjectUsersResponses, ListProjectUsersErrors, ThrowOnError>({ url: '/projects/{share-token}/users', ...options });
 
 /**
  * Create a new project user
  */
-export const createUser = <ThrowOnError extends boolean = false>(options: Options<CreateUserData, ThrowOnError>): RequestResult<CreateUserResponses, CreateUserErrors, ThrowOnError> => (options.client ?? client).post<CreateUserResponses, CreateUserErrors, ThrowOnError>({
-    url: '/projects/{token}/users',
+export const createProjectUser = <ThrowOnError extends boolean = false>(options: Options<CreateProjectUserData, ThrowOnError>): RequestResult<CreateProjectUserResponses, CreateProjectUserErrors, ThrowOnError> => (options.client ?? client).post<CreateProjectUserResponses, CreateProjectUserErrors, ThrowOnError>({
+    url: '/projects/{share-token}/users',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -65,13 +70,13 @@ export const createUser = <ThrowOnError extends boolean = false>(options: Option
 /**
  * Get a project's user by id
  */
-export const getUser = <ThrowOnError extends boolean = false>(options: Options<GetUserData, ThrowOnError>): RequestResult<GetUserResponses, GetUserErrors, ThrowOnError> => (options.client ?? client).get<GetUserResponses, GetUserErrors, ThrowOnError>({ url: '/projects/{token}/users/{user-id}', ...options });
+export const getProjectUser = <ThrowOnError extends boolean = false>(options: Options<GetProjectUserData, ThrowOnError>): RequestResult<GetProjectUserResponses, GetProjectUserErrors, ThrowOnError> => (options.client ?? client).get<GetProjectUserResponses, GetProjectUserErrors, ThrowOnError>({ url: '/projects/{share-token}/users/{user-id}', ...options });
 
 /**
  * Update a user
  */
-export const patchUser = <ThrowOnError extends boolean = false>(options: Options<PatchUserData, ThrowOnError>): RequestResult<PatchUserResponses, PatchUserErrors, ThrowOnError> => (options.client ?? client).patch<PatchUserResponses, PatchUserErrors, ThrowOnError>({
-    url: '/projects/{token}/users/{user-id}',
+export const patchProjectUser = <ThrowOnError extends boolean = false>(options: Options<PatchProjectUserData, ThrowOnError>): RequestResult<PatchProjectUserResponses, PatchProjectUserErrors, ThrowOnError> => (options.client ?? client).patch<PatchProjectUserResponses, PatchProjectUserErrors, ThrowOnError>({
+    url: '/projects/{share-token}/users/{user-id}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -80,11 +85,21 @@ export const patchUser = <ThrowOnError extends boolean = false>(options: Options
 });
 
 /**
+ * Get a project's background jobs
+ */
+export const getProjectBackgroundJobs = <ThrowOnError extends boolean = false>(options: Options<GetProjectBackgroundJobsData, ThrowOnError>): RequestResult<GetProjectBackgroundJobsResponses, GetProjectBackgroundJobsErrors, ThrowOnError> => (options.client ?? client).get<GetProjectBackgroundJobsResponses, GetProjectBackgroundJobsErrors, ThrowOnError>({ url: '/projects/{share-token}/jobs', ...options });
+
+/**
+ * List a project's media (paged)
+ */
+export const listProjectMediaMetadata = <ThrowOnError extends boolean = false>(options: Options<ListProjectMediaMetadataData, ThrowOnError>): RequestResult<ListProjectMediaMetadataResponses, ListProjectMediaMetadataErrors, ThrowOnError> => (options.client ?? client).get<ListProjectMediaMetadataResponses, ListProjectMediaMetadataErrors, ThrowOnError>({ url: '/projects/{share-token}/media', ...options });
+
+/**
  * Upload media to a project
  */
-export const uploadMedia = <ThrowOnError extends boolean = false>(options: Options<UploadMediaData, ThrowOnError>): RequestResult<UploadMediaResponses, UploadMediaErrors, ThrowOnError> => (options.client ?? client).post<UploadMediaResponses, UploadMediaErrors, ThrowOnError>({
+export const uploadProjectMedia = <ThrowOnError extends boolean = false>(options: Options<UploadProjectMediaData, ThrowOnError>): RequestResult<UploadProjectMediaResponses, UploadProjectMediaErrors, ThrowOnError> => (options.client ?? client).post<UploadProjectMediaResponses, UploadProjectMediaErrors, ThrowOnError>({
     ...formDataBodySerializer,
-    url: '/projects/{token}/media',
+    url: '/projects/{share-token}/media/upload',
     ...options,
     headers: {
         'Content-Type': null,
@@ -93,15 +108,15 @@ export const uploadMedia = <ThrowOnError extends boolean = false>(options: Optio
 });
 
 /**
- * Get media metadata
+ * Download a project's media
  */
-export const getMedia = <ThrowOnError extends boolean = false>(options: Options<GetMediaData, ThrowOnError>): RequestResult<GetMediaResponses, GetMediaErrors, ThrowOnError> => (options.client ?? client).get<GetMediaResponses, GetMediaErrors, ThrowOnError>({ url: '/projects/{token}/media/{media-id}', ...options });
+export const downloadProjectMediaArchive = <ThrowOnError extends boolean = false>(options: Options<DownloadProjectMediaArchiveData, ThrowOnError>): RequestResult<DownloadProjectMediaArchiveResponses, DownloadProjectMediaArchiveErrors, ThrowOnError> => (options.client ?? client).get<DownloadProjectMediaArchiveResponses, DownloadProjectMediaArchiveErrors, ThrowOnError>({ url: '/projects/{share-token}/media/download', ...options });
 
 /**
- * Update media metadata
+ * Create a custom filtered download archive
  */
-export const updateMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateMediaData, ThrowOnError>): RequestResult<UpdateMediaResponses, UpdateMediaErrors, ThrowOnError> => (options.client ?? client).patch<UpdateMediaResponses, UpdateMediaErrors, ThrowOnError>({
-    url: '/projects/{token}/media/{media-id}',
+export const createDownloadProjectFilteredMediaArchive = <ThrowOnError extends boolean = false>(options: Options<CreateDownloadProjectFilteredMediaArchiveData, ThrowOnError>): RequestResult<CreateDownloadProjectFilteredMediaArchiveResponses, CreateDownloadProjectFilteredMediaArchiveErrors, ThrowOnError> => (options.client ?? client).post<CreateDownloadProjectFilteredMediaArchiveResponses, CreateDownloadProjectFilteredMediaArchiveErrors, ThrowOnError>({
+    url: '/projects/{share-token}/media/download/filtered',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -110,15 +125,59 @@ export const updateMedia = <ThrowOnError extends boolean = false>(options: Optio
 });
 
 /**
+ * Download a custom filtered download archive
+ */
+export const downloadProjectFilteredMediaArchive = <ThrowOnError extends boolean = false>(options: Options<DownloadProjectFilteredMediaArchiveData, ThrowOnError>): RequestResult<DownloadProjectFilteredMediaArchiveResponses, DownloadProjectFilteredMediaArchiveErrors, ThrowOnError> => (options.client ?? client).get<DownloadProjectFilteredMediaArchiveResponses, DownloadProjectFilteredMediaArchiveErrors, ThrowOnError>({ url: '/projects/{share-token}/media/download/filtered/{download-token}', ...options });
+
+/**
+ * Get media metadata
+ */
+export const getProjectMedia = <ThrowOnError extends boolean = false>(options: Options<GetProjectMediaData, ThrowOnError>): RequestResult<GetProjectMediaResponses, GetProjectMediaErrors, ThrowOnError> => (options.client ?? client).get<GetProjectMediaResponses, GetProjectMediaErrors, ThrowOnError>({ url: '/projects/{share-token}/media/{media-id}', ...options });
+
+/**
+ * Update media metadata
+ */
+export const updateProjectMedia = <ThrowOnError extends boolean = false>(options: Options<UpdateProjectMediaData, ThrowOnError>): RequestResult<UpdateProjectMediaResponses, UpdateProjectMediaErrors, ThrowOnError> => (options.client ?? client).patch<UpdateProjectMediaResponses, UpdateProjectMediaErrors, ThrowOnError>({
+    url: '/projects/{share-token}/media/{media-id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Synchronise the capture time of one or more media files to the media file in the path.
+ */
+export const syncProjectMediaFile = <ThrowOnError extends boolean = false>(options: Options<SyncProjectMediaFileData, ThrowOnError>): RequestResult<SyncProjectMediaFileResponses, SyncProjectMediaFileErrors, ThrowOnError> => (options.client ?? client).post<SyncProjectMediaFileResponses, SyncProjectMediaFileErrors, ThrowOnError>({
+    url: '/projects/{share-token}/media/{media-id}/sync',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Download a single media file
+ */
+export const downloadProjectMediaFile = <ThrowOnError extends boolean = false>(options: Options<DownloadProjectMediaFileData, ThrowOnError>): RequestResult<DownloadProjectMediaFileResponses, DownloadProjectMediaFileErrors, ThrowOnError> => (options.client ?? client).get<DownloadProjectMediaFileResponses, DownloadProjectMediaFileErrors, ThrowOnError>({ url: '/projects/{share-token}/media/{media-id}/download', ...options });
+
+/**
+ * Download a media preview image
+ */
+export const downloadProjectMediaPreview = <ThrowOnError extends boolean = false>(options: Options<DownloadProjectMediaPreviewData, ThrowOnError>): RequestResult<DownloadProjectMediaPreviewResponses, DownloadProjectMediaPreviewErrors, ThrowOnError> => (options.client ?? client).get<DownloadProjectMediaPreviewResponses, DownloadProjectMediaPreviewErrors, ThrowOnError>({ url: '/projects/{share-token}/media/{media-id}/preview', ...options });
+
+/**
  * Delete a project
  */
-export const deleteProject = <ThrowOnError extends boolean = false>(options: Options<DeleteProjectData, ThrowOnError>): RequestResult<DeleteProjectResponses, DeleteProjectErrors, ThrowOnError> => (options.client ?? client).delete<DeleteProjectResponses, DeleteProjectErrors, ThrowOnError>({ url: '/projects/admin/{token}', ...options });
+export const deleteProject = <ThrowOnError extends boolean = false>(options: Options<DeleteProjectData, ThrowOnError>): RequestResult<DeleteProjectResponses, DeleteProjectErrors, ThrowOnError> => (options.client ?? client).delete<DeleteProjectResponses, DeleteProjectErrors, ThrowOnError>({ url: '/admin/projects/{admin-token}', ...options });
 
 /**
  * Partially update a project
  */
 export const patchProject = <ThrowOnError extends boolean = false>(options: Options<PatchProjectData, ThrowOnError>): RequestResult<PatchProjectResponses, PatchProjectErrors, ThrowOnError> => (options.client ?? client).patch<PatchProjectResponses, PatchProjectErrors, ThrowOnError>({
-    url: '/projects/admin/{token}',
+    url: '/admin/projects/{admin-token}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -127,10 +186,15 @@ export const patchProject = <ThrowOnError extends boolean = false>(options: Opti
 });
 
 /**
- * Fully update a project
+ * Delete a user from a project
  */
-export const updateProject = <ThrowOnError extends boolean = false>(options: Options<UpdateProjectData, ThrowOnError>): RequestResult<UpdateProjectResponses, UpdateProjectErrors, ThrowOnError> => (options.client ?? client).put<UpdateProjectResponses, UpdateProjectErrors, ThrowOnError>({
-    url: '/projects/admin/{token}',
+export const deleteProjectUser = <ThrowOnError extends boolean = false>(options: Options<DeleteProjectUserData, ThrowOnError>): RequestResult<DeleteProjectUserResponses, DeleteProjectUserErrors, ThrowOnError> => (options.client ?? client).delete<DeleteProjectUserResponses, DeleteProjectUserErrors, ThrowOnError>({ url: '/admin/projects/{admin-token}/users/{user-id}', ...options });
+
+/**
+ * Delete media from a project (batched)
+ */
+export const deleteProjectMediaBatched = <ThrowOnError extends boolean = false>(options: Options<DeleteProjectMediaBatchedData, ThrowOnError>): RequestResult<DeleteProjectMediaBatchedResponses, DeleteProjectMediaBatchedErrors, ThrowOnError> => (options.client ?? client).post<DeleteProjectMediaBatchedResponses, DeleteProjectMediaBatchedErrors, ThrowOnError>({
+    url: '/admin/projects/{admin-token}/media/delete',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -141,4 +205,4 @@ export const updateProject = <ThrowOnError extends boolean = false>(options: Opt
 /**
  * Delete media from a project
  */
-export const deleteMedia = <ThrowOnError extends boolean = false>(options: Options<DeleteMediaData, ThrowOnError>): RequestResult<DeleteMediaResponses, DeleteMediaErrors, ThrowOnError> => (options.client ?? client).delete<DeleteMediaResponses, DeleteMediaErrors, ThrowOnError>({ url: '/projects/admin/{token}/media/{media-id}', ...options });
+export const deleteProjectMedia = <ThrowOnError extends boolean = false>(options: Options<DeleteProjectMediaData, ThrowOnError>): RequestResult<DeleteProjectMediaResponses, DeleteProjectMediaErrors, ThrowOnError> => (options.client ?? client).delete<DeleteProjectMediaResponses, DeleteProjectMediaErrors, ThrowOnError>({ url: '/admin/projects/{admin-token}/media/{media-id}', ...options });
