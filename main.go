@@ -97,8 +97,14 @@ func main() {
 		_, _ = w.Write(openAPISpec)
 	})
 	mux.Handle("/", http.FileServerFS(staticFS))
-	h := api.HandlerFromMuxWithBaseURL(a, mux, apiPrefixWithVersion)
+	h := api.HandlerWithOptions(a, api.StdHTTPServerOptions{
+		BaseRouter: mux,
+		BaseURL:    apiPrefixWithVersion,
+		Middlewares: []api.MiddlewareFunc{
+			api.RecoverPanic,
+		},
+	})
 
 	slog.Info("Server ready", "host", host, "port", port)
-	http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), h)
+	http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), api.LogRequests(h))
 }
