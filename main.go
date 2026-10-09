@@ -22,8 +22,11 @@ var (
 	GitHash = "0000000000000000000000000000000000000000"
 )
 
-//go:embed web/static
+//go:embed all:web/static
 var webFS embed.FS
+
+//go:embed openapi.yaml
+var openAPISpec []byte
 
 var frontendFilesRoot = "web/static"
 
@@ -80,16 +83,21 @@ func main() {
 	slog.Info("Starting up", "version", Version, "gitHash", GitHash)
 	slog.Debug("Using slog with specified level", "loglevel", logLevel)
 
-	apiPrefix := "/api/v1"
-	a := api.NewAPIHandler(db, apiPrefix)
+	apiPrefix := "/api"
+	apiPrefixWithVersion := apiPrefix + "/v1"
+	a := api.NewAPIHandler(db)
 	mux := http.NewServeMux()
 
 	staticFS, err := fs.Sub(webFS, frontendFilesRoot)
 	if err != nil {
 		utility.HandleErr("Error while creating sub FS for static file server", err)
 	}
+	mux.HandleFunc(apiPrefix+"/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/yaml")
+		_, _ = w.Write(openAPISpec)
+	})
 	mux.Handle("/", http.FileServerFS(staticFS))
-	h := api.HandlerFromMuxWithBaseURL(a, mux, apiPrefix)
+	h := api.HandlerFromMuxWithBaseURL(a, mux, apiPrefixWithVersion)
 
 	slog.Info("Server ready", "host", host, "port", port)
 	http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), h)
