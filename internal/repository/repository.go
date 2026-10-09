@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -35,7 +36,18 @@ func New(dbFile string) (*Repository, error) {
 	return &Repository{DB: db}, nil
 }
 
-func (r *Repository) Save(object any) error {
-	result := r.DB.Save(object)
-	return result.Error
+func (r *Repository) Save(ctx context.Context, object any) error {
+	return r.DB.WithContext(ctx).Save(object).Error
+}
+
+func (r *Repository) ProjectByShareToken(ctx context.Context, shareToken string) (*Project, error) {
+	var m Project
+	err := r.DB.WithContext(ctx).Where(&Project{ShareToken: shareToken}).Take(&m).Error
+	return &m, err
+}
+
+func (r *Repository) ProjectByAdminToken(ctx context.Context, adminToken string) (*Project, error) {
+	var m Project
+	err := r.DB.WithContext(ctx).Where(&Project{AdminToken: adminToken}).Take(&m).Error
+	return &m, err
 }
