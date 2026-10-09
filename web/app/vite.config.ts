@@ -27,7 +27,7 @@ export default defineConfig({
 			adapter: adapter({
 				pages: "../static",
 				assets: "../static",
-				fallback: "index.html",
+				fallback: "200.html",
 			})
 		})
 	]
