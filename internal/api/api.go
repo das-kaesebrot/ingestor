@@ -16,8 +16,6 @@ type APIHandler struct {
 	repo *repository.Repository
 }
 
-var jsonUnmarshalerOpts = json.JoinOptions(json.DefaultOptionsV2(), json.RejectUnknownMembers(true))
-
 // CreateDownloadProjectFilteredMediaArchive implements [ServerInterface].
 func (a *APIHandler) CreateDownloadProjectFilteredMediaArchive(w http.ResponseWriter, r *http.Request, shareToken ShareToken) {
 	panic("unimplemented")
