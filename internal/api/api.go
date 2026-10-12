@@ -3,7 +3,9 @@ package api
 import (
 	"encoding/json/v2"
 	"errors"
+	"log/slog"
 	"net/http"
+	"runtime/debug"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/repository"
 	"gorm.io/gorm"
@@ -13,6 +15,8 @@ type APIHandler struct {
 	repo *repository.Repository
 }
 
+var jsonUnmarshalerOpts = json.JoinOptions(json.DefaultOptionsV2(), json.RejectUnknownMembers(true))
+
 // CreateDownloadProjectFilteredMediaArchive implements [ServerInterface].
 func (a *APIHandler) CreateDownloadProjectFilteredMediaArchive(w http.ResponseWriter, r *http.Request, shareToken ShareToken) {
 	panic("unimplemented")
@@ -20,7 +24,11 @@ func (a *APIHandler) CreateDownloadProjectFilteredMediaArchive(w http.ResponseWr
 
 // CreateProject implements [ServerInterface].
 func (a *APIHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
-	panic("unimplemented")
+	var parsedReq CreateProjectJSONRequestBody
+	if err := json.UnmarshalRead(r.Body, &parsedReq); err != nil {
+		writeInternalServerError(w, r, err)
+		return
+	}
 }
 
 // CreateProjectUser implements [ServerInterface].
@@ -85,9 +93,9 @@ func (a *APIHandler) GetProjectByShareToken(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
-			writeJSON(w, http.StatusNotFound, NotFound{Status: http.StatusNotFound, Title: "The requested project was not found.", AdditionalProperties: map[string]interface{}{"share_token": shareToken}})
+			writeNotFoundError(w, map[string]interface{}{"share_token": shareToken})
 		default:
-			writeJSON(w, http.StatusInternalServerError, InternalServerError{Status: http.StatusInternalServerError, Title: err.Error()})
+			writeInternalServerError(w, r, err)
 		}
 		return
 	}
@@ -154,14 +162,40 @@ func NewAPIHandler(db *repository.Repository) *APIHandler {
 	return &APIHandler{repo: db}
 }
 
-func writeJSON(w http.ResponseWriter, status int, object any) {
-	jData, err := json.Marshal(object)
+func writeBadRequestError(w http.ResponseWriter, additionalProperties map[string]interface{}) {
+	status := http.StatusBadRequest
+	writeProblemJSON(w, status, BadRequest{Status: status, Title: "The request was malformed or invalid.", AdditionalProperties: additionalProperties})
+}
+
+func writeNotFoundError(w http.ResponseWriter, additionalProperties map[string]interface{}) {
+	status := http.StatusNotFound
+	writeProblemJSON(w, status, NotFound{Status: status, Title: "The requested object was not found.", AdditionalProperties: additionalProperties})
+}
+
+func writeInternalServerError(w http.ResponseWriter, r *http.Request, err error) {
+	status := http.StatusInternalServerError
+	slog.Error("internal server error",
+		"method", r.Method,
+		"path", r.URL.Path,
+		"error", err.Error(),
+		"stack", string(debug.Stack()),
+	)
+	writeProblemJSON(w, status, InternalServerError{Status: status, Title: "An internal server error has occured."})
+}
+
+func writeProblemJSON(w http.ResponseWriter, status int, object any) {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(status)
+	err := json.MarshalWrite(w, object)
 	if err != nil {
 		panic(err)
 	}
+}
+
+func writeJSON(w http.ResponseWriter, status int, object any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	_, err = w.Write(jData)
+	err := json.MarshalWrite(w, object)
 	if err != nil {
 		panic(err)
 	}

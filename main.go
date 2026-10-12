@@ -15,6 +15,8 @@ import (
 	"dev.kaesebrot.eu/go/ingestor/internal/api"
 	"dev.kaesebrot.eu/go/ingestor/internal/repository"
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
+	"github.com/getkin/kin-openapi/openapi3"
+	middleware "github.com/oapi-codegen/nethttp-middleware"
 )
 
 var (
@@ -96,11 +98,18 @@ func main() {
 		w.Header().Set("Content-Type", "application/yaml")
 		_, _ = w.Write(openAPISpec)
 	})
+
+	spec, _ := openapi3.NewLoader().LoadFromData([]byte(openAPISpec))
+	validateOapiRequests := middleware.OapiRequestValidatorWithOptions(spec, &middleware.Options{
+		ErrorHandlerWithOpts: api.OapiRequestValidatorErrorHandler,
+	})
+
 	mux.Handle("/", http.FileServerFS(staticFS))
 	h := api.HandlerWithOptions(a, api.StdHTTPServerOptions{
 		BaseRouter: mux,
 		BaseURL:    apiPrefixWithVersion,
 		Middlewares: []api.MiddlewareFunc{
+			validateOapiRequests,
 			api.RecoverPanic,
 		},
 	})

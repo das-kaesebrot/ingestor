@@ -1182,6 +1182,7 @@ components:
       description: "A time format that follows the go Time.Format specification. See https://pkg.go.dev/time#Layout"
     ProjectDescription:
       type: string
+      minLength: 1
       maxLength: 64
     ProjectStart:
       type: string
