@@ -402,19 +402,15 @@ type Project struct {
 	AdminToken  *Token             `json:"admin_token,omitempty"`
 	CreatedAt   time.Time          `json:"created_at"`
 	Description ProjectDescription `json:"description"`
-
-	// End The end date and time of the project (event). Used for finding media that does not fall into the project time range.
-	End ProjectEnd `json:"end"`
+	End         *ProjectEnd        `json:"end"`
 
 	// ExpiresAt Expiry date for the project. After that time, the project is automatically deleted.
 	ExpiresAt             ProjectExpiry                 `json:"expires_at"`
 	Id                    ProjectId                     `json:"id"`
 	ShareToken            Token                         `json:"share_token"`
 	ShareTokenPermissions []ProjectShareTokenPermission `json:"share_token_permissions"`
-
-	// Start The start date and time of the project (event). Used for finding media that does not fall into the project time range.
-	Start     ProjectStart `json:"start"`
-	UpdatedAt time.Time    `json:"updated_at"`
+	Start                 *ProjectStart                 `json:"start"`
+	UpdatedAt             time.Time                     `json:"updated_at"`
 }
 
 // ProjectDescription defines model for ProjectDescription.
@@ -446,9 +442,7 @@ type ProjectStart = time.Time
 // ProjectUpdate defines model for ProjectUpdate.
 type ProjectUpdate struct {
 	Description *ProjectDescription `json:"description,omitempty"`
-
-	// End The end date and time of the project (event). Used for finding media that does not fall into the project time range.
-	End *ProjectEnd `json:"end,omitempty"`
+	End         *ProjectEnd         `json:"end,omitempty"`
 
 	// ExpiresAt Expiry date for the project. After that time, the project is automatically deleted.
 	ExpiresAt *ProjectExpiry `json:"expires_at,omitempty"`
@@ -459,9 +453,7 @@ type ProjectUpdate struct {
 	// RotateShareToken Invalidate the previous share token and let the server generate a new one.
 	RotateShareToken      *bool                          `json:"rotate_share_token,omitempty"`
 	ShareTokenPermissions *[]ProjectShareTokenPermission `json:"share_token_permissions,omitempty"`
-
-	// Start The start date and time of the project (event). Used for finding media that does not fall into the project time range.
-	Start *ProjectStart `json:"start,omitempty"`
+	Start                 *ProjectStart                  `json:"start,omitempty"`
 }
 
 // SystemCapabilities defines model for SystemCapabilities.

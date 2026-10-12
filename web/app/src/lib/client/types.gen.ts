@@ -23,8 +23,8 @@ export type Project = {
     admin_token?: Token;
     description: ProjectDescription;
     share_token_permissions: Array<ProjectShareTokenPermission>;
-    start: ProjectStart;
-    end: ProjectEnd;
+    start: ProjectStart | null;
+    end: ProjectEnd | null;
     expires_at: ProjectExpiry;
     updated_at: string;
     created_at: string;
@@ -99,8 +99,8 @@ export type NewProject = {
 
 export type ProjectUpdate = {
     description?: ProjectDescription;
-    start?: ProjectStart;
-    end?: ProjectEnd;
+    start?: ProjectStart | null;
+    end?: ProjectEnd | null;
     expires_at?: ProjectExpiry;
     share_token_permissions?: Array<ProjectShareTokenPermission>;
     /**

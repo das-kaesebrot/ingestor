@@ -835,9 +835,13 @@ components:
           items:
             $ref: '#/components/schemas/ProjectShareTokenPermission'
         start:
-          $ref: '#/components/schemas/ProjectStart'
+          oneOf:
+            - $ref: '#/components/schemas/ProjectStart'
+            - type: "null"
         end:
-          $ref: '#/components/schemas/ProjectEnd'
+          oneOf:
+            - $ref: '#/components/schemas/ProjectEnd'
+            - type: "null"
         expires_at:
           $ref: '#/components/schemas/ProjectExpiry'
         updated_at:
@@ -960,9 +964,13 @@ components:
         description:
           $ref: '#/components/schemas/ProjectDescription'
         start:
-          $ref: '#/components/schemas/ProjectStart'
+          oneOf:
+            - $ref: '#/components/schemas/ProjectStart'
+            - type: "null"
         end:
-          $ref: '#/components/schemas/ProjectEnd'
+          oneOf:
+            - $ref: '#/components/schemas/ProjectEnd'
+            - type: "null"
         expires_at:
           $ref: '#/components/schemas/ProjectExpiry'
         share_token_permissions:
