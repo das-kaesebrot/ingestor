@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"runtime/debug"
+	"time"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/repository"
 	"gorm.io/gorm"
@@ -79,7 +80,35 @@ func (a *APIHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 // CreateProjectUser implements [ServerInterface].
 func (a *APIHandler) CreateProjectUser(w http.ResponseWriter, r *http.Request, shareToken ShareToken) {
-	panic("unimplemented")
+	p, err := a.repo.ProjectByShareToken(r.Context(), shareToken)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"share_token": shareToken})
+		default:
+			writeInternalServerError(w, r, err)
+		}
+		return
+	}
+
+	var parsedReq CreateProjectUserJSONRequestBody
+	if err := json.UnmarshalRead(r.Body, &parsedReq); err != nil {
+		writeInternalServerError(w, r, err)
+		return
+	}
+
+	projectUser := new(repository.UploadUser)
+	projectUser.ProjectID = p.ID
+	projectUser.Name = parsedReq.Name
+
+	err = a.repo.Create(r.Context(), projectUser)
+	if err != nil {
+		writeInternalServerError(w, r, err)
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, UserToResponse(projectUser))
 }
 
 // DeleteProject implements [ServerInterface].
