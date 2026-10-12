@@ -9,6 +9,7 @@ import (
 
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 	"github.com/glebarez/sqlite"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -36,6 +37,10 @@ func New(dbFile string) (*Repository, error) {
 	return &Repository{DB: db}, nil
 }
 
+func (r *Repository) Create(ctx context.Context, object any) error {
+	return r.DB.WithContext(ctx).Create(object).Error
+}
+
 func (r *Repository) Save(ctx context.Context, object any) error {
 	return r.DB.WithContext(ctx).Save(object).Error
 }
@@ -50,4 +55,60 @@ func (r *Repository) ProjectByAdminToken(ctx context.Context, adminToken string)
 	var m Project
 	err := r.DB.WithContext(ctx).Where(&Project{AdminToken: adminToken}).Take(&m).Error
 	return &m, err
+}
+
+func (r *Repository) ProjectIdByShareToken(ctx context.Context, shareToken string) (uuid.UUID, error) {
+	var m Project
+	err := r.DB.WithContext(ctx).Select("id").Where(&Project{ShareToken: shareToken}).Take(&m).Error
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+	return m.ID, nil
+}
+
+func (r *Repository) ProjectIdByAdminToken(ctx context.Context, adminToken string) (uuid.UUID, error) {
+	var m Project
+	err := r.DB.WithContext(ctx).Select("id").Where(&Project{AdminToken: adminToken}).Take(&m).Error
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+	return m.ID, nil
+}
+
+func (r *Repository) UploadUserById(ctx context.Context, projectID uuid.UUID, userID uuid.UUID) (*UploadUser, error) {
+	var m UploadUser
+	err := r.DB.WithContext(ctx).Where(&UploadUser{ID: userID, ProjectID: projectID}).Take(&m).Error
+	if err != nil {
+		return nil, err
+	}
+	return &m, nil
+}
+
+func (r *Repository) UploadUsersByProjectWithLimitAndOffset(ctx context.Context, projectID uuid.UUID, limit int, offset int) ([]UploadUser, error) {
+	var users []UploadUser
+	err := r.DB.WithContext(ctx).Where(&UploadUser{ProjectID: projectID}).Order("created_at ASC").Limit(limit).Offset(offset).Find(&users).Error
+	if err != nil {
+		return []UploadUser{}, err
+	}
+	return users, nil
+}
+
+func (r *Repository) CountUploadUsersByProject(ctx context.Context, projectID uuid.UUID) (int64, error) {
+	var count int64
+	err := r.DB.WithContext(ctx).Model(&UploadUser{}).Select("id").Where(&UploadUser{ProjectID: projectID}).Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (r *Repository) DeleteProject(ctx context.Context, projectID uuid.UUID) error {
+	result := r.DB.WithContext(ctx).Delete(&Project{ID: projectID})
+	return result.Error
+}
+
+func (r *Repository) DeleteProjectByAdminToken(ctx context.Context, adminToken string) error {
+	result := r.DB.Where(&Project{AdminToken: adminToken}).Delete(ctx)
+	return result.Error
 }
