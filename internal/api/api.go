@@ -88,7 +88,7 @@ func (a *APIHandler) GetProjectBackgroundJobs(w http.ResponseWriter, r *http.Req
 
 // GetProjectByShareToken implements [ServerInterface].
 func (a *APIHandler) GetProjectByShareToken(w http.ResponseWriter, r *http.Request, shareToken ShareToken) {
-	_, err := a.repo.ProjectByShareToken(r.Context(), shareToken)
+	p, err := a.repo.ProjectByShareToken(r.Context(), shareToken)
 
 	if err != nil {
 		switch {
@@ -99,6 +99,8 @@ func (a *APIHandler) GetProjectByShareToken(w http.ResponseWriter, r *http.Reque
 		}
 		return
 	}
+
+	writeJSON(w, http.StatusOK, ProjectToResponse(p, false))
 }
 
 // GetProjectMedia implements [ServerInterface].
