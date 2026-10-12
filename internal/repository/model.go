@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,11 +21,28 @@ func GenerateRandomRepoToken() (string, error) {
 
 type Project struct {
 	gorm.Model
-	ID          uuid.UUID `gorm:"primaryKey,type:uuid"`
-	ShareToken  string    `gorm:"not null;uniqueIndex"`
-	AdminToken  string    `gorm:"not null;uniqueIndex"`
-	Description string
-	UploadUsers []UploadUser
+	ID                        uuid.UUID `gorm:"primaryKey,type:uuid"`
+	ShareToken                string    `gorm:"not null;uniqueIndex"`
+	AdminToken                string    `gorm:"not null;uniqueIndex"`
+	Description               string
+	Start                     *time.Time
+	End                       *time.Time
+	ExpiresAt                 time.Time
+	ShareTokenDownloadAllowed bool
+	ShareTokenUploadAllowed   bool
+	UploadUsers               []UploadUser
+}
+
+func (p *Project) Validate() error {
+	if p.Start != nil && p.End != nil && (p.Start.After(*p.End) || p.Start.Equal(*p.End)) {
+		return errors.New("Project start can't be at or after project end!")
+	}
+
+	if p.ExpiresAt.Before(time.Now()) {
+		return errors.New("Project expiry can't be in the past!")
+	}
+
+	return nil
 }
 
 func (p *Project) BeforeCreate(tx *gorm.DB) error {
