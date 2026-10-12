@@ -47,19 +47,17 @@ func (a *APIHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if parsedReq.ShareTokenPermissions != nil {
-		project.ShareTokenDownloadAllowed = false
-		project.ShareTokenUploadAllowed = false
+		project.ShareTokenPermissions = make([]repository.ShareTokenPermission, 0, 2)
 		for _, perm := range *parsedReq.ShareTokenPermissions {
 			if perm == Download {
-				project.ShareTokenDownloadAllowed = true
+				project.ShareTokenPermissions = append(project.ShareTokenPermissions, repository.SHARE_TOKEN_DOWNLOAD_ALLOWED)
 			}
 			if perm == Upload {
-				project.ShareTokenUploadAllowed = true
+				project.ShareTokenPermissions = append(project.ShareTokenPermissions, repository.SHARE_TOKEN_UPLOAD_ALLOWED)
 			}
 		}
 	} else {
-		project.ShareTokenDownloadAllowed = false
-		project.ShareTokenUploadAllowed = true
+		project.ShareTokenPermissions = []repository.ShareTokenPermission{repository.SHARE_TOKEN_UPLOAD_ALLOWED}
 	}
 
 	err := project.Validate()
@@ -310,14 +308,13 @@ func (a *APIHandler) PatchProject(w http.ResponseWriter, r *http.Request, adminT
 		project.ExpiresAt = *parsedReq.ExpiresAt
 	}
 	if parsedReq.ShareTokenPermissions != nil {
-		project.ShareTokenDownloadAllowed = false
-		project.ShareTokenUploadAllowed = false
+		project.ShareTokenPermissions = make([]repository.ShareTokenPermission, 0, 2)
 		for _, perm := range *parsedReq.ShareTokenPermissions {
 			if perm == Download {
-				project.ShareTokenDownloadAllowed = true
+				project.ShareTokenPermissions = append(project.ShareTokenPermissions, repository.SHARE_TOKEN_DOWNLOAD_ALLOWED)
 			}
 			if perm == Upload {
-				project.ShareTokenUploadAllowed = true
+				project.ShareTokenPermissions = append(project.ShareTokenPermissions, repository.SHARE_TOKEN_UPLOAD_ALLOWED)
 			}
 		}
 	}

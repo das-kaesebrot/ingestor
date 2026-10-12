@@ -19,18 +19,24 @@ func GenerateRandomRepoToken() (string, error) {
 	return utility.GenerateRandomToken(defaultTokenLength, defaultTokenAlphabet)
 }
 
+type ShareTokenPermission int
+
+const (
+	SHARE_TOKEN_UPLOAD_ALLOWED ShareTokenPermission = iota
+	SHARE_TOKEN_DOWNLOAD_ALLOWED
+)
+
 type Project struct {
 	gorm.Model
-	ID                        uuid.UUID `gorm:"primaryKey,type:uuid"`
-	ShareToken                string    `gorm:"not null;uniqueIndex"`
-	AdminToken                string    `gorm:"not null;uniqueIndex"`
-	Description               string
-	Start                     *time.Time
-	End                       *time.Time
-	ExpiresAt                 time.Time
-	ShareTokenDownloadAllowed bool
-	ShareTokenUploadAllowed   bool
-	UploadUsers               []UploadUser
+	ID                    uuid.UUID `gorm:"primaryKey,type:uuid"`
+	ShareToken            string    `gorm:"not null;uniqueIndex"`
+	AdminToken            string    `gorm:"not null;uniqueIndex"`
+	Description           string
+	Start                 *time.Time
+	End                   *time.Time
+	ExpiresAt             time.Time
+	ShareTokenPermissions []ShareTokenPermission `gorm:"serializer:json"`
+	UploadUsers           []UploadUser
 }
 
 func (p *Project) Validate() error {

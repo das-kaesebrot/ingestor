@@ -16,11 +16,13 @@ func PagedProjectsToResponse(ps []repository.Project, pageNum int, perPage int, 
 
 func ProjectToResponse(p *repository.Project, withAdminToken bool) Project {
 	shareTokenPermissions := make([]ProjectShareTokenPermission, 0, 2)
-	if p.ShareTokenDownloadAllowed {
-		shareTokenPermissions = append(shareTokenPermissions, Download)
-	}
-	if p.ShareTokenUploadAllowed {
-		shareTokenPermissions = append(shareTokenPermissions, Upload)
+	for _, perm := range p.ShareTokenPermissions {
+		if perm == repository.SHARE_TOKEN_DOWNLOAD_ALLOWED {
+			shareTokenPermissions = append(shareTokenPermissions, Download)
+		}
+		if perm == repository.SHARE_TOKEN_UPLOAD_ALLOWED {
+			shareTokenPermissions = append(shareTokenPermissions, Upload)
+		}
 	}
 
 	projectResponse := Project{
