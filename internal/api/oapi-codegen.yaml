@@ -4,3 +4,8 @@ package: api
 generate:
   std-http-server: true
   models: true
+output-options:
+  type-mapping:
+    string:
+      formats:
+        uuid: { type: uuid.UUID }

@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"time"
+	"uuid"
 
 	"github.com/google/uuid"
 
@@ -52,10 +53,7 @@ func (p *Project) Validate() error {
 }
 
 func (p *Project) BeforeCreate(tx *gorm.DB) error {
-	newUuid, err := uuid.NewV7()
-	if err != nil {
-		return err
-	}
+	newUuid := uuid.NewV7()
 	p.ID = newUuid
 
 	newShareToken, err := GenerateRandomRepoToken()
@@ -83,10 +81,7 @@ type UploadUser struct {
 }
 
 func (u *UploadUser) BeforeCreate(tx *gorm.DB) error {
-	newUuid, err := uuid.NewV7()
-	if err != nil {
-		return err
-	}
+	newUuid := uuid.NewV7()
 	u.ID = newUuid
 	return nil
 }
@@ -101,11 +96,8 @@ type MediaFile struct {
 	CaptureCorrectionOffset time.Duration
 }
 
-func (m *MediaFile) BeforeCreate(tx *gorm.DB) error {
-	newUuid, err := uuid.NewV7()
-	if err != nil {
-		return err
-	}
+func (m *MediaFileBase) BeforeCreate(tx *gorm.DB) error {
+	newUuid := uuid.NewV7()
 	m.ID = newUuid
 	return nil
 }

@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"uuid"
 
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -264,7 +265,7 @@ type Job struct {
 }
 
 // JobId defines model for JobId.
-type JobId = openapi_types.UUID
+type JobId = uuid.UUID
 
 // JobStatus A job's status
 type JobStatus string
@@ -278,7 +279,7 @@ type MediaBatchDeletionRequest struct {
 }
 
 // MediaId defines model for MediaId.
-type MediaId = openapi_types.UUID
+type MediaId = uuid.UUID
 
 // MediaMetadata defines model for MediaMetadata.
 type MediaMetadata struct {
@@ -423,7 +424,7 @@ type ProjectEnd = time.Time
 type ProjectExpiry = time.Time
 
 // ProjectId defines model for ProjectId.
-type ProjectId = openapi_types.UUID
+type ProjectId = uuid.UUID
 
 // ProjectMediaPreviewNotReadyYet The requested preview image has not been created yet, try again later.
 type ProjectMediaPreviewNotReadyYet struct {
@@ -482,7 +483,7 @@ type User struct {
 }
 
 // UserId defines model for UserId.
-type UserId = openapi_types.UUID
+type UserId = uuid.UUID
 
 // UserUpdate defines model for UserUpdate.
 type UserUpdate struct {

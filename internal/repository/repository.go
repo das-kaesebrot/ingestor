@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"uuid"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 	"github.com/glebarez/sqlite"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -32,7 +32,7 @@ func New(dbFile string) (*Repository, error) {
 		return nil, fmt.Errorf("failed to connect database: %w", err)
 	}
 
-	db.AutoMigrate(&Project{}, &UploadUser{})
+	db.AutoMigrate(&Project{}, &UploadUser{}, &ImageFile{}, &VideoFile{})
 
 	return &Repository{DB: db}, nil
 }
