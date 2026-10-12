@@ -110,7 +110,30 @@ func (a *APIHandler) GetProjectMedia(w http.ResponseWriter, r *http.Request, sha
 
 // GetProjectUser implements [ServerInterface].
 func (a *APIHandler) GetProjectUser(w http.ResponseWriter, r *http.Request, shareToken ShareToken, userId UserId) {
-	panic("unimplemented")
+	pID, err := a.repo.ProjectIdByShareToken(r.Context(), shareToken)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"share_token": shareToken})
+		default:
+			writeInternalServerError(w, r, err)
+		}
+		return
+	}
+
+	user, err := a.repo.UploadUserById(r.Context(), pID, userId)
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"user_id": userId})
+		default:
+			writeInternalServerError(w, r, err)
+		}
+		return
+	}
+
+	writeJSON(w, http.StatusOK, UserToResponse(user))
 }
 
 // GetSystemCapabilities implements [ServerInterface].
@@ -125,7 +148,41 @@ func (a *APIHandler) ListProjectMediaMetadata(w http.ResponseWriter, r *http.Req
 
 // ListProjectUsers implements [ServerInterface].
 func (a *APIHandler) ListProjectUsers(w http.ResponseWriter, r *http.Request, shareToken ShareToken, params ListProjectUsersParams) {
-	panic("unimplemented")
+	pID, err := a.repo.ProjectIdByShareToken(r.Context(), shareToken)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"share_token": shareToken})
+		default:
+			writeInternalServerError(w, r, err)
+		}
+		return
+	}
+
+	pageNum := 1
+	if params.Page != nil {
+		pageNum = *params.Page
+	}
+
+	perPage := 50
+	if params.PerPage != nil {
+		perPage = *params.PerPage
+	}
+
+	total, err := a.repo.CountUploadUsersByProject(r.Context(), pID)
+	if err != nil {
+		writeInternalServerError(w, r, err)
+		return
+	}
+
+	users, err := a.repo.UploadUsersByProjectWithLimitAndOffset(r.Context(), pID, perPage, (pageNum-1)*perPage)
+	if err != nil {
+		writeInternalServerError(w, r, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, PagedUsersToResponse(users, pageNum, perPage, total))
 }
 
 // ListProjects implements [ServerInterface].
