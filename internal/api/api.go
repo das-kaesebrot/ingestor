@@ -279,7 +279,108 @@ func (a *APIHandler) ListProjects(w http.ResponseWriter, r *http.Request, params
 
 // PatchProject implements [ServerInterface].
 func (a *APIHandler) PatchProject(w http.ResponseWriter, r *http.Request, adminToken AdminToken) {
-	panic("unimplemented")
+	project, err := a.repo.ProjectByAdminToken(r.Context(), adminToken)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"admin_token": adminToken})
+		default:
+			writeInternalServerError(w, r, err)
+		}
+		return
+	}
+
+	var parsedReq PatchProjectJSONRequestBody
+	if err := json.UnmarshalRead(r.Body, &parsedReq); err != nil {
+		writeInternalServerError(w, r, err)
+		return
+	}
+
+	if parsedReq.Description != nil {
+		project.Description = *parsedReq.Description
+	}
+	if parsedReq.Start != nil {
+		project.Start = new(*parsedReq.Start)
+	}
+	if parsedReq.End != nil {
+		project.End = new(*parsedReq.End)
+	}
+	if parsedReq.ExpiresAt != nil {
+		project.ExpiresAt = *parsedReq.ExpiresAt
+	}
+	if parsedReq.ShareTokenPermissions != nil {
+		project.ShareTokenDownloadAllowed = false
+		project.ShareTokenUploadAllowed = false
+		for _, perm := range *parsedReq.ShareTokenPermissions {
+			if perm == Download {
+				project.ShareTokenDownloadAllowed = true
+			}
+			if perm == Upload {
+				project.ShareTokenUploadAllowed = true
+			}
+		}
+	}
+	if parsedReq.RotateShareToken != nil && (*parsedReq.RotateShareToken) {
+		tokenFound := false
+		for !tokenFound {
+			token, err := repository.GenerateRandomRepoToken()
+			if err != nil {
+				writeInternalServerError(w, r, err)
+				return
+			}
+
+			_, err = a.repo.ProjectIdByShareToken(r.Context(), token)
+			if err != nil {
+				switch {
+				case errors.Is(err, gorm.ErrRecordNotFound):
+					project.ShareToken = token
+					tokenFound = true
+				default:
+					writeInternalServerError(w, r, err)
+					return
+				}
+			}
+		}
+	}
+	if parsedReq.RotateAdminToken != nil && (*parsedReq.RotateAdminToken) {
+		tokenFound := false
+		for !tokenFound {
+			token, err := repository.GenerateRandomRepoToken()
+			if err != nil {
+				// bruh
+				writeInternalServerError(w, r, err)
+				return
+			}
+
+			_, err = a.repo.ProjectByAdminToken(r.Context(), token)
+			if err != nil {
+				switch {
+				case errors.Is(err, gorm.ErrRecordNotFound):
+					project.AdminToken = token
+					tokenFound = true
+				default:
+					writeInternalServerError(w, r, err)
+					return
+				}
+			}
+		}
+	}
+
+	err = project.Validate()
+	if err != nil {
+		detail := err.Error()
+		writeProblemJSON(w, http.StatusBadRequest, BadRequest{Status: http.StatusBadRequest, Title: "The request was malformed or invalid.", Detail: &detail})
+		return
+	}
+
+	err = a.repo.Save(r.Context(), project)
+	if err != nil {
+		writeInternalServerError(w, r, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, ProjectToResponse(project, true))
 }
 
 // PatchProjectUser implements [ServerInterface].
