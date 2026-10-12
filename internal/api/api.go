@@ -29,6 +29,52 @@ func (a *APIHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 		writeInternalServerError(w, r, err)
 		return
 	}
+
+	project := new(repository.Project)
+	project.Description = parsedReq.Description
+	if parsedReq.Start != nil {
+		project.Start = new(*parsedReq.Start)
+	}
+	if parsedReq.End != nil {
+		project.End = new(*parsedReq.End)
+	}
+
+	if parsedReq.ExpiresAt != nil {
+		project.ExpiresAt = *parsedReq.ExpiresAt
+	} else {
+		project.ExpiresAt = time.Now().Add(time.Hour * 24 * 90) // default expiration date: now + 90 days
+	}
+
+	if parsedReq.ShareTokenPermissions != nil {
+		project.ShareTokenDownloadAllowed = false
+		project.ShareTokenUploadAllowed = false
+		for _, perm := range *parsedReq.ShareTokenPermissions {
+			if perm == Download {
+				project.ShareTokenDownloadAllowed = true
+			}
+			if perm == Upload {
+				project.ShareTokenUploadAllowed = true
+			}
+		}
+	} else {
+		project.ShareTokenDownloadAllowed = false
+		project.ShareTokenUploadAllowed = true
+	}
+
+	err := project.Validate()
+	if err != nil {
+		detail := err.Error()
+		writeProblemJSON(w, http.StatusBadRequest, BadRequest{Status: http.StatusBadRequest, Title: "The request was malformed or invalid.", Detail: &detail})
+		return
+	}
+
+	err = a.repo.Create(r.Context(), project)
+	if err != nil {
+		writeInternalServerError(w, r, err)
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, ProjectToResponse(project, true))
 }
 
 // CreateProjectUser implements [ServerInterface].
@@ -38,7 +84,19 @@ func (a *APIHandler) CreateProjectUser(w http.ResponseWriter, r *http.Request, s
 
 // DeleteProject implements [ServerInterface].
 func (a *APIHandler) DeleteProject(w http.ResponseWriter, r *http.Request, adminToken AdminToken) {
-	panic("unimplemented")
+	err := a.repo.DeleteProjectByAdminToken(r.Context(), adminToken)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"admin_token": adminToken})
+		default:
+			writeInternalServerError(w, r, err)
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // DeleteProjectMedia implements [ServerInterface].
