@@ -695,7 +695,7 @@ type DownloadProjectFilteredMediaArchiveParams struct {
 
 // UploadProjectMediaMultipartBody defines parameters for UploadProjectMedia.
 type UploadProjectMediaMultipartBody struct {
-	File *[]interface{} `json:"file,omitempty"`
+	Files *[]interface{} `json:"files,omitempty"`
 }
 
 // DownloadProjectMediaFileParams defines parameters for DownloadProjectMediaFile.

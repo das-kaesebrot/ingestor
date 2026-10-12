@@ -721,7 +721,7 @@ export type ListProjectMediaMetadataResponse = ListProjectMediaMetadataResponses
 
 export type UploadProjectMediaData = {
     body: {
-        file?: Array<unknown>;
+        files?: Array<unknown>;
     };
     path: {
         'share-token': Token;

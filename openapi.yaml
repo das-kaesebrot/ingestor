@@ -225,7 +225,7 @@ paths:
             schema:
               type: object
               properties:
-                file:
+                files:
                   type: array
                   items:
                     format: binary
