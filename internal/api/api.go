@@ -136,7 +136,30 @@ func (a *APIHandler) DeleteProjectMediaBatched(w http.ResponseWriter, r *http.Re
 
 // DeleteProjectUser implements [ServerInterface].
 func (a *APIHandler) DeleteProjectUser(w http.ResponseWriter, r *http.Request, adminToken AdminToken, userId UserId) {
-	panic("unimplemented")
+	pID, err := a.repo.ProjectIdByAdminToken(r.Context(), adminToken)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"admin_token": adminToken})
+		default:
+			writeInternalServerError(w, r, err)
+		}
+		return
+	}
+
+	err = a.repo.DeleteUploadUser(r.Context(), pID, userId)
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"user_id": userId})
+		default:
+			writeInternalServerError(w, r, err)
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // DownloadProjectFilteredMediaArchive implements [ServerInterface].
@@ -380,7 +403,46 @@ func (a *APIHandler) PatchProject(w http.ResponseWriter, r *http.Request, adminT
 
 // PatchProjectUser implements [ServerInterface].
 func (a *APIHandler) PatchProjectUser(w http.ResponseWriter, r *http.Request, shareToken ShareToken, userId UserId) {
-	panic("unimplemented")
+	pID, err := a.repo.ProjectIdByShareToken(r.Context(), shareToken)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"share_token": shareToken})
+		default:
+			writeInternalServerError(w, r, err)
+		}
+		return
+	}
+
+	user, err := a.repo.UploadUserById(r.Context(), pID, userId)
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"user_id": userId})
+		default:
+			writeInternalServerError(w, r, err)
+		}
+		return
+	}
+
+	var parsedReq PatchProjectUserJSONRequestBody
+	if err := json.UnmarshalRead(r.Body, &parsedReq); err != nil {
+		writeInternalServerError(w, r, err)
+		return
+	}
+
+	if parsedReq.Name != nil {
+		user.Name = *parsedReq.Name
+	}
+
+	err = a.repo.Save(r.Context(), user)
+	if err != nil {
+		writeInternalServerError(w, r, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, UserToResponse(user))
 }
 
 // SyncProjectMediaFile implements [ServerInterface].

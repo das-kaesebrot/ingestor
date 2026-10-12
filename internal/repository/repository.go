@@ -112,3 +112,13 @@ func (r *Repository) DeleteProjectByAdminToken(ctx context.Context, adminToken s
 	result := r.DB.Where(&Project{AdminToken: adminToken}).Delete(ctx)
 	return result.Error
 }
+
+func (r *Repository) DeleteUploadUser(ctx context.Context, projectID uuid.UUID, userID uuid.UUID) error {
+	u, err := r.UploadUserById(ctx, projectID, userID)
+	if err != nil {
+		return err
+	}
+
+	result := r.DB.Delete(u)
+	return result.Error
+}
