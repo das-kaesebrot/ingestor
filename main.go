@@ -102,6 +102,11 @@ func main() {
 	spec, _ := openapi3.NewLoader().LoadFromData([]byte(openAPISpec))
 	validateOapiRequests := middleware.OapiRequestValidatorWithOptions(spec, &middleware.Options{
 		ErrorHandlerWithOpts: api.OapiRequestValidatorErrorHandler,
+		Skipper: func(r *http.Request) bool {
+			// this is important for making upload efficient
+			// but might break in the future in case we change the API upload path
+			return r.Pattern == "POST "+apiPrefixWithVersion+"/projects/{share_token}/media/upload"
+		},
 	})
 
 	mux.Handle("/", http.FileServerFS(staticFS))
