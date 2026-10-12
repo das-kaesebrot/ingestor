@@ -60,8 +60,7 @@ func (a *APIHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	err := project.Validate()
 	if err != nil {
-		detail := err.Error()
-		writeProblemJSON(w, http.StatusBadRequest, BadRequest{Status: http.StatusBadRequest, Title: "The request was malformed or invalid.", Detail: &detail})
+		writeBadRequestError(w, err.Error(), map[string]interface{}{})
 		return
 	}
 
@@ -387,8 +386,7 @@ func (a *APIHandler) PatchProject(w http.ResponseWriter, r *http.Request, adminT
 
 	err = project.Validate()
 	if err != nil {
-		detail := err.Error()
-		writeProblemJSON(w, http.StatusBadRequest, BadRequest{Status: http.StatusBadRequest, Title: "The request was malformed or invalid.", Detail: &detail})
+		writeBadRequestError(w, err.Error(), map[string]interface{}{})
 		return
 	}
 
