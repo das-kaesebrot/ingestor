@@ -28,7 +28,9 @@ export default defineConfig({
 				pages: "../static",
 				assets: "../static",
 				fallback: "200.html",
-			})
+			}),
+			// use app dir without underscore prefix so that go embed doesn't ignore it
+			appDir: "app",
 		})
 	]
 });

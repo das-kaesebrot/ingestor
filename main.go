@@ -22,7 +22,7 @@ var (
 	GitHash = "0000000000000000000000000000000000000000"
 )
 
-//go:embed all:web/static
+//go:embed web/static
 var webFS embed.FS
 
 //go:embed openapi.yaml
