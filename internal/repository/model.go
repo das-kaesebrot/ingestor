@@ -9,6 +9,15 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	defaultTokenLength   = 16
+	defaultTokenAlphabet = utility.TokenAlphabetHumanReadable
+)
+
+func GenerateRandomRepoToken() (string, error) {
+	return utility.GenerateRandomToken(defaultTokenLength, defaultTokenAlphabet)
+}
+
 type Project struct {
 	gorm.Model
 	ID          uuid.UUID `gorm:"primaryKey,type:uuid"`
@@ -25,16 +34,13 @@ func (p *Project) BeforeCreate(tx *gorm.DB) error {
 	}
 	p.ID = newUuid
 
-	defaultTokenLength := 16
-	defaultTokenAlphabet := utility.TokenAlphabetHumanReadable
-
-	newShareToken, err := utility.GenerateRandomToken(defaultTokenLength, defaultTokenAlphabet)
+	newShareToken, err := GenerateRandomRepoToken()
 	if err != nil {
 		return err
 	}
 	p.ShareToken = newShareToken
 
-	newAdminToken, err := utility.GenerateRandomToken(defaultTokenLength, defaultTokenAlphabet)
+	newAdminToken, err := GenerateRandomRepoToken()
 	if err != nil {
 		return err
 	}
