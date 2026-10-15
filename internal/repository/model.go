@@ -5,8 +5,7 @@ import (
 	"time"
 	"uuid"
 
-	"github.com/google/uuid"
-
+	"dev.kaesebrot.eu/go/ingestor/internal/mediaprocessor"
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 	"gorm.io/gorm"
 )
@@ -38,6 +37,7 @@ type Project struct {
 	ExpiresAt             time.Time
 	ShareTokenPermissions []ShareTokenPermission `gorm:"serializer:json"`
 	UploadUsers           []UploadUser
+	MediaFiles            []MediaFileBase
 }
 
 func (p *Project) Validate() error {
@@ -73,11 +73,10 @@ func (p *Project) BeforeCreate(tx *gorm.DB) error {
 
 type UploadUser struct {
 	gorm.Model
-	ID         uuid.UUID `gorm:"primaryKey,type:uuid"`
-	Name       string
-	ProjectID  uuid.UUID
-	ImageFiles []ImageFile
-	VideoFiles []VideoFile
+	ID        uuid.UUID `gorm:"primaryKey,type:uuid"`
+	Name      string
+	ProjectID uuid.UUID
+	MediaFile []MediaFileBase
 }
 
 func (u *UploadUser) BeforeCreate(tx *gorm.DB) error {
@@ -86,43 +85,30 @@ func (u *UploadUser) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-type MediaFile struct {
+type MediaFileBase struct {
 	gorm.Model
-	ID                      uuid.UUID `gorm:"primaryKey,type:uuid"`
-	UploadUserID            uuid.UUID
-	ProjectID               uuid.UUID
-	OriginalFilename        string
-	CaptureTime             time.Time
-	CaptureCorrectionOffset time.Duration
-}
-
-func (m *MediaFileBase) BeforeCreate(tx *gorm.DB) error {
-	newUuid := uuid.NewV7()
-	m.ID = newUuid
-	return nil
-}
-
-type VideoFile struct {
-	MediaFile
-	VideoMetadata
+	ID           uuid.UUID `gorm:"primaryKey,type:uuid"`
+	UploadUserID *uuid.UUID
+	ProjectID    uuid.UUID
 }
 
 type ImageFile struct {
-	MediaFile
-	ImageMetadata
+	MediaFileBase
+	mediaprocessor.ImageMetadata
 }
 
-type ImageMetadata struct {
-	Width     int64
-	Height    int64
-	Codec     string
-	Container string
+type VideoFile struct {
+	MediaFileBase
+	mediaprocessor.VideoMetadata
 }
 
-type VideoMetadata struct {
-	Width     int64
-	Height    int64
-	Duration  time.Duration
-	Codec     string
-	Container string
+func (m *MediaFileBase) BeforeCreate(tx *gorm.DB) error {
+	// don't generate a new uuid if we already have a value (this would be generated during file upload)
+	if m.ID != uuid.Nil() {
+		return nil
+	}
+
+	newUuid := uuid.NewV7()
+	m.ID = newUuid
+	return nil
 }
