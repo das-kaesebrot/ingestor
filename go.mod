@@ -5,6 +5,7 @@ go 1.27.1
 require (
 	github.com/getkin/kin-openapi v0.150.0
 	github.com/glebarez/sqlite v1.11.0
+	github.com/h2non/filetype v1.1.3
 	github.com/oapi-codegen/nethttp-middleware v1.2.0
 	github.com/oapi-codegen/runtime v1.7.0
 	gorm.io/gorm v1.31.2
