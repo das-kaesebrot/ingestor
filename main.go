@@ -13,6 +13,7 @@ import (
 	"path"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/api"
+	"dev.kaesebrot.eu/go/ingestor/internal/filestore"
 	"dev.kaesebrot.eu/go/ingestor/internal/repository"
 	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -63,6 +64,11 @@ func main() {
 		utility.HandleErr("Error initializing database", err)
 	}
 
+	fileStorer, err := filestore.NewLocalFileStorer("tmp", 0700)
+	if err != nil {
+		utility.HandleErr("Error initializing local file storer", err)
+	}
+
 	if l := os.Getenv("LOG_LEVEL"); l != "" {
 		logLevelStr = l
 	}
@@ -87,7 +93,7 @@ func main() {
 
 	apiPrefix := "/api"
 	apiPrefixWithVersion := apiPrefix + "/v1"
-	a := api.NewAPIHandler(db)
+	a := api.NewAPIHandler(db, fileStorer)
 	mux := http.NewServeMux()
 
 	staticFS, err := fs.Sub(webFS, frontendFilesRoot)

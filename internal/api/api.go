@@ -8,12 +8,16 @@ import (
 	"runtime/debug"
 	"time"
 
+	"dev.kaesebrot.eu/go/ingestor/internal/filestore"
+	"dev.kaesebrot.eu/go/ingestor/internal/mediaprocessor"
 	"dev.kaesebrot.eu/go/ingestor/internal/repository"
+	"dev.kaesebrot.eu/go/ingestor/internal/utility"
 	"gorm.io/gorm"
 )
 
 type APIHandler struct {
-	repo *repository.Repository
+	repo       *repository.Repository
+	fileStorer filestore.FileStorer
 }
 
 // CreateDownloadProjectFilteredMediaArchive implements [ServerInterface].
@@ -455,18 +459,60 @@ func (a *APIHandler) UpdateProjectMedia(w http.ResponseWriter, r *http.Request, 
 
 // UploadProjectMedia implements [ServerInterface].
 func (a *APIHandler) UploadProjectMedia(w http.ResponseWriter, r *http.Request, shareToken ShareToken) {
-	panic("unimplemented")
+	const maxUploadFilesize = 50 << 30
+	_ = http.MaxBytesReader(w, r.Body, maxUploadFilesize)
+
+	err := r.ParseMultipartForm(maxUploadFilesize)
+	if err != nil {
+		writeBadRequestError(w, "Uploaded files too large!", map[string]interface{}{})
+		return
+	}
+
+	form := r.MultipartForm
+	files := form.File["files"]
+
+	uploadedVideoFiles := map[string]*repository.VideoFile{}
+	uploadedImageFiles := map[string]*repository.ImageFile{}
+
+	errs := make([]error, 0, len(files))
+	if len(files) == 0 {
+		writeBadRequestError(w, "At least one file has to be uploaded!", map[string]interface{}{})
+		return
+	}
+
+	for _, file := range files {
+		token, _ := utility.GenerateRandomToken(64, utility.TokenAlphabetHumanReadable)
+		uploadFileName := "upload_" + token
+
+		result, err := mediaprocessor.ProcessMediaUpload(r.Context(), file, uploadFileName)
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+
+		if result.ImageResult != nil {
+			imageFile := new(repository.ImageFile{})
+			imageFile.ImageMetadata = *result.ImageResult
+			uploadedImageFiles[uploadFileName] = imageFile
+		} else if result.VideoResult != nil {
+			videoFile := new(repository.VideoFile{})
+			videoFile.VideoMetadata = *result.VideoResult
+			uploadedVideoFiles[uploadFileName] = videoFile
+		}
+	}
+
+	writeJSON(w, http.StatusCreated, MediaMetadataUploadResponse{})
 }
 
 var _ ServerInterface = (*APIHandler)(nil)
 
-func NewAPIHandler(db *repository.Repository) *APIHandler {
-	return &APIHandler{repo: db}
+func NewAPIHandler(db *repository.Repository, fileStorer filestore.FileStorer) *APIHandler {
+	return &APIHandler{repo: db, fileStorer: fileStorer}
 }
 
-func writeBadRequestError(w http.ResponseWriter, additionalProperties map[string]interface{}) {
+func writeBadRequestError(w http.ResponseWriter, detail string, additionalProperties map[string]interface{}) {
 	status := http.StatusBadRequest
-	writeProblemJSON(w, status, BadRequest{Status: status, Title: "The request was malformed or invalid.", AdditionalProperties: additionalProperties})
+	writeProblemJSON(w, status, BadRequest{Status: status, Title: "The request was malformed or invalid.", Detail: &detail, AdditionalProperties: additionalProperties})
 }
 
 func writeNotFoundError(w http.ResponseWriter, additionalProperties map[string]interface{}) {

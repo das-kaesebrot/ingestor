@@ -13,7 +13,6 @@ type FileStorerObjectMetadata struct {
 }
 
 type FileStorer interface {
-	Init() error
 	GetFile(m *FileStorerObjectMetadata) (*io.ReadCloser, error)
 	WriteFile(src io.ReadCloser) (*FileStorerObjectMetadata, error)
 }
@@ -25,18 +24,19 @@ type LocalFileStorer struct {
 // ensure LocalFileStorer implements FileStorer interface
 var _ FileStorer = (*LocalFileStorer)(nil)
 
-func New(path string) *LocalFileStorer {
-	return new(LocalFileStorer{path: path})
+func NewLocalFileStorer(path string, perms os.FileMode) (FileStorer, error) {
+	err := os.MkdirAll(path, perms)
+	if err != nil {
+		return nil, err
+	}
+
+	return new(LocalFileStorer{path: path}), nil
 }
 
-func (l *LocalFileStorer) Init() error {
-	return os.MkdirAll(l.path, 0o777)
-}
-
-func (l *LocalFileStorer) GetFile(o *FileStorerObjectMetadata) (*io.ReadCloser, error) {
+func (l LocalFileStorer) GetFile(o *FileStorerObjectMetadata) (*io.ReadCloser, error) {
 	panic("not implemented yet")
 }
 
-func (l *LocalFileStorer) WriteFile(src io.ReadCloser) (*FileStorerObjectMetadata, error) {
+func (l LocalFileStorer) WriteFile(src io.ReadCloser) (*FileStorerObjectMetadata, error) {
 	panic("not implemented yet")
 }
