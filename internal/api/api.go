@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"runtime/debug"
+	"slices"
 	"time"
 
 	"dev.kaesebrot.eu/go/ingestor/internal/filestore"
@@ -459,20 +460,32 @@ func (a *APIHandler) UpdateProjectMedia(w http.ResponseWriter, r *http.Request, 
 
 // UploadProjectMedia implements [ServerInterface].
 func (a *APIHandler) UploadProjectMedia(w http.ResponseWriter, r *http.Request, shareToken ShareToken) {
-	const maxUploadFilesize = 50 << 30
-	_ = http.MaxBytesReader(w, r.Body, maxUploadFilesize)
+	project, err := a.repo.ProjectByShareToken(r.Context(), shareToken)
 
-	err := r.ParseMultipartForm(maxUploadFilesize)
 	if err != nil {
-		writeBadRequestError(w, "Uploaded files too large!", map[string]interface{}{})
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			writeNotFoundError(w, map[string]interface{}{"share_token": shareToken})
+		default:
+			writeInternalServerError(w, r, err)
+		}
 		return
 	}
 
-	form := r.MultipartForm
-	files := form.File["files"]
+	if !slices.Contains(project.ShareTokenPermissions, repository.SHARE_TOKEN_DOWNLOAD_ALLOWED) {
+		writeUploadNotAllowedError(w)
+		return
+	}
 
-	uploadedVideoFiles := map[string]*repository.VideoFile{}
-	uploadedImageFiles := map[string]*repository.ImageFile{}
+	// TODO
+	const maxUploadFilesize = 50 << 30
+	_ = http.MaxBytesReader(w, r.Body, maxUploadFilesize)
+
+	reader, err := r.MultipartReader()
+	if err != nil {
+		writeBadRequestError(w, "Not a valid multipart request!", map[string]interface{}{})
+		return
+	}
 
 	errs := make([]error, 0, len(files))
 	if len(files) == 0 {
@@ -513,6 +526,15 @@ func NewAPIHandler(db *repository.Repository, fileStorer filestore.FileStorer) *
 func writeBadRequestError(w http.ResponseWriter, detail string, additionalProperties map[string]interface{}) {
 	status := http.StatusBadRequest
 	writeProblemJSON(w, status, BadRequest{Status: status, Title: "The request was malformed or invalid.", Detail: &detail, AdditionalProperties: additionalProperties})
+}
+
+func writeUploadNotAllowedError(w http.ResponseWriter) {
+	status := http.StatusForbidden
+	writeProblemJSON(w, status, UploadNotAllowed{Status: status, Title: "The admin has not yet enabled uploads for this project.", AdditionalProperties: map[string]interface{}{}})
+}
+func writeDownloadNotAllowedError(w http.ResponseWriter) {
+	status := http.StatusForbidden
+	writeProblemJSON(w, status, DownloadNotAllowed{Status: status, Title: "The admin has not yet enabled downloads for this project.", AdditionalProperties: map[string]interface{}{}})
 }
 
 func writeNotFoundError(w http.ResponseWriter, additionalProperties map[string]interface{}) {
