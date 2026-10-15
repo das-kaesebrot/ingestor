@@ -725,6 +725,10 @@ export type UploadProjectMediaData = {
          * The user this uploaded file should be linked to. Not required.
          */
         uploadingUser?: UserId;
+        /**
+         * The incoming file's hash. At this time, only a BLAKE2b hash is supported. Not required but strongly recommended.
+         */
+        hash?: string;
         file: Blob | File;
     };
     path: {

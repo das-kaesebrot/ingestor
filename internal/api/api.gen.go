@@ -696,6 +696,9 @@ type DownloadProjectFilteredMediaArchiveParams struct {
 type UploadProjectMediaMultipartBody struct {
 	File openapi_types.File `json:"file"`
 
+	// Hash The incoming file's hash. At this time, only a BLAKE2b hash is supported. Not required but strongly recommended.
+	Hash *string `json:"hash,omitempty"`
+
 	// UploadingUser The user this uploaded file should be linked to. Not required.
 	UploadingUser *UserId `json:"uploadingUser,omitempty"`
 }
