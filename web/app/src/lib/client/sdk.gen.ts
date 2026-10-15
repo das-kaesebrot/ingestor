@@ -95,7 +95,7 @@ export const getProjectBackgroundJobs = <ThrowOnError extends boolean = false>(o
 export const listProjectMediaMetadata = <ThrowOnError extends boolean = false>(options: Options<ListProjectMediaMetadataData, ThrowOnError>): RequestResult<ListProjectMediaMetadataResponses, ListProjectMediaMetadataErrors, ThrowOnError> => (options.client ?? client).get<ListProjectMediaMetadataResponses, ListProjectMediaMetadataErrors, ThrowOnError>({ url: '/projects/{share-token}/media', ...options });
 
 /**
- * Upload media to a project
+ * Upload a single media file to a project
  */
 export const uploadProjectMedia = <ThrowOnError extends boolean = false>(options: Options<UploadProjectMediaData, ThrowOnError>): RequestResult<UploadProjectMediaResponses, UploadProjectMediaErrors, ThrowOnError> => (options.client ?? client).post<UploadProjectMediaResponses, UploadProjectMediaErrors, ThrowOnError>({
     ...formDataBodySerializer,

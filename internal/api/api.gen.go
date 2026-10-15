@@ -588,9 +588,7 @@ type InternalServerError struct {
 type MediaMetadataResponse = MediaMetadata
 
 // MediaMetadataUploadResponse defines model for MediaMetadataUploadResponse.
-type MediaMetadataUploadResponse struct {
-	CreatedMediaIds []MediaId `json:"created_media_ids"`
-}
+type MediaMetadataUploadResponse = MediaMetadata
 
 // NotFound defines model for NotFound.
 type NotFound struct {
@@ -696,7 +694,10 @@ type DownloadProjectFilteredMediaArchiveParams struct {
 
 // UploadProjectMediaMultipartBody defines parameters for UploadProjectMedia.
 type UploadProjectMediaMultipartBody struct {
-	Files *[]interface{} `json:"files,omitempty"`
+	File openapi_types.File `json:"file"`
+
+	// UploadingUser The user this uploaded file should be linked to. Not required.
+	UploadingUser *UserId `json:"uploadingUser,omitempty"`
 }
 
 // DownloadProjectMediaFileParams defines parameters for DownloadProjectMediaFile.
@@ -1895,7 +1896,7 @@ type ServerInterface interface {
 	// DownloadProjectFilteredMediaArchive Download a custom filtered download archive
 	// (GET /projects/{share-token}/media/download/filtered/{download-token})
 	DownloadProjectFilteredMediaArchive(w http.ResponseWriter, r *http.Request, shareToken ShareToken, downloadToken FilteredDownloadToken, params DownloadProjectFilteredMediaArchiveParams)
-	// UploadProjectMedia Upload media to a project
+	// UploadProjectMedia Upload a single media file to a project
 	// (POST /projects/{share-token}/media/upload)
 	UploadProjectMedia(w http.ResponseWriter, r *http.Request, shareToken ShareToken)
 	// GetProjectMedia Get media metadata

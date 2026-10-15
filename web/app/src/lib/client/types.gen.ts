@@ -721,7 +721,11 @@ export type ListProjectMediaMetadataResponse = ListProjectMediaMetadataResponses
 
 export type UploadProjectMediaData = {
     body: {
-        files?: Array<unknown>;
+        /**
+         * The user this uploaded file should be linked to. Not required.
+         */
+        uploadingUser?: UserId;
+        file: Blob | File;
     };
     path: {
         'share-token': Token;
@@ -765,11 +769,9 @@ export type UploadProjectMediaError = UploadProjectMediaErrors[keyof UploadProje
 
 export type UploadProjectMediaResponses = {
     /**
-     * Media metadata ids for all uploaded files.
+     * Media metadata for the uploaded file.
      */
-    201: {
-        created_media_ids: Array<MediaId>;
-    };
+    201: MediaMetadata;
 };
 
 export type UploadProjectMediaResponse = UploadProjectMediaResponses[keyof UploadProjectMediaResponses];

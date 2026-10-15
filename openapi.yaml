@@ -214,7 +214,7 @@ paths:
         - media
   /projects/{share-token}/media/upload:
     post:
-      summary: Upload media to a project
+      summary: Upload a single media file to a project
       operationId: uploadProjectMedia
       parameters:
         - $ref: '#/components/parameters/ShareToken'
@@ -224,12 +224,14 @@ paths:
           multipart/form-data:
             schema:
               type: object
+              required: ["file"]
               properties:
-                files:
-                  type: array
-                  items:
-                    format: binary
-                  minItems: 1
+                uploadingUser:
+                  description: "The user this uploaded file should be linked to. Not required."
+                  $ref: '#/components/schemas/UserId'
+                file:
+                  type: string
+                  format: binary
       responses:
         "201":
           $ref: '#/components/responses/MediaMetadataUploadResponse'
@@ -690,17 +692,11 @@ components:
           schema:
             $ref: '#/components/schemas/PagedMediaMetadata'
     MediaMetadataUploadResponse:
-      description: "Media metadata ids for all uploaded files."
+      description: "Media metadata for the uploaded file."
       content:
         application/json:
           schema:
-            type: object
-            required: [created_media_ids]
-            properties:
-              created_media_ids:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MediaId'
+            $ref: '#/components/schemas/MediaMetadata'
     MediaMetadataResponse:
       description: "Media metadata"
       content:
